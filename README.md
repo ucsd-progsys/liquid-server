@@ -15,14 +15,14 @@ JSON Format
 
 The JSON file has data about:
 
-  { status : "safe" + "unsafe" + "crash" + "error"
-  , errors : [ { message : 
-               , start   : { line : number, col : number } 
-               , stop    : { line : number, col : number } 
-               }
-             ]
-  , types  : [ TODO ]
-  }
+    { status : "safe" + "unsafe" + "crash" + "error"
+    , errors : [ { message : 
+                 , start   : { line : number, col : number } 
+                 , stop    : { line : number, col : number } 
+                 }
+               ]
+    , types  : [ TODO ]
+    }
 
 The above are then reflected on the client side ace-editor based pane.
 
