@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+import           Control.Monad.IO.Class (liftIO)
 import           Snap.Core
 import           Snap.Util.FileServe
 import           Snap.Http.Server
@@ -28,7 +29,9 @@ queryH         = writeLBS . encode =<< bodyResult =<< readBody
   where
     readBody   = readRequestBody maxLen
     maxLen     = 1000000
-    bodyResult = fromMaybe (return dummyResult) queryResult . decode 
+
+bodyResult = maybe (return dummyResult) (liftIO . queryResult) . decode 
+
 
 -- bodyResult bs = case decode bs of
 --                   Nothing -> return dummyResult

@@ -14,14 +14,18 @@ module Language.Liquid.Server.Types (
   , queryResult 
   ) where
 
-import           System.Process           (system)
+import           System.FilePath        (addExtension)
+import           System.Process         (system)
 import           Control.Monad          (mzero)
 import           Control.Applicative    ((<$>))
+import           Control.Monad.IO.Class (liftIO)
 import           Data.Maybe
+import           Data.List              (intercalate)
 import           Data.Aeson                 hiding (Result)
 -- import qualified Data.ByteString      as B
 import qualified Data.ByteString.Lazy as LB
 import qualified Data.HashMap.Strict  as M
+import           Data.Time.Clock.POSIX
 
 -----------------------------------------------------------------
 -- Configuration Parameters -------------------------------------
@@ -31,7 +35,7 @@ config :: Config
 config = C { srcSuffix  = "hs" 
            , srcChecker = "liquid"
            , cmdPrefix  = "GHC_PACKAGE_PATH=/home/rjhala/research/liquid/.hsenv_liquid/ghc/lib/ghc-7.6.3/package.conf.d"
-           , log        = "resources/sandbox/log"
+           , logFile    = "resources/sandbox/log"
            }
 
 -----------------------------------------------------------------
@@ -41,13 +45,13 @@ config = C { srcSuffix  = "hs"
 data Config = C { srcSuffix  :: String
                 , srcChecker :: FilePath
                 , cmdPrefix  :: String
-                , log        :: FilePath 
+                , logFile    :: FilePath 
                 }
 
 data Query  = Q { program :: LB.ByteString } 
 
-data Files  = F { src  :: FilePath
-                , json :: FilePath
+data Files  = F { srcFile  :: FilePath
+                , jsonFile :: FilePath
                 }
 
 type Result = Value
@@ -65,30 +69,33 @@ dummyResult = fromJust $ decode "{\"status\" : \"crash\" }"
 -- | Executing the Binary
 
 ------------------------------------------------------------------------
-queryResult :: Query -> Snap Result
+queryResult :: Query -> IO Result
 ------------------------------------------------------------------------
-
--- import qualified Control.Exception     as Ex
--- queryResult = echoResult  
-
 queryResult q 
-  = do f <- srcFile q 
-       LB.writeFile (src f) (program q)
-       let cmd = makeCommand config (src f)
-       logError $ "EXEC: " ++ cmd
+  = do f <- queryFiles q 
+       LB.writeFile (srcFile f) (program q)
+       let cmd = makeCommand config (srcFile f)
+       -- logError $ "EXEC: " ++ cmd
        system cmd
-       HEREHEREHEREHERE
+       byteStringResult <$> LB.readFile (jsonFile f)
+
+byteStringResult = fromMaybe dummyResult . decode
 
 queryFiles   :: Query -> IO Files
-queryFiles q = do t     <- getTimeStamp
-                  return $ F (srcFile t) (jsonFile t)
+queryFiles q 
+  = do t     <- show <$> getPOSIXTime 
+       return $ F (sourceName t) (jsonName t)
 
-srcFile      = (`addExtension` (config srcSuffix))
-jsonFile     = (`addExtension` "json" . srcFile) 
+sourceName = (`addExtension` (srcSuffix config))
+jsonName   = (`addExtension` "json") . sourceName 
 
 -- executeShellCommand phase cmd 
 --   = do whenLoud $ putStrLn $ "EXEC: " ++ cmd 
 --        Ex.bracket_ (startPhase Loud phase) (donePhase Loud phase) $ system cmd
+-- 
+-- import qualified Control.Exception     as Ex
+-- queryResult = echoResult  
+
 
 
 echoResult  :: (ToJSON a) => a -> Result
@@ -101,11 +108,11 @@ makeCommand :: Config -> FilePath -> String
 makeCommand config target 
   = intercalate " " 
     [ "LANG=en_US.UTF-8"
-    , config cmdPrefix
-    , config checker
+    , cmdPrefix  config
+    , srcChecker config
     , target 
     , ">"
-    , config log 
+    , logFile    config 
     , "2>&1" 
     ]
 
