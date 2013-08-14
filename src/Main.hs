@@ -1,13 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 
--- module Main where
-
--- import           Control.Applicative
--- import           Control.Monad
--- import qualified Data.ByteString      as B
--- import qualified Data.ByteString.Lazy as LB
-
-
 import           Snap.Core
 import           Snap.Util.FileServe
 import           Snap.Http.Server
@@ -19,20 +11,30 @@ main      :: IO ()
 main      = quickHttpServe site
 
 site      :: Snap ()
-site      = route [ ("static", serveDirectory "resources/static/")
-                  , ("check" , method POST queryH)
-                  , (""      , defaultH)
+site      = route [ ("index.html" , serveFile      "resources/static/index.html") 
+                  , ("log"        , serveFileAs    "text/plain" "resources/sandbox/log") 
+                  , ("js/"        , serveDirectory "resources/static/js")
+                  , ("css/"       , serveDirectory "resources/static/css")
+                  , ("demos/"     , serveDirectory "resources/static/demos")
+                  , ("check/"     , method POST queryH)
+                  , (""           , defaultH)
                   ]
 
-defaultH  :: Snap ()
-defaultH  = writeLBS "Liquid Demo Server"
+defaultH       :: Snap ()
+defaultH       = writeLBS "Liquid Demo Server: Oops, there's nothing here!"
 
-queryH        :: Snap ()
-queryH        = writeLBS . encode . getResult =<< readBody
+queryH         :: Snap ()
+queryH         = writeLBS . encode =<< bodyResult =<< readBody
   where
-    readBody  = readRequestBody maxLen
-    maxLen    = 1000000
-    getResult = fromMaybe dummyResult . fmap queryResult . decode
+    readBody   = readRequestBody maxLen
+    maxLen     = 1000000
+    bodyResult = fromMaybe (return dummyResult) queryResult . decode 
+
+-- bodyResult bs = case decode bs of
+--                   Nothing -> return dummyResult
+--                   Just q  -> queryResult q 
+-- 
+-- getResult = readBody >>= bodyResult 
 
 -- echoHandler = do
 --     param <- getParam "echoparam"

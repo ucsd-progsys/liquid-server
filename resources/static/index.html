@@ -65,7 +65,7 @@
     <link href="css/bootstrap-readable.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
     <link href="css/bootswatch.css" rel="stylesheet">
-    <link href="syntax/liquid.css" type='text/css' rel="stylesheet">
+    <!-- <link href="syntax/liquid.css" type='text/css' rel="stylesheet"> -->
     <script src="js/jquery/jquery-1.7.1.min.js"></script>
     <script src="js/angular/angular.js"></script>
     <script src="js/bootstrap/bootstrap.min.js"></script>
@@ -156,9 +156,11 @@
        <div class="tabbable"> <!-- Only required for left/right tabs -->
          <ul class="nav nav-tabs">
            <li class="active"><a href="#tabSrc" data-toggle="tab">Haskell Source</a></li>
+           
+           <!-- 
            <li><a href="#tabQuals" data-toggle="tab">Qualifiers</a></li>
            <li ng-show="outReady"><a href="#tabOut" data-toggle="tab">Result</a></li>
-           <!-- <li ng-show="outReady"><a href="#tabLog" data-toggle="tab">Log</a></li>
+           <li ng-show="outReady"><a href="#tabLog" data-toggle="tab">Log</a></li>
            -->
 
          </ul>
@@ -216,24 +218,17 @@
 
               </div>
            </div>
-           
+
+           <!--
            <div class="tab-pane" id="tabQuals">
              <div id="qualifier-pane" class="well" style="background:#fff">
-               <!--
-               <textarea class="field" id='qualifiers' name='qualifiers' rows='20' cols='80'>
-                // Wait for it ... 
-               </textarea>
-               -->
-
                <div id="qualifiers" style="height: 90%">
                    // Wait for it ...
                </div>
-
-
-
              </div>
            </div>
-           
+            -->
+
            <div class="tab-pane" id="tabOut">
              <div ng-show="isSafe" class="alert alert-success">
                <button type="button" class="close" data-dismiss="alert">×</button>

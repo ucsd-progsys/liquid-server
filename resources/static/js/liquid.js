@@ -80,20 +80,20 @@ $(window).resize(resizeProgEditor);
 ////set initially
 resizeProgEditor();
 
+// DUPLICATE?!! //listen for changes
+// DUPLICATE?!! $(window).resize(resizeProgEditor);
+// DUPLICATE?!! ////set initially
+// DUPLICATE?!! resizeProgEditor();
 
-function resizeQualEditor() {
-  var w = $('#qualifier-pane').width();
-  return $('#qualifiers').width(w);
-};
 
-//listen for changes
-$(window).resize(resizeProgEditor);
-////set initially
-resizeProgEditor();
-
-var qualEditor = ace.edit("qualifiers");
-qualEditor.setTheme("ace/theme/xcode");
-qualEditor.getSession().setMode(new SrcMode());
+// NOQUAL  function resizeQualEditor() {
+// NOQUAL    var w = $('#qualifier-pane').width();
+// NOQUAL    return $('#qualifiers').width(w);
+// NOQUAL  };
+// NOQUAL  
+// NOQUAL  var qualEditor = ace.edit("qualifiers");
+// NOQUAL  qualEditor.setTheme("ace/theme/xcode");
+// NOQUAL  qualEditor.getSession().setMode(new SrcMode());
 
 
 /*******************************************************************************/
@@ -146,9 +146,9 @@ function setErrors(editor, errs){
 /************** URLS ***********************************************************/
 /*******************************************************************************/
 
+// NOQUAL function getQualsURL(file) { return ('demos/' + file + '.hquals');  }
 function getSrcURL(file)   { return ('demos/' + file);              }
-function getQualsURL(file) { return ('demos/' + file + '.hquals');  }
-function getVerifierURL()  { return 'liquid.php';                   }
+function getVerifierURL()  { return 'check/' /* 'liquid.php' */; }
 
 /*******************************************************************************/
 /************** Tracking Status ************************************************/
@@ -169,7 +169,6 @@ function setStatusChecking($scope){
   $scope.isUnknown  = false;
 }
 
-var debugResult ;
 
 function setStatusResult($scope, result){
   debugResult = result;
@@ -199,7 +198,7 @@ function getResult(d) {
 function getWarns(d){ 
   var ws = [];
   if (d && d.annots && d.annots.errors){
-    var ws = globData.annots.errors.map(function(x){ 
+    var ws = d.annots.errors.map(function(x){ 
                return x.message;//.replace(/\n/g, '<br>')
              });
   }
@@ -210,9 +209,9 @@ function getWarns(d){
 /************** Top-Level Demo Controller **************************************/
 /*******************************************************************************/
 
-var globData   = null;
-var globResult = null;
-var globResp   = 0;
+var debugData   = null;
+var debugResult = null;
+var debugResp   = 0;
 
 function LiquidDemoCtrl($scope, $http, $location) {
 
@@ -224,10 +223,10 @@ function LiquidDemoCtrl($scope, $http, $location) {
 
   // Load a particular demo
   $scope.loadSource   = function(demo){
-    var baseURL     = 'demos/';
-    // var baseURL       = 'http://goto.ucsd.edu/~rjhala/liquid/haskell/demo/demos/';
-    var srcURL        = baseURL + demo.file;
-    var qualsURL      = 'demos/' + demo.file + '.hquals';
+    // NOQUAL var baseURL     = 'demos/';
+    // NOQUAL var baseURL       = 'http://goto.ucsd.edu/~rjhala/liquid/haskell/demo/demos/';
+    // NOQUAL var qualsURL      = 'demos/' + demo.file + '.hquals';
+    var srcURL = getSrcURL(demo.file);
    
     clearStatus($scope);
 
@@ -244,10 +243,11 @@ function LiquidDemoCtrl($scope, $http, $location) {
       .success(function(src) { progEditor.getSession().setValue(src);})
       .error(function(data, stat){ alert("Horrors: No such file! " + srcURL); })
       ;
-    $http.get(qualsURL)
-      .success(function(quals) { qualEditor.getSession().setValue(quals); })
-      .error(function(data, stat){ qualEditor.getSession().setValue("// No user-specified Qualifiers"); })
-      ; 
+    
+    // NOQUAL $http.get(qualsURL)
+    // NOQUAL   .success(function(quals) { qualEditor.getSession().setValue(quals); })
+    // NOQUAL   .error(function(data, stat){ qualEditor.getSession().setValue("// No user-specified Qualifiers"); })
+    // NOQUAL   ; 
   };
 
   // Initialize with Test000.hs
@@ -268,23 +268,22 @@ function LiquidDemoCtrl($scope, $http, $location) {
 
   // http://www.cleverweb.nl/javascript/a-simple-search-with-angularjs-and-php/
   $scope.verifySource = function(){ 
-    var query = { "program"    : progEditor.getSession().getValue(), 
-                  "qualifiers" : qualEditor.getSession().getValue() 
+    var query = { "program"    : progEditor.getSession().getValue() 
+                // , "qualifiers" : qualEditor.getSession().getValue() 
                 };
 
     setStatusChecking($scope);
 
     $http.post(getVerifierURL(), query)
          .success(function(data, status) {
-            globResp         = globResp + 1; 
+            debugResp        = debugResp + 1; 
             $scope.status    = status;
-            globData         = data;
-            globResult       = getResult(data);
-            $scope.result    = globResult;
+            debugData        = data;
+            $scope.result    = getResult(data);
+            debugResult      = $scope.result;
             $scope.warns     = getWarns(data); 
-            // $scope.crash     = getCrash(data);  
             $scope.annotHtml = data.annotHtml;
-            setStatusResult($scope, globResult);
+            setStatusResult($scope, $scope.result);
            
             // This may be "null" if liquid crashed...
             debugAnnots      = data.annots;

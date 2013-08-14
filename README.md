@@ -26,45 +26,47 @@ The JSON file has data about:
 
 The above are then reflected on the client side ace-editor based pane.
 
-Configuration
--------------
+Configuration [TODO]
+--------------------
 
 To configure to a new checker, you should just specify:
 
-  + checker, specified via a path to the **binary** [TODO]
-  + (optional) editor configuration parameters      [TODO]
+  1. **checker binary** specified by a shell-command string
+                        `checkerCommand`
+
+  2. **demo files**     specified by the contents of 
+                        `resources/static/demos/`
+
+  3. **js config**      editor config params, list and types of demos 
+                        `resources/static/js/config.js`
+
+Files
+-----
+
+Directory Structure
+  
+  + resources/
+      + static/
+          + index.html
+          + js/
+          + css/
+          + demos/
+
+      + sandbox/
+
+      + saved/
 
 TODO
 ----
 
 1. PHP functionality
 --------------------
-
-  + routes:
-      1. get  file
-      2. get  hquals
-      3. post json-query :: { program :: string }
-      4. echo response   :: { annots  :: { status :: string } } 
-
-     
-      static/demos/foo.hs
-      static/demos/foo.hs.hquals
-      static/js/liquid.js etc.
-      static/css/
-      static/img/
-        
-
-      static/demos/ /:srcfile
-      check/:query
-
-
-    // var baseURL    = 'demos/';
-    var srcURL        = baseURL + demo.file;
-    var qualsURL      = 'demos/' + demo.file + '.hquals';
-   
-
-    $http.get(srcURL)
-    $http.get(qualsURL)
+    + basic server
+    + serve  source
+    + remove hquals pane
+    + update checker URL (++ "check/") 
+    - invoke binary
+    - test!
 
 2. Permalinks
 -------------
