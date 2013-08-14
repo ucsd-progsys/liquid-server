@@ -1,0 +1,1 @@
+{"status":"error","types":{},"errors":[{"message":"Specified Type Does Not Refine Haskell Type for PuttingThingsInOrder.whatGosUp: web/demos/Order.hs:120:5\nHaskell: forall t. GHC.Num.Num t =\u003e [t]\nLiquid : [(GHC.Integer.Type.Integer)]\u003c\\xi9 VV -\u003e (xi9 \u003c= VV)\u003e","stop":{"column":5,"line":120},"start":{"column":5,"line":120}}]}

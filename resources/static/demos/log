@@ -1,0 +1,318 @@
+
+BEGIN: Qualifier Instantiation
+
+DONE: Qualifier Instantiation
+
+DONE: Qualifier Instantiation: Built Map 
+
+USING SMTLIB bindings with z3
+
+USING SMTLIB bindings with z3
+
+BEGIN: refine_sort
+
+END: refine_sort
+
+ 
+ 
+ 
+ 
+========================================================
+© Copyright 2009 Regents of the University of California.
+All Rights Reserved.
+========================================================
+/home/rjhala/research/liquid/.hsenv/cabal/bin/fixpoint.native -notruekvars -refinesort -noslice -nosimple -strictsortcheck -sortedquals -no-gen-qual-sorts -smtsolver z3 -out ../../tests/todo/Eval.hs.fqout ../../tests/todo/Eval.hs.fq
+========================================================
+BEGIN: Q.normalize
+DONE: Q.normalize
+Fixpoint: Creating  CI
+Using Quals: 
+Pre-Simplify Stats
+#Constraints: 107 (simple = 0) 
+Post-Simplify Stats
+#Constraints: 107 (simple = 0) 
+Using Quals: 
+qualif Auto(VV:List (fix##40##41# (List (GHC.Types.Char )) int), ~A0:List (GHC.Types.Char )):Set_mem(~A0, vars([VV]))
+
+qualif Auto0(VV:Eval.Expr , ~A0:List (fix##40##41# (List (GHC.Types.Char )) int)):Set_sub(free([VV]), vars([~A0]))
+
+qualif Bot(v:@(0)):(0 = 1)
+qualif Bot0(v:obj):(0 = 1)
+
+qualif Bot1(v:bool):(0 = 1)
+qualif Bot2(v:int):(0 = 1)
+
+qualif Cmp(v:@(0), ~A:@(0)):(v <= ~A)
+qualif Cmp0(v:@(0), ~A:@(0)):(v < ~A)
+
+qualif Cmp1(v:@(0), ~A:@(0)):(v > ~A)
+qualif Cmp2(v:@(0), ~A:@(0)):(v = ~A)
+
+qualif Cmp3(v:@(0), ~A:@(0)):(v >= ~A)
+
+qualif Cmp4(v:@(0), ~A:@(0)):(v != ~A)
+
+qualif CmpLen(v:List @(0), ~A:List @(1)):(len([v]) < len([~A]))
+
+qualif CmpLen0(v:List @(0), ~A:List @(1)):(len([v]) = len([~A]))
+
+qualif CmpLen1(v:List @(0), ~A:List @(1)):(len([v]) <= len([~A]))
+
+qualif CmpLen2(v:List @(0), ~A:List @(1)):(len([v]) >= len([~A]))
+
+qualif CmpLen3(v:List @(0), ~A:List @(1)):(len([v]) > len([~A]))
+
+qualif CmpZ(v:@(0)):(v != 0)
+qualif CmpZ0(v:@(0)):(v < 0)
+
+qualif CmpZ1(v:@(0)):(v >= 0)
+qualif CmpZ2(v:@(0)):(v = 0)
+
+qualif CmpZ3(v:@(0)):(v <= 0)
+qualif CmpZ4(v:@(0)):(v > 0)
+
+qualif EqLen(v:int, ~A:List @(0)):(v = len([~A]))
+
+qualif False(v:bool):(~ ((Bexp v)))
+
+qualif False1(v:GHC.Types.Bool ):(~ (Prop(v)))
+
+qualif IsEmp(v:GHC.Types.Bool , ~A:List @(0)):(Prop(v) <=> (len([~A]) > 0))
+
+qualif IsEmp0(v:GHC.Types.Bool , ~A:List @(0)):(Prop(v) <=> (len([~A]) = 0))
+
+qualif LenAcc(v:int, ~A:List @(0), ~B:int):(v = (len([~A]) + ~B))
+
+qualif LenDiff(v:List @(0), ~A:int):(len([v]) = (~A + 1))
+
+qualif LenDiff0(v:List @(0), ~A:int):(len([v]) = (~A - 1))
+
+qualif LenEq(v:List @(0), ~A:int):(~A = len([v]))
+
+qualif ListZ(v:List @(0)):(len([v]) > 0)
+
+qualif ListZ0(v:List @(0)):(len([v]) >= 0)
+
+qualif ListZ1(v:List @(0)):(len([v]) = 0)
+qualif One(v:int):(v = 1)
+
+qualif Papp(v:@(0), ~P:Pred @(0)):papp1(~P, v)
+
+qualif Papp2(v:@(0), ~X:@(1), ~P:Pred @(0) @(1)):papp2(~P, v, ~X)
+
+qualif True(v:bool):(Bexp v)
+
+BEGIN: Qualifier Instantiation
+.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-
+DONE: Qualifier Instantiation
+
+DONE: Qualifier Instantiation: Built Map 
+
+USING SMTLIB bindings with z3
+
+USING SMTLIB bindings with z3
+Distinct Constants: GHC.Types.True#6u, GHC.Types.False#68 
+Distinct Constants: GHC.Types.True#6u, GHC.Types.False#68 
+
+BEGIN: refine_sort
+
+END: refine_sort
+
+DONE: Dom.create
+
+BEGIN: PP.validate
+
+END: PP.validate
+
+qualif True1(v:GHC.Types.Bool ):Prop(v)DONE: Solve.create
+Fixpoint: Solving 
+Fixpoint: Validating Initial Solution 
+Total binds=5711, cbinds=1310, kbinds=423, ebinds=3978 
+Constraint Clusters = 86 
+
+BEGIN: Fixpoint: Trueing Unconstrained Variables 
+
+DONE: Fixpoint: Trueing Unconstrained Variables 
+
+BEGIN: Fixpoint: Initialize Worklist 
+
+DONE: Fixpoint: Initialize Worklist 
+
+BEGIN: Fixpoint Refinement Loop 
+
+ num refines=0# Vars: (Total=39, False=39) Quals: (Total=398, Avg=10.205128, Max=44, Min=1)
+#Iteration Profile = (si=0 tp=0 unsatLHS=0 emptyRHS=0) 
+#Queries: umatch=0, match=0, ask=0, valid=0
+SMT stats: pushes=196, pops=196, unsats=67 
+TP stats: sets=40, queries=156, count=2
+ 
+.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-.\.|./.-
+DONE: Fixpoint Refinement Loop 
+
+DONE: Simplify Solution 
+#Constraints: 107 (simple = 0) 
+#Iterations = 99
+Iteration Frequency: 
+ITERFREQ: 1 times (ch = false) 57 constraints 58,107,64,89,60,75,73,78,20,86,24,103,71,79,72,65,70,38,62,96,37,94,57,54,26,97,102,28,36,25,21,85,19,81,40,22,18,69,100,39,27,80,87,77,63,84,23,29,91,56,41,55,16,67,83,93,92 
+ITERFREQ: 1 times (ch = true) 38 constraints 13,106,42,7,12,31,9,48,2,43,35,105,6,46,10,98,99,49,44,11,5,50,52,1,45,3,30,34,14,8,95,51,101,32,104,33,4,47 
+ITERFREQ: 2 times (ch = false) 2 constraints 15,66 
+Iteration Periods: 
+Timer fixpoint iters :: <     0,  0.000, *>
+                        <     1,  0.004, 
+ num refines=0>
+                        <     2,  0.024, Finished>
+                         
+ 
+ 
+# Vars: (Total=39, False=2) Quals: (Total=9, Avg=0.230769, Max=3, Min=0)
+#Iteration Profile = (si=0 tp=28 unsatLHS=3 emptyRHS=58) 
+#Queries: umatch=21, match=23, ask=331, valid=18
+SMT stats: pushes=555, pops=555, unsats=85 
+TP stats: sets=68, queries=487, count=59
+ 
+Fixpoint: Testing Solution 
+Unsatisfied Constraints:
+ constraint:
+ env  [ x#a1eQ:{VV#143 : List (GHC.Types.Char ) | [(len([VV#143]) >= 0)]}
+      ; vars:{VV : func(0, [List (fix##40##41# (List (GHC.Types.Char )) int) ; Set_Set (List (GHC.Types.Char ))]) | []}
+      ; snd:{VV : func(2, [fix##40##41# @(0) @(1) ; @(1)]) | []}
+      ; papp2:{VV : func(4, [Pred @(0) @(1) ; @(2) ; @(3) ; bool]) | []}
+      ; papp1:{VV : func(2, [Pred @(0) ; @(1) ; bool]) | []}
+      ; null:{VV : func(1, [List @(0) ; bool]) | []}
+      ; lq_anf__d1fv:{VV#131 : Eval.Expr  | [k_132; (VV#131 = ds_d1fl)
+                                            ; (VV#131 = Eval.Var#r1dX([x#a1eQ]))
+                                            ; (free([VV#131]) = Set_sng([x#a1eQ]))]}
+      ; listElts:{VV : func(1, [List @(0) ; Set_Set @(0)]) | []}
+      ; len:{VV : func(1, [List @(0) ; int]) | []}
+      ; isJust:{VV : func(1, [Data.Maybe.Maybe @(0) ; bool]) | []}
+      ; fst:{VV : func(2, [fix##40##41# @(0) @(1) ; @(0)]) | []}
+      ; fromJust:{VV : func(1, [Data.Maybe.Maybe @(0) ; @(0)]) | []}
+      ; free:{VV : func(0, [Eval.Expr  ; Set_Set (List (GHC.Types.Char ))]) | []}
+      ; fix#GHC.Types.#91##93##35#6m:{VV : func(1, [List @(0)]) | []}
+      ; fix#GHC.Types.#58##35#64:{VV : func(1, [@(0) ; List @(0) ; List @(0)]) | []}
+      ; fix#GHC.Tuple.#40##44##41##35#74:{VV : func(2, [@(0) ; @(1) ; fix##40##41# @(0) @(1)]) | []}
+      ; eval#a1f2:{VV : func(0, [List (fix##40##41# (List (GHC.Types.Char )) int) ; Eval.Expr  ; int]) | []}
+      ; env#a1eN:{VV#129 : List (fix##40##41# (List (GHC.Types.Char )) int) | 
+                 [k_130; (len([VV#129]) >= 0)]}
+      ; ds_d1fl:{VV#131 : Eval.Expr  | [k_132]}
+      ; cmp:{VV : func(0, [GHC.Types.Ordering  ; GHC.Types.Ordering ]) | []}
+      ; addrLen:{VV : func(0, [int ; int]) | []}
+      ; Set_sub:{VV : func(1, [Set_Set @(0) ; Set_Set @(0) ; bool]) | []}
+      ; Set_sng:{VV : func(1, [@(0) ; Set_Set @(0)]) | []}
+      ; Set_mem:{VV : func(1, [@(0) ; Set_Set @(0) ; bool]) | []}
+      ; Set_emp:{VV : func(1, [Set_Set @(0) ; bool]) | []}
+      ; Set_dif:{VV : func(1, [Set_Set @(0) ; Set_Set @(0) ; Set_Set @(0)]) | []}
+      ; Set_cup:{VV : func(1, [Set_Set @(0) ; Set_Set @(0) ; Set_Set @(0)]) | []}
+      ; Set_cap:{VV : func(1, [Set_Set @(0) ; Set_Set @(0) ; Set_Set @(0)]) | []}
+      ; Prop:{VV : func(0, [GHC.Types.Bool  ; bool]) | []}
+      ; GHC.Types.True#6u:{VV : GHC.Types.Bool  | []}
+      ; GHC.Types.LT#6S:{VV#60 : GHC.Types.Ordering  | [(cmp([VV#60]) = GHC.Types.LT#6S)]}
+      ; GHC.Types.GT#6W:{VV#59 : GHC.Types.Ordering  | [(cmp([VV#59]) = GHC.Types.GT#6W)]}
+      ; GHC.Types.False#68:{VV : GHC.Types.Bool  | []}
+      ; GHC.Types.EQ#6U:{VV#45 : GHC.Types.Ordering  | [(cmp([VV#45]) = GHC.Types.EQ#6U)]}
+      ; GHC.Prim.realWorld##0f:{VV#22 : GHC.Prim.State# (GHC.Prim.RealWorld ) | []}
+      ; GHC.CString.unpackCString##0k:{VV : func(0, [int ; List (GHC.Types.Char )]) | []}
+      ; Eval.lookup#r1e1:{VV : func(0, [List (GHC.Types.Char ) ; List (fix##40##41# (List (GHC.Types.Char )) int) ; int]) | []}
+      ; Eval.eval#r1e2:{VV : func(0, [List (fix##40##41# (List (GHC.Types.Char )) int) ; Eval.Expr  ; int]) | []}
+      ; Eval.Var#r1dX:{VV : func(0, [List (GHC.Types.Char ) ; Eval.Expr ]) | []}
+      ; Eval.Plus#r1dW:{VV : func(0, [Eval.Expr  ; Eval.Expr  ; Eval.Expr ]) | []}
+      ; Eval.Let#r1dV:{VV : func(0, [List (GHC.Types.Char ) ; Eval.Expr  ; Eval.Expr  ; Eval.Expr ]) | []}
+      ; Eval.Const#r1dY:{VV : func(0, [int ; Eval.Expr ]) | []}] 
+ grd true 
+ lhs {VV#F96 : List (fix##40##41# (List (GHC.Types.Char )) int) | [k_130[VV#F:=VV#F96][VV#437:=VV#F96][VV#129:=VV#F96]
+                                                                  ; (len([VV#F96]) >= 0)
+                                                                  ; (VV#F96 = env#a1eN)]} 
+ rhs {VV#F96 : List (fix##40##41# (List (GHC.Types.Char )) int) | [Set_mem(x#a1eQ, vars([VV#F96]))]} 
+ id 96 tag [3] // 
+Fixpoint: Saving Result 
+Fixpoint: Saving Result DONE 
+Fixpoint Solver Time 
+TOTAL                          0.304 s
+  save                           0.004 s
+  solve                          0.060 s
+    Solve.unsatcs                  0.028 s
+      unsat                          0.000 s
+        SMT.check_unsat                0.000 s
+      assertPreds                    0.000 s
+      z3Pred                         0.016 s
+        z3Var memo                     0.004 s
+      fixdiv                         0.000 s
+    Solve.dump                     0.000 s
+    Solve.acsolve                  0.024 s
+      refine                         0.016 s
+        refine                         0.016 s
+          cx_update                      0.000 s
+          check tp                       0.012 s
+            unsat                          0.008 s
+              SMT.check_unsat                0.008 s
+            assertPreds                    0.004 s
+            z3Pred                         0.000 s
+              z3Var memo                     0.000 s
+            fixdiv                         0.000 s
+          lhs_contra                     0.000 s
+          preds_of_lhs                   0.000 s
+          rhs_cands                      0.000 s
+    Cindex.winit                   0.000 s
+    Prepass.profile                0.004 s
+  Validate                       0.148 s
+    valid rhs                      0.000 s
+      validate_vars                  0.000 s
+      preds_of_reft                  0.000 s
+    validate_vars                  0.004 s
+  cx_update                      0.000 s
+  z3Var memo                     0.000 s
+  Constant EnvWF                 0.000 s
+  Simplify                       0.000 s
+    add ids  1                     0.000 s
+  Constant Env                   0.000 s
+  Ref Index                      0.000 s
+  create                         0.000 s
+  making_graph                   0.036 s
+  parse                          0.036 s
+  Annots: make qleqs             0.000 s
+    unsat                          0.000 s
+      SMT.check_unsat                0.000 s
+    assertPreds                    0.000 s
+    z3Pred                         0.000 s
+      z3Var memo                     0.000 s
+    fixdiv                         0.000 s
+    z3Var memo                     0.000 s
+  Qual Inst                      0.020 s
+
+UNSAT
+LiquidHaskell © Copyright 2009-13 Regents of the University of California.
+All Rights Reserved.
+liquid Config {files = ["../../tests/todo/Eval.hs"], idirs = [], diffcheck = False, binders = [], noCheckUnknown = False, nofalse = False, notermination = True, noPrune = False, maxParams = 2, smtsolver = z3}
+
+Warning: Couldn't do delete binaries: ../../tests/todo/Eval.hi: removeLink: does not exist (No such file or directory)
+Warning: Couldn't do delete binaries: ../../tests/todo/Eval.o: removeLink: does not exist (No such file or directory)
+paths = ["../../tests/todo/","/home/rjhala/research/liquid/liquidhaskell/include"]
+parseSpec: ../../tests/todo/Eval.hs for module Eval
+getSpecs: [("Data.Set","/home/rjhala/research/liquid/liquidhaskell/include/Data/Set.spec"),("Language.Haskell.Liquid.Prelude","/home/rjhala/research/liquid/liquidhaskell/include/Language/Haskell/Liquid/Prelude.hs"),("Prelude","/home/rjhala/research/liquid/liquidhaskell/include/Prelude.spec")]
+parseSpec: /home/rjhala/research/liquid/liquidhaskell/include/Data/Set.spec for module Data.Set
+parseSpec: /home/rjhala/research/liquid/liquidhaskell/include/Language/Haskell/Liquid/Prelude.hs for module Language.Haskell.Liquid.Prelude
+parseSpec: /home/rjhala/research/liquid/liquidhaskell/include/Prelude.spec for module Prelude
+parseSpec: /home/rjhala/research/liquid/liquidhaskell/include/Data/Maybe.spec for module Data.Maybe
+parseSpec: /home/rjhala/research/liquid/liquidhaskell/include/GHC/Base.spec for module GHC.Base
+parseSpec: /home/rjhala/research/liquid/liquidhaskell/include/GHC/List.lhs for module GHC.List
+parseSpec: /home/rjhala/research/liquid/liquidhaskell/include/GHC/Classes.spec for module GHC.Classes
+parseSpec: /home/rjhala/research/liquid/liquidhaskell/include/GHC/Prim.spec for module GHC.Prim
+parseSpec: /home/rjhala/research/liquid/liquidhaskell/include/GHC/Types.spec for module GHC.Types
+Module Imports: ["Data.Maybe","Data.Set","GHC.Base","GHC.Classes","GHC.Err","GHC.List","GHC.Prim","GHC.Types","Language.Haskell.Liquid.Prelude","Prelude"]
+Reading Qualifiers From: ["/home/rjhala/research/liquid/liquidhaskell/include/GHC/Base.hquals","/home/rjhala/research/liquid/liquidhaskell/include/Prelude.hquals"]
+[1;94m
+****************************** DONE:  generateConstraints *****************************
+[0m[1;94m
+****************************** START: fixpoint *****************************
+[0mEXEC: LD_LIBRARY_PATH=/home/rjhala/research/liquid/.hsenv/cabal/bin/ /home/rjhala/research/liquid/.hsenv/cabal/bin/fixpoint.native -notruekvars -refinesort -noslice -nosimple -strictsortcheck -sortedquals -no-gen-qual-sorts -smtsolver z3 -out ../../tests/todo/Eval.hs.fqout ../../tests/todo/Eval.hs.fq
+[1;94m
+****************************** DONE:  fixpoint *****************************
+[0m[1;94m
+****************************** DONE:  solve *****************************
+[0m[1;94m
+****************************** DONE:  annotate *****************************
+[0m[1;91m
+****************************** DONE:  Unsafe: *****************************
+[0m[1;91m
+****************************** WARNING: ../../tests/todo/Eval.hs:33:35-37 *****************************
+[0m

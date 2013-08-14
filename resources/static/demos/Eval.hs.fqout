@@ -1,0 +1,211 @@
+SAT 
+ 
+ 
+ 
+solution: k_101 := [] 
+
+solution: k_104 := [] 
+
+solution: k_106 := [(Set_mem(VV#105, vars([lq_anf__d1g4])), Auto(VV#105, lq_anf__d1g4));((len([VV#105]) >= 0), ListZ1(VV#105));(Set_mem(VV#105, vars([ds_d1fE])), Auto(VV#105, ds_d1fE))] 
+
+solution: k_112 := [] 
+
+solution: k_114 := [((VV#113 = GHC.Prim.realWorld##0f), Cmp4(VV#113, GHC.Prim.realWorld##0f))] 
+
+solution: k_119 := [] 
+
+solution: k_122 := [] 
+
+solution: k_124 := [] 
+
+solution: k_126 := [] 
+
+solution: k_129 := [] 
+
+solution: k_131 := [] 
+
+solution: k_134 := [] 
+
+solution: k_137 := [] 
+
+solution: k_139 := [] 
+
+solution: k_141 := [] 
+
+solution: k_144 := [] 
+
+solution: k_146 := [] 
+
+solution: k_148 := [] 
+
+solution: k_150 := [(Set_sub(free([VV#149]), vars([env#a1f5])), Auto0(VV#149, env#a1f5))] 
+
+solution: k_152 := [] 
+
+solution: k_168 := [] 
+
+solution: k_170 := [((VV#169 = GHC.Prim.realWorld##0f), Cmp4(VV#169, GHC.Prim.realWorld##0f))] 
+
+solution: k_173 := [((0 = 1), Bot(VV#172))] 
+
+solution: k_176 := [((0 = 1), Bot(VV#175))] 
+
+solution: k_181 := [((VV#180 = lq_anf__d1gb), Cmp4(VV#180, lq_anf__d1gb))] 
+
+solution: k_183 := [((VV#182 = lq_anf__d1gc), Cmp4(VV#182, lq_anf__d1gc))] 
+
+solution: k_185 := [((VV#184 = lq_anf__d1gc), Cmp4(VV#184, lq_anf__d1gc))] 
+
+solution: k_220 := [] 
+
+solution: k_223 := [] 
+
+solution: k_225 := [((len([VV#224]) = len([x#a1ff])), CmpLen3(VV#224, x#a1ff));((len([VV#224]) >= 0), ListZ1(VV#224));((VV#224 = x#a1ff), Cmp4(VV#224, x#a1ff))] 
+
+solution: k_227 := [((VV#226 = lq_anf__d1go), Cmp4(VV#226, lq_anf__d1go))] 
+
+solution: k_229 := [((VV#228 = lq_anf__d1go), Cmp4(VV#228, lq_anf__d1go))] 
+
+solution: k_234 := [] 
+
+solution: k_237 := [] 
+
+solution: k_239 := [] 
+
+solution: k_241 := [] 
+
+solution: k_244 := [] 
+
+solution: k_246 := [] 
+
+solution: k_248 := [] 
+
+solution: k_251 := [] 
+
+solution: k_253 := [] 
+
+solution: k_255 := [] 
+
+solution: k_258 := [] 
+
+solution: k_260 := [] 
+
+solution: k_278 := [] 
+
+solution: k_280 := [((VV#279 = GHC.Prim.realWorld##0f), Cmp4(VV#279, GHC.Prim.realWorld##0f))] 
+
+solution: k_283 := [((0 = 1), Bot(VV#282))] 
+
+solution: k_286 := [((0 = 1), Bot(VV#285))] 
+
+solution: k_294 := [] 
+
+solution: k_297 := [] 
+
+solution: k_299 := [((len([VV#298]) = len([x#a1fp])), CmpLen3(VV#298, x#a1fp));((len([VV#298]) >= 0), ListZ1(VV#298));((VV#298 = x#a1fp), Cmp4(VV#298, x#a1fp))] 
+
+solution: k_301 := [((VV#300 = lq_anf__d1gu), Cmp4(VV#300, lq_anf__d1gu))] 
+
+solution: k_303 := [((VV#302 = lq_anf__d1gu), Cmp4(VV#302, lq_anf__d1gu))] 
+
+solution: k_308 := [] 
+
+solution: k_311 := [] 
+
+solution: k_313 := [] 
+
+solution: k_315 := [] 
+
+solution: k_318 := [] 
+
+solution: k_320 := [] 
+
+solution: k_322 := [] 
+
+solution: k_325 := [] 
+
+solution: k_327 := [] 
+
+solution: k_329 := [] 
+
+solution: k_332 := [] 
+
+solution: k_334 := [] 
+
+solution: k_81 := [((0 = 1), Bot(VV#80))] 
+
+solution: k_90 := [((0 = 1), Bot(VV#89))] 
+
+//QUALIFIERS 
+
+qualif True1(v:GHC.Types.Bool ):Prop(v)
+
+qualif True(v:bool):(Bexp v)
+
+qualif Papp2(v:@(0), ~X:@(1), ~P:Pred @(0) @(1)):papp2(~P, v, ~X)
+
+qualif Papp(v:@(0), ~P:Pred @(0)):papp1(~P, v)
+qualif One(v:int):(v = 1)
+
+qualif ListZ1(v:List @(0)):(len([v]) >= 0)
+
+qualif ListZ0(v:List @(0)):(len([v]) = 0)
+
+qualif ListZ(v:List @(0)):(len([v]) > 0)
+
+qualif LenEq(v:List @(0), ~A:int):(~A = len([v]))
+
+qualif LenDiff0(v:List @(0), ~A:int):(len([v]) = (~A - 1))
+
+qualif LenDiff(v:List @(0), ~A:int):(len([v]) = (~A + 1))
+
+qualif LenAcc(v:int, ~A:List @(0), ~B:int):(v = (len([~A]) + ~B))
+
+qualif IsEmp0(v:GHC.Types.Bool , ~A:List @(0)):(Prop(v) <=> (len([~A]) > 0))
+
+qualif IsEmp(v:GHC.Types.Bool , ~A:List @(0)):(Prop(v) <=> (len([~A]) = 0))
+
+qualif False1(v:GHC.Types.Bool ):(~ (Prop(v)))
+
+qualif False(v:bool):(~ ((Bexp v)))
+
+qualif EqLen(v:int, ~A:List @(0)):(v = len([~A]))
+
+qualif CmpZ4(v:@(0)):(v > 0)
+qualif CmpZ3(v:@(0)):(v <= 0)
+
+qualif CmpZ2(v:@(0)):(v != 0)
+qualif CmpZ1(v:@(0)):(v < 0)
+
+qualif CmpZ0(v:@(0)):(v >= 0)
+qualif CmpZ(v:@(0)):(v = 0)
+
+qualif CmpLen3(v:List @(0), ~A:List @(1)):(len([v]) = len([~A]))
+
+qualif CmpLen2(v:List @(0), ~A:List @(1)):(len([v]) < len([~A]))
+
+qualif CmpLen1(v:List @(0), ~A:List @(1)):(len([v]) >= len([~A]))
+
+qualif CmpLen0(v:List @(0), ~A:List @(1)):(len([v]) > len([~A]))
+
+qualif CmpLen(v:List @(0), ~A:List @(1)):(len([v]) <= len([~A]))
+
+qualif Cmp4(v:@(0), ~A:@(0)):(v = ~A)
+qualif Cmp3(v:@(0), ~A:@(0)):(v != ~A)
+
+qualif Cmp2(v:@(0), ~A:@(0)):(v > ~A)
+qualif Cmp1(v:@(0), ~A:@(0)):(v < ~A)
+
+qualif Cmp0(v:@(0), ~A:@(0)):(v <= ~A)
+qualif Cmp(v:@(0), ~A:@(0)):(v >= ~A)
+
+qualif Bot2(v:int):(0 = 1)
+qualif Bot1(v:bool):(0 = 1)
+
+qualif Bot0(v:obj):(0 = 1)
+qualif Bot(v:@(0)):(0 = 1)
+
+qualif Auto0(VV:Eval.Expr , ~A0:List (fix##40##41# (List (GHC.Types.Char )) (Eval.Val ))):Set_sub(free([VV]), vars([~A0]))
+
+qualif Auto(VV:List (GHC.Types.Char ), ~A0:List (fix##40##41# (List (GHC.Types.Char )) (Eval.Val ))):Set_mem(VV, vars([~A0])) 
+

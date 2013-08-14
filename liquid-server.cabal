@@ -1,0 +1,35 @@
+Name:                liquid-server
+Version:             0.1
+Synopsis:            Web Server for Interactive Code Editors
+Description:         liquid-server is a general web server that can be used
+                     with different code verification tools to provide a
+                     brower-based GUI for using the tools.
+License:             GPL
+License-file:        LICENSE
+Author:              Ranjit Jhala 
+Maintainer:          jhala@cs.ucsd.edu
+Stability:           Experimental
+Category:            Web
+Build-type:          Simple
+Cabal-version:       >=1.2
+
+Executable liquid-server
+  hs-source-dirs: src
+  main-is: Main.hs
+
+  Build-depends:
+    base                      >= 4     && < 5,
+    bytestring                >= 0.9.1 && < 0.11,
+    MonadCatchIO-transformers >= 0.2.1 && < 0.4,
+    mtl                       >= 2     && < 3,
+    snap-core                 >= 0.9   && < 0.11,
+    snap-server               >= 0.9   && < 0.11,
+    aeson,
+    hashable                              < 1.2,
+    unordered-containers
+
+  if impl(ghc >= 6.12.0)
+    ghc-options: -threaded -Wall -fwarn-tabs -funbox-strict-fields -O2
+                 -fno-warn-unused-do-bind
+  else
+    ghc-options: -threaded -Wall -fwarn-tabs -funbox-strict-fields -O2

@@ -1,0 +1,4 @@
+CRASH: 
+CRASH:  Specified Type Does Not Refine Haskell Type for PuttingThingsInOrder.whatGosUp: web/demos/Order.hs:120:5
+        Haskell: forall t. GHC.Num.Num t => [t]
+        Liquid : [(GHC.Integer.Type.Integer)]<\xi9 VV -> (xi9 <= VV)>
