@@ -1,7 +1,6 @@
 'use strict';
 
 // Globals
-var debugAnnots  = null;
 var errorMarkers = [];
 
 /*******************************************************************************r
@@ -42,9 +41,6 @@ var allDemos =
 
   };
 
-
-
-
 function getDemo(name){
   var d = allDemos[name];
   var res = { "name" : d.name , "file" : name };
@@ -77,24 +73,9 @@ function resizeProgEditor() {
 
 //listen for changes
 $(window).resize(resizeProgEditor);
-////set initially
+
+//set initially
 resizeProgEditor();
-
-// DUPLICATE?!! //listen for changes
-// DUPLICATE?!! $(window).resize(resizeProgEditor);
-// DUPLICATE?!! ////set initially
-// DUPLICATE?!! resizeProgEditor();
-
-
-// NOQUAL  function resizeQualEditor() {
-// NOQUAL    var w = $('#qualifier-pane').width();
-// NOQUAL    return $('#qualifiers').width(w);
-// NOQUAL  };
-// NOQUAL  
-// NOQUAL  var qualEditor = ace.edit("qualifiers");
-// NOQUAL  qualEditor.setTheme("ace/theme/xcode");
-// NOQUAL  qualEditor.getSession().setMode(new SrcMode());
-
 
 /*******************************************************************************/
 /** Markers For Errors *********************************************************/
@@ -146,7 +127,6 @@ function setErrors(editor, errs){
 /************** URLS ***********************************************************/
 /*******************************************************************************/
 
-// NOQUAL function getQualsURL(file) { return ('demos/' + file + '.hquals');  }
 function getSrcURL(file)   { return ('demos/' + file);              }
 function getVerifierURL()  { return 'check/' /* 'liquid.php' */; }
 
@@ -189,17 +169,17 @@ function setStatusResult($scope, result){
 
 function getResult(d) { 
   var res = "crash";
-  if (d && d.annots) {
-    res = d.annots.status; 
+  if (d) {
+    res = d.status; 
   }
   return res;
 }
 
 function getWarns(d){ 
   var ws = [];
-  if (d && d.annots && d.annots.errors){
-    var ws = d.annots.errors.map(function(x){ 
-               return x.message;//.replace(/\n/g, '<br>')
+  if (d && d.errors){
+    var ws = d.errors.map(function(x){ 
+               return x.message;
              });
   }
   return ws;
@@ -223,13 +203,8 @@ function LiquidDemoCtrl($scope, $http, $location) {
 
   // Load a particular demo
   $scope.loadSource   = function(demo){
-    // NOQUAL var baseURL     = 'demos/';
-    // NOQUAL var baseURL       = 'http://goto.ucsd.edu/~rjhala/liquid/haskell/demo/demos/';
-    // NOQUAL var qualsURL      = 'demos/' + demo.file + '.hquals';
     var srcURL = getSrcURL(demo.file);
-   
     clearStatus($scope);
-
     $scope.msg        = demo.file; 
     $scope.outReady   = false;
 
@@ -244,10 +219,6 @@ function LiquidDemoCtrl($scope, $http, $location) {
       .error(function(data, stat){ alert("Horrors: No such file! " + srcURL); })
       ;
     
-    // NOQUAL $http.get(qualsURL)
-    // NOQUAL   .success(function(quals) { qualEditor.getSession().setValue(quals); })
-    // NOQUAL   .error(function(data, stat){ qualEditor.getSession().setValue("// No user-specified Qualifiers"); })
-    // NOQUAL   ; 
   };
 
   // Initialize with Test000.hs
@@ -268,9 +239,7 @@ function LiquidDemoCtrl($scope, $http, $location) {
 
   // http://www.cleverweb.nl/javascript/a-simple-search-with-angularjs-and-php/
   $scope.verifySource = function(){ 
-    var query = { "program"    : progEditor.getSession().getValue() 
-                // , "qualifiers" : qualEditor.getSession().getValue() 
-                };
+    var query = { "program"  : progEditor.getSession().getValue() };
 
     setStatusChecking($scope);
 
@@ -286,10 +255,9 @@ function LiquidDemoCtrl($scope, $http, $location) {
             setStatusResult($scope, $scope.result);
            
             // This may be "null" if liquid crashed...
-            debugAnnots      = data.annots;
-            if (data.annots) { 
-              setAnnots(data.annots.types);
-              setErrors(progEditor, data.annots.errors);
+            if (data) { 
+              setAnnots(data.types);
+              setErrors(progEditor, data.errors);
             };
             
         })
