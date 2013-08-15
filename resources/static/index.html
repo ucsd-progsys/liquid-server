@@ -7,6 +7,21 @@
     <meta name="author" content="">
    
     <style>
+      
+      .buggyuploadbutton {
+        position: relative;
+        top: 150px;
+        font-family: calibri;
+        width: 150px;
+        padding: 10px;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border: 1px dashed #BBB; 
+        text-align: center;
+        background-color: #DDD;
+        cursor:pointer;
+      }
+      
       .warningmessage {
         white-space: pre;
         font-family: monospace;
@@ -66,11 +81,10 @@
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
     <link href="css/bootswatch.css" rel="stylesheet">
     <!-- <link href="syntax/liquid.css" type='text/css' rel="stylesheet"> -->
-    <script type="text/javascript" src="js/jquery/jquery-1.7.1.min.js"></script>
+    <!-- <script type="text/javascript" src="js/jquery/jquery-1.7.1.min.js"></script> -->
+    <script type="text/javascript" src="js/jquery/jquery-2.0.3.min.js"></script>
     <script type="text/javascript" src="js/angular/angular.js"></script>
     <script type="text/javascript" src="js/bootstrap/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap/bootstrap-filestyle.min.js"> </script>
-    
   </head>
 
 <body data-spy="scroll" data-target=".bs-docs-sidebar" ng-app="liquidDemo" ng-controller="LiquidDemoCtrl">
@@ -124,7 +138,8 @@
    
    <!-- Actual Body ================================================== -->
    
-   <div class="container-fluid">
+ 
+  <div class="container-fluid">
      <div class="row-fluid">
        <div class="span2">
        <!--Sidebar content-->
@@ -149,14 +164,11 @@
      <div class="span10">
 
         <!-- Body content =========================================-->
-        
-        <input type="file" class="filestyle" data-icon="false"> 
 
         <!-- FILE UPLOAD -->
         <div file-input="localFileName" on-change="readFile()"></div>
-        <div>{{imageSrc}}<div/>
+        <br>
 
-       
        <div class="tab-content">
            <div class="tab-pane active" id="tabSrc">
              <div ng-show="isError" class="alert alert-block" ng-repeat="warn in warns">
@@ -200,11 +212,7 @@
        </div> 
 
 <!-- JavaScript below! ============================================== -->
-         
-<!-- IMPORTANT?
-<script src="js/jquery/jquery-1.7.1.min.js"></script>
-<script src="js/bootstrap/bootstrap.js"></script>
--->
+
 
   <script src="js/ace/ace.js" type="text/javascript" charset="utf-8"></script> 
   <script src="js/ace/theme-xcode.js" type="text/javascript" charset="utf-8"></script>
@@ -225,8 +233,7 @@
       alt="Site Meter" border="0"/></a>
   /</noscript>
   <!-- Copyright (c)2009 Site Meter -->
-
-
+  
 </body>
 
 </html>

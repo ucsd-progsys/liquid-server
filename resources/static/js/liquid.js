@@ -182,11 +182,15 @@ function fileText(file, k){
 
 /*@ loadSourceFile :: (scope, file) => void */
 function loadLocalFile($scope, file){
-  if (window.File && window.FileList && window.FileReader && file && file.type.match('text')) {
-    fileText(file, function(srcText){ 
-      setSourceCode($scope, file.name, srcText) 
-    });
-  } else { 
+  if (window.File && window.FileList && window.FileReader && file) {
+    if (file.type.match('text')) {
+      fileText(file, function(srcText){ 
+        setSourceCode($scope, file.name, srcText) 
+      });
+    } else { 
+      alert("Can only load text files.");
+    }
+  } else {
     alert("Cannot load files: browser does not support File API");
   }
 }
@@ -311,7 +315,7 @@ function LiquidDemoCtrl($scope, $http, $location) {
 var fileInput = function ($parse) {
     return {
         restrict: "EA",
-        template: "<input type='file' class='filestyle' />",
+        template: "<input type='file' class='filestyle' data-icon='false'  />",
         replace: true,          
         link: function (scope, element, attrs) {
             var modelGet = $parse(attrs.fileInput);
@@ -328,34 +332,7 @@ var fileInput = function ($parse) {
     };
 };
 
-
 var demo = angular.module("liquidDemo", []);
 demo.controller('LiquidDemoCtrl', LiquidDemoCtrl);
 demo.directive('fileInput', fileInput);
-// demo.directive('uploader', LiquidUpload);
-
-// <input type="file" id="files" name="files[]" multiple />
-// <output id="list"></output>
-
-//  <script>
-//    function handleFileSelect(evt) {
-//      var files = evt.target.files; // FileList object
-//  
-//      // files is a FileList of File objects. List some properties.
-//      var output = [];
-//      for (var i = 0, f; f = files[i]; i++) {
-//        output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-//                    f.size, ' bytes, last modified: ',
-//                    f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-//                    '</li>');
-//      }
-//      document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-//    }
-//  
-//    document.getElementById('files').addEventListener('change', handleFileSelect, false);
-//  </script>
-
-
-
-
 
