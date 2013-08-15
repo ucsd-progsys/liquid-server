@@ -59,25 +59,29 @@ Directory Structure
 TODO
 ----
 
-1. PHP functionality
---------------------
+1. PHP functionality [done]
+---------------------------
+
     + basic server
     + serve  source
     + remove hquals pane
     + update checker URL (++ "check/") 
-    - invoke binary
-    - test!
+    + invoke binary
+    + test!
 
-2. Permalinks
--------------
-
-3. Local Checking
------------------
-
-4. File Loading
+2. File Loading
 ---------------
 
-Saving happens locally.
+HEREHEREHEREHERE
+
+3. Permalinks
+-------------
+
+4. File Saving/Local Checking
+-----------------------------
+
+Local checking works already -- have been running locally.
+Just need to SAVE/LOAD locally.
 
 5. Language Customization
 -------------------------
