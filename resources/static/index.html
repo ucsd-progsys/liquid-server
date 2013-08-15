@@ -165,8 +165,13 @@
 
         <!-- Body content =========================================-->
 
-        <!-- FILE UPLOAD -->
+        <!-- FILE UPLOAD: THIS WORKS BUT IS A PITA. DO LOAD AND SAVE VIA SERVER
         <div file-input="localFileName" on-change="readFile()"></div>
+        -->
+        <div ng-show="isLocalServer">
+          <input type="text" ng-model="localFilePath" placeholder="Save To Path">
+        </div>
+
         <br>
 
        <div class="tab-content">
@@ -222,7 +227,7 @@
   <script src="js/annot.js"></script> 
   <script src="js/liquid.js"></script>
     
-  <!--Site Meter -->
+  <!--Site Meter
   <script type="text/javascript" 
     src="http://s23.sitemeter.com/js/counter.js?site=s23liquidtypes">
   </script>
@@ -232,8 +237,8 @@
       <img src="http://s23.sitemeter.com/meter.asp?site=s23liquidtypes" 
       alt="Site Meter" border="0"/></a>
   /</noscript>
-  <!-- Copyright (c)2009 Site Meter -->
-  
+  Copyright (c)2009 Site Meter -->
+
 </body>
 
 </html>

@@ -236,6 +236,9 @@ function LiquidDemoCtrl($scope, $http, $location) {
   $scope.abstRefDemos  = getDemos("absref") ;
   $scope.tutorialDemos = getDemos("tutorial") ;
 
+  // Is Local Instance
+  $scope.isLocalServer = true;
+
   // Clear Status when editor is changed
   progEditor.on("change", function(e){ 
     $scope.$apply(function(){
@@ -273,7 +276,6 @@ function LiquidDemoCtrl($scope, $http, $location) {
   $scope.readFile = function () { 
     debugFiles = $scope.localFileName;
     loadLocalFile($scope, $scope.localFileName);
-    // alert ('I WANNA read a file'); 
   };
 
   // http://www.cleverweb.nl/javascript/a-simple-search-with-angularjs-and-php/
