@@ -54,7 +54,7 @@ Directory Structure
 
       + sandbox/
 
-      + saved/
+      + permalink/
 
 TODO
 ----
@@ -69,19 +69,49 @@ TODO
     + invoke binary
     + test!
 
-2. File Loading
----------------
+2. File Loading [HEREHEREHEREHERE]
+----------------------------------
 
-HEREHEREHEREHERE
+    a. liquid.js: 
+          + load button
+          + json : add field "path"
 
-3. Permalinks
+    b. server
+          + add support for "path"
+          + hash "path" (not timestamp) for file name (for repeated query)
+
+3. File Saving
+--------------
+
+    c. liquid.js:
+          - save button [saves to path loaded from]
+
+4. Local Checking
+-----------------
+
+    i.   build liquid && liquid-server
+    ii.  load file [pass extra params e.g. include dirs as LIQUID pragma]
+    iii. check
+    iv.  save file
+
+5. Permalinks
 -------------
 
-4. File Saving/Local Checking
------------------------------
+    liquid.js:
+        - add "permalink" button (POST permalink)
+          wait for permalink id { permalink : string }
+          update doc.location to "permalink/id" 
 
-Local checking works already -- have been running locally.
-Just need to SAVE/LOAD locally.
+    server:
+        - route "permalink"    , method POST makePermalinkH
+                                     create new id [time]
+                                     write file to "resources/permalink/"
+                                     return permalink id as json 
+                                       { permalink : string} 
+
+        - route "permalink/:id", method GET  loadPermalinkH 
+                                 serveDirectory "resources/permalink/"
+
 
 5. Language Customization
 -------------------------
