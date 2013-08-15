@@ -131,7 +131,7 @@ function getSrcURL(file)   { return ('demos/' + file);              }
 function getVerifierURL()  { return 'check/' /* 'liquid.php' */; }
 
 /*******************************************************************************/
-/************** Tracking Status ************************************************/
+/************** Tracking Status and Source *************************************/
 /*******************************************************************************/
 
 function clearStatus($scope){
@@ -149,7 +149,6 @@ function setStatusChecking($scope){
   $scope.isUnknown  = false;
 }
 
-
 function setStatusResult($scope, result){
   debugResult = result;
 
@@ -160,6 +159,36 @@ function setStatusResult($scope, result){
   $scope.isCrash      = (result == "crash" );
   $scope.isError      = (result == "error" );
   $scope.isUnknown    = !($scope.isSafe || $scope.isError || $scope.isUnsafe || $scope.isCrash);
+}
+
+function setSourceCode($scope, srcName, srcText){
+  clearStatus($scope);
+  $scope.sourceFileName = srcName; 
+  progEditor.getSession().setValue(srcText);
+}
+
+/*******************************************************************************/
+/************** Loading Files **************************************************/
+/*******************************************************************************/
+
+/*@ fileText :: (file, (string) => void) => void */
+function fileText(file, k){
+  var reader = new FileReader();
+  reader.addEventListener("load", function(e){
+    k(e.target.result);
+  });
+  reader.readAsText(file);
+}
+
+/*@ loadSourceFile :: (scope, file) => void */
+function loadLocalFile($scope, file){
+  if (window.File && window.FileList && window.FileReader && file && file.type.match('text')) {
+    fileText(file, function(srcText){ 
+      setSourceCode($scope, file.name, srcText) 
+    });
+  } else { 
+    alert("Cannot load files: browser does not support File API");
+  }
 }
 
 
@@ -185,6 +214,7 @@ function getWarns(d){
   return ws;
 }
 
+
 /*******************************************************************************/
 /************** Top-Level Demo Controller **************************************/
 /*******************************************************************************/
@@ -192,6 +222,7 @@ function getWarns(d){
 var debugData   = null;
 var debugResult = null;
 var debugResp   = 0;
+var debugFiles  = null;
 
 function LiquidDemoCtrl($scope, $http, $location) {
 
@@ -201,24 +232,21 @@ function LiquidDemoCtrl($scope, $http, $location) {
   $scope.abstRefDemos  = getDemos("absref") ;
   $scope.tutorialDemos = getDemos("tutorial") ;
 
+  // Clear Status when editor is changed
+  progEditor.on("change", function(e){ 
+    $scope.$apply(function(){
+      clearStatus($scope);
+    });
+  });
+
   // Load a particular demo
   $scope.loadSource   = function(demo){
-    var srcURL = getSrcURL(demo.file);
-    clearStatus($scope);
-    $scope.msg        = demo.file; 
-    $scope.outReady   = false;
-
-    progEditor.on("change", function(e){ 
-      $scope.$apply(function(){
-        clearStatus($scope);
-      });
-    });
-
+    var srcName = demo.file;
+    var srcURL  = getSrcURL(srcName);
     $http.get(srcURL)
-      .success(function(src) { progEditor.getSession().setValue(src);})
-      .error(function(data, stat){ alert("Horrors: No such file! " + srcURL); })
-      ;
-    
+         .success(function(srcText) { setSourceCode($scope, srcName, srcText); })
+         .error(function(data, stat){ alert("Horrors: No such file! " + srcURL); })
+         ;
   };
 
   // Initialize with Test000.hs
@@ -235,6 +263,13 @@ function LiquidDemoCtrl($scope, $http, $location) {
   $scope.changeTarget = function(demo) {
      $location.search('demo', demo.file);
      $scope.loadSource(demo);
+  };
+  
+  // Load a local file into editor
+  $scope.readFile = function () { 
+    debugFiles = $scope.localFileName;
+    loadLocalFile($scope, $scope.localFileName);
+    // alert ('I WANNA read a file'); 
   };
 
   // http://www.cleverweb.nl/javascript/a-simple-search-with-angularjs-and-php/
@@ -267,4 +302,60 @@ function LiquidDemoCtrl($scope, $http, $location) {
          });
   };
 }
+
+/************************************************************************/
+/***** Initialize Angular ***********************************************/
+/************************************************************************/
+
+// directive for file upload
+var fileInput = function ($parse) {
+    return {
+        restrict: "EA",
+        template: "<input type='file' class='filestyle' />",
+        replace: true,          
+        link: function (scope, element, attrs) {
+            var modelGet = $parse(attrs.fileInput);
+            var modelSet = modelGet.assign;
+            var onChange = $parse(attrs.onChange);
+            var updateModel = function () {
+                scope.$apply(function () {
+                    modelSet(scope, element[0].files[0]);
+                    onChange(scope);
+                });                    
+            };
+            element.bind('change', updateModel);
+        }
+    };
+};
+
+
+var demo = angular.module("liquidDemo", []);
+demo.controller('LiquidDemoCtrl', LiquidDemoCtrl);
+demo.directive('fileInput', fileInput);
+// demo.directive('uploader', LiquidUpload);
+
+// <input type="file" id="files" name="files[]" multiple />
+// <output id="list"></output>
+
+//  <script>
+//    function handleFileSelect(evt) {
+//      var files = evt.target.files; // FileList object
+//  
+//      // files is a FileList of File objects. List some properties.
+//      var output = [];
+//      for (var i = 0, f; f = files[i]; i++) {
+//        output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+//                    f.size, ' bytes, last modified: ',
+//                    f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+//                    '</li>');
+//      }
+//      document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+//    }
+//  
+//    document.getElementById('files').addEventListener('change', handleFileSelect, false);
+//  </script>
+
+
+
+
 

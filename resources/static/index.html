@@ -1,4 +1,4 @@
-<html lang="en" ng-app>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <title>LiquidHaskell · Demo</title>
@@ -66,12 +66,14 @@
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
     <link href="css/bootswatch.css" rel="stylesheet">
     <!-- <link href="syntax/liquid.css" type='text/css' rel="stylesheet"> -->
-    <script src="js/jquery/jquery-1.7.1.min.js"></script>
-    <script src="js/angular/angular.js"></script>
-    <script src="js/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/jquery/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="js/angular/angular.js"></script>
+    <script type="text/javascript" src="js/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap/bootstrap-filestyle.min.js"> </script>
+    
   </head>
 
-<body data-spy="scroll" data-target=".bs-docs-sidebar" ng-controller="LiquidDemoCtrl">
+<body data-spy="scroll" data-target=".bs-docs-sidebar" ng-app="liquidDemo" ng-controller="LiquidDemoCtrl">
 
   <!-- Navbar ================================================== -->
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -128,12 +130,7 @@
        <!--Sidebar content-->
        <ul class="nav nav-list">
 
-         <!-- TODO
-         <li class="nav-header">New</li>
-         <li><a href="#">Load File</a></li>
-         -->
-
-         <li class="nav-header">Basics</li>
+             <li class="nav-header">Basics</li>
          <li ng-repeat="demo in basicDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
 
          <li class="nav-header">Datatype Measures</li>
@@ -152,23 +149,16 @@
      <div class="span10">
 
         <!-- Body content =========================================-->
+        
+        <input type="file" class="filestyle" data-icon="false"> 
 
-       <div class="tabbable"> <!-- Only required for left/right tabs -->
-         <ul class="nav nav-tabs">
-           <li class="active"><a href="#tabSrc" data-toggle="tab">Haskell Source</a></li>
-           
-           <!-- 
-           <li><a href="#tabQuals" data-toggle="tab">Qualifiers</a></li>
-           <li ng-show="outReady"><a href="#tabOut" data-toggle="tab">Result</a></li>
-           <li ng-show="outReady"><a href="#tabLog" data-toggle="tab">Log</a></li>
-           -->
+        <!-- FILE UPLOAD -->
+        <div file-input="localFileName" on-change="readFile()"></div>
+        <div>{{imageSrc}}<div/>
 
-         </ul>
-         
-         <div class="tab-content">
-           
+       
+       <div class="tab-content">
            <div class="tab-pane active" id="tabSrc">
-             
              <div ng-show="isError" class="alert alert-block" ng-repeat="warn in warns">
                <button type="button" class="close" data-dismiss="alert">×</button>
                <strong>Error:</strong> 
@@ -181,19 +171,12 @@
                  <div class="warningmessage">{{warn}}</div>
              </div>
 
-            <!-- <div class="alert alert-error" ng-repeat="warn in warns">
-               <button type="button" class="close" data-dismiss="alert">×</button>
-               <strong>Warning!</strong> {{warn}}
-             </div>
-             -->
-
              <div ng-show="isCrash" class="alert alert-block">
                <button type="button" class="close" data-dismiss="alert">×</button>
                <strong>Crash!</strong> Uh oh, there was a crash. See the <a href="log">the log</a>.
              </div>
 
              <div id="program-pane" class="welleditor" style="background:#fff">
-
                <button class="btn btn-info" type="button" ng-show="isUnknown" 
                  ng-click="verifySource()">Verify</button>
                
@@ -201,84 +184,20 @@
                    ng-click="verifySource()">Verifying...</button>
                
                <button class="btn btn-success" type="button" ng-show="isSafe">Safe</button>
-               <button class="btn btn-danger" type="button"  ng-show="isUnsafe">Unsafe</button>
+               <button class="btn btn-danger"  type="button"  ng-show="isUnsafe">Unsafe</button>
                <button class="btn btn-warning" type="button" ng-show="isError">Error!</button>
                <button class="btn btn-warning" type="button" ng-show="isCrash">Crash!</button>
 
-                 <div style="float:right">
-                    <span class="label large" id="sourceName">{{msg}}</span>
-                 </div> 
-                 
-                 <br>
-                 <br>
-                 
-                 <div id="program" style="height: 85%">
+               <div style="float:right"><span class="label large" id="sourceName">{{sourceFileName}}</span></div> 
+               <br>
+               <br>
+               <div id="program" style="height: 85%">
                    -- Wait for it ...
-                 </div>
-
+               </div>
               </div>
            </div>
-
-           <!--
-           <div class="tab-pane" id="tabQuals">
-             <div id="qualifier-pane" class="well" style="background:#fff">
-               <div id="qualifiers" style="height: 90%">
-                   // Wait for it ...
-               </div>
-             </div>
-           </div>
-            -->
-
-           <div class="tab-pane" id="tabOut">
-             <div ng-show="isSafe" class="alert alert-success">
-               <button type="button" class="close" data-dismiss="alert">×</button>
-               <strong>Safe!</strong> Your program is verified!
-             </div>
-
-             <div ng-show="isUnsafe" class="alert alert-error" ng-repeat="warn in warns">
-               <button type="button" class="close" data-dismiss="alert">×</button>
-               <strong>Unsafe!</strong> {{warn}}
-             </div>
-
-             <div ng-show="isError" class="alert" ng-repeat="warn in warns">
-               <button type="button" class="close" data-dismiss="alert">×</button>
-               <strong>Unsafe!</strong> {{warn}}
-             </div>
-
-             <div class="alert alert-block" ng-show="isCrash">
-               <button type="button" class="close" data-dismiss="alert">×</button>
-               <strong>Crash!</strong> Oh no, there was a crash. See the <a href="log">the log</a>.
-             </div>
-
-             <div class="page-header">
-               <h1><small> Hover mouse over variables to see inferred types</small></h1>
-             </div>
-             <div ng-bind-html-unsafe="annotHtml"></div>
-
-             <br>
-             <br>
-             <br>
-             <br>
-             <br>
-             <br>
-             <br>
-             <br>
-             <br>
-             <br>
-           </div>
-
-           <!--
-           <div class="tab-pane" id="tabLog">
-             Click <a href="log">this</a> to see the log. 
-           </div>
-           -->
-
          </div>
        </div> 
-     </div>
-   </div>
- </div>
-
 
 <!-- JavaScript below! ============================================== -->
          
