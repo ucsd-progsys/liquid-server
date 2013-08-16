@@ -16,7 +16,7 @@ import           Data.List              (intercalate)
 import           Data.Aeson                 hiding (Result)
 import qualified Data.ByteString.Lazy as LB
 import           Data.Time.Clock.POSIX
-import           Data.ByteString.Lazy.Char8 (pack, unpack)
+import           Data.ByteString.Lazy.Char8 (pack)
 
 -- import           Data.Aeson           hiding (Result)
 -- import           Data.Maybe
@@ -33,7 +33,7 @@ site      = route [ ("index.html" , serveFile      "resources/static/index.html"
                   , ("css/"       , serveDirectory "resources/static/css")
                   , ("img/"       , serveDirectory "resources/static/img")
                   , ("demos/"     , serveDirectory "resources/static/demos")
-                  , ("act/"       , method POST    queryH)
+                  , ("query"      , method POST    queryH)
                   , (""           , defaultH)
                   ]
 
@@ -42,9 +42,21 @@ defaultH = writeLBS "Liquid Demo Server: Oops, there's nothing here!"
 
 queryH   :: Snap ()
 queryH   = writeLBS . encode =<< liftIO . queryResult =<< getQuery  
+  where
+    queryResult' q = dumpQuery q >> queryResult q
+    dumpQuery      = putStrLn . show . toJSON 
 
 getQuery :: Snap Query 
 getQuery = fromMaybe Junk . decode <$> readRequestBody 1000000
+
+---------------------------------------------------------------
+queryResult :: Query -> IO Result
+---------------------------------------------------------------
+queryResult q@(Check {}) = checkResult q
+queryResult q@(Load {})  = loadResult  q
+queryResult q@(Save {})  = saveResult  q
+queryResult q@(Junk )    = return $ errResult "junk query" 
+
 
 ---------------------------------------------------------------
 loadResult :: Query -> IO Result
@@ -55,6 +67,7 @@ loadResult q = doRead `catchIOError` err
     err e    = return $ errResult $ pack $ "Load Error: " ++ show e
     ok pgm   = toJSON $ Save pgm (path q) 
 
+
 ---------------------------------------------------------------
 saveResult :: Query -> IO Result
 ---------------------------------------------------------------
@@ -63,14 +76,6 @@ saveResult q = doWrite `catchIOError` err
     doWrite  = LB.writeFile (path q) (program q) >> return ok
     err e    = return $ errResult $ pack $ "Save Error: " ++ show e
     ok       = toJSON $ Load (path q) 
-
----------------------------------------------------------------
-queryResult :: Query -> IO Result
----------------------------------------------------------------
-queryResult q@(Check {}) = checkResult q
-queryResult q@(Load {})  = loadResult  q
-queryResult q@(Save {})  = saveResult  q
-queryResult q@(Junk )    = return $ errResult "junk query" 
 
 ---------------------------------------------------------------
 checkResult :: Query -> IO Result

@@ -167,7 +167,13 @@
 
         <!-- FILE UPLOAD: THIS WORKS BUT IS A PITA. DO LOAD AND SAVE VIA SERVER
         <div file-input="localFileName" on-change="readFile()"></div>
+
+        <div class="input-append">
+          <input name="search" id="search"/>
+          <button class="btn">button</button>
+        </div>
         -->
+
         <div ng-show="isLocalServer">
           <div class="input-append">
             <input type="text" class="span2" ng-model="localFilePath" placeholder="local file path" id="localFilePath">

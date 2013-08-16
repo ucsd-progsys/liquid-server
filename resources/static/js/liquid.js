@@ -128,29 +128,29 @@ function setErrors(editor, errs){
 /*******************************************************************************/
 
 function getSrcURL(file){ return ('demos/' + file);}
-function getQueryURL()  { return 'check/'; }
+function getQueryURL()  { return 'query'; }
 
 /*******************************************************************************/
 /************** Queries ********************************************************/
 /*******************************************************************************/
 
 function getCheckQuery($scope){ 
-  return { "type"    : "check"
-         , "program" : getSourceCode() 
-         , "path"    : $scope.localFilePath 
+  return { type    : "check"
+         , program : getSourceCode() 
+         , path    : $scope.localFilePath 
          };
 }
 
 function getLoadQuery($scope){
-  return { "type"    : "load"
-         , "path"    : $scope.localFilePath
+  return { type    : "load"
+         , path    : $scope.localFilePath
          };
 }
 
 function getSaveQuery($scope){
-  return { "type"    : "save"
-         , "program" : getSourceCode()
-         , "path"    : $scope.localFilePath
+  return { type    : "save"
+         , program : getSourceCode()
+         , path    : $scope.localFilePath
          };
 }
 
@@ -268,18 +268,21 @@ function LiquidDemoCtrl($scope, $http, $location) {
 
   $scope.loadFromLocalPath = function(){ 
     var srcName = $scope.localFilePath;
-    //alert('so you want to load' + $scope.localFilePath); 
-    if (!srcName){
-      $http.get(getQueryURL(), getLoadQuery($scope))
+    if (srcName){
+      // alert('so you want to load' + $scope.localFilePath); 
+      $http.post(getQueryURL(), getLoadQuery($scope))
            .success(function(data, status){
+             debugData = data;
              if (data.program) { 
                setSourceCode($scope, srcName, data.program);
+             } else if (data.error) {
+               alert("Load Error " + data.error); 
              } else {
                alert("Horrors: Load Failed! " + srcName); 
              }
            })
            .error(function(data, status){
-             alert("Horrors: No such file! " + srcName); 
+             alert("Load Error: No response for " + srcName); 
            });
     }
   };
@@ -287,10 +290,10 @@ function LiquidDemoCtrl($scope, $http, $location) {
   $scope.saveToLocalPath = function(){ 
     var srcName = $scope.localFilePath;
     //alert('so you want to save ' + $scope.localFilePath); 
-    if (!srcName) {
-      var query = { "type" : "save",  "program" : getSourceCode();, "path" : srcName};
+    if (srcName) {
       $http.post(getQueryURL(), getSaveQuery($scope))
            .success(function(data, status){
+             debugData = data;
              if (data.path){
                alert("Saved."); 
              } else {
@@ -344,11 +347,8 @@ function LiquidDemoCtrl($scope, $http, $location) {
 
   // http://www.cleverweb.nl/javascript/a-simple-search-with-angularjs-and-php/
   $scope.verifySource = function(){ 
-    var query = { "program"  : getSourceCode();  };
-
     setStatusChecking($scope);
-
-    $http.post(getQueryURL(), query)
+    $http.post(getQueryURL(), getCheckQuery($scope))
          .success(function(data, status) {
             debugResp        = debugResp + 1; 
             $scope.status    = status;
