@@ -169,10 +169,12 @@
         <div file-input="localFileName" on-change="readFile()"></div>
         -->
         <div ng-show="isLocalServer">
-          <input type="text" ng-model="localFilePath" placeholder="Save To Path">
+          <div class="input-append">
+            <input type="text" class="span2" ng-model="localFilePath" placeholder="local file path" id="localFilePath">
+            <button class="btn" type="button" ng-click="loadFromLocalPath()">Load</button>
+            <button class="btn" type="button" ng-click="saveToLocalPath()">Save</button>
+          </div>
         </div>
-
-        <br>
 
        <div class="tab-content">
            <div class="tab-pane active" id="tabSrc">

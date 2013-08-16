@@ -1,43 +1,54 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Language.Liquid.Server.Types (
-    Query  (..) 
-  , Result 
-  , Files  (..)
-  , Config (..)
-  , dummyResult
+    -- * Configuration
+    Config (..)
+   , Files  (..)
+
+    -- * Query Type 
+  , Query (..) 
+  
+    -- * Response Type
+  , Result
+
+    -- * Canned Responses
+  , dummyResult, okResult, errResult
   ) where
 
--- import           System.Exit            (ExitCode)
--- import           System.Directory       (doesFileExist)
--- import           System.FilePath        ((</>), addExtension)
--- import           System.Process         (system)
--- import           Control.Monad.IO.Class (liftIO)
--- import           Data.List              (intercalate)
--- import qualified Data.ByteString      as B
-
-
 import           Control.Monad          (mzero)
-import           Control.Applicative    ((<$>))
+import           Control.Applicative    ((<$>), (<*>))
 import           Data.Maybe
 import           Data.Aeson                 hiding (Result)
 import qualified Data.ByteString.Lazy as LB
-
+import qualified Data.HashMap.Strict as M
 -----------------------------------------------------------------
 -- Core Data Types ----------------------------------------------
 -----------------------------------------------------------------
 
-data Config = C { srcSuffix   :: String
-                , srcChecker  :: FilePath
-                , cmdPrefix   :: String
-                , sandboxPath :: FilePath
-                }
+data Config = Config { 
+    srcSuffix   :: String
+  , srcChecker  :: FilePath
+  , cmdPrefix   :: String
+  , sandboxPath :: FilePath
+  }
 
-data Query  = Q { program :: LB.ByteString } 
+data Files   = Files { 
+    srcFile  :: FilePath
+  , jsonFile :: FilePath
+  }
 
-data Files  = F { srcFile  :: FilePath
-                , jsonFile :: FilePath
-                }
+-----------------------------------------------------------------
+-- "REST" Queries ----------------------------------------------- 
+-----------------------------------------------------------------
+
+data Query  = Check { program :: LB.ByteString 
+                    }
+            | Save  { program :: LB.ByteString 
+                    , path    :: FilePath 
+                    } 
+            | Load  { path    :: FilePath 
+                    } 
+            | Junk
 
 type Result = Value
 
@@ -46,25 +57,38 @@ type Result = Value
 ----------------------------------------------------------------
 
 instance FromJSON Query where
-  parseJSON (Object v) = Q <$> v .: "program" 
-  parseJSON _          = mzero
+  parseJSON (Object v) = do ty <- v .: "type" 
+                            case ty :: String of 
+                              "check" -> Check <$> v .: "program" 
+                              "save"  -> Save  <$> v .: "program" <*> v.: "path" 
+                              "load"  -> Load <$> v .: "path"
+                              _       -> mzero 
+  parseJSON _          = mzero 
 
 instance ToJSON Query where
-  toJSON (Q p) = object ["program" .= p]
+  toJSON q@(Check prg)     = object ["type" .= jsonType q, "program" .= prg]
+  toJSON q@(Save  prg pth) = object ["type" .= jsonType q, "program" .= prg, "path" .= pth]
+  toJSON q@(Load  pth)     = object ["type" .= jsonType q,                   "path" .= pth]
+  toJSON q@(Junk)          = object ["type" .= jsonType q]
+
+jsonType            :: Query -> String 
+jsonType (Check {}) = "check"
+jsonType (Save  {}) = "save"
+jsonType (Load  {}) = "load"
+jsonType (Junk  {}) = "junk"
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+----------------------------------------------------------------
 
 dummyResult :: Result 
-dummyResult = fromJust $ decode "{\"status\" : \"crash\" }"
+dummyResult = mkResult [("status", "crash")] -- fromJust $ decode "{\"status\" : \"crash\" }"
 
+okResult :: Result
+okResult    = mkResult [("status", "ok")] 
 
-------------------------------------------------------------------------
--- Random stuff for debugging ------------------------------------------
-------------------------------------------------------------------------
+errResult :: LB.ByteString -> Result
+errResult s = mkResult [("status", "crash"), ("error",  s)] 
 
--- Can instead use exit code from liquid...
--- resultExit Safe        = ExitSuccess
--- resultExit (Unsafe _)  = ExitFailure 1
--- resultExit _           = ExitFailure 2
-
--- echoResult  :: (ToJSON a) => a -> Result
--- echoResult x = Object $ M.fromList [ ("status", String "crash")
---                                    , ("stuff" , toJSON x)       ]
+mkResult :: [(LB.ByteString, LB.ByteString)] -> Result
+mkResult = toJSON . M.fromList

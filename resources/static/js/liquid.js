@@ -127,8 +127,32 @@ function setErrors(editor, errs){
 /************** URLS ***********************************************************/
 /*******************************************************************************/
 
-function getSrcURL(file)   { return ('demos/' + file);              }
-function getVerifierURL()  { return 'check/' /* 'liquid.php' */; }
+function getSrcURL(file){ return ('demos/' + file);}
+function getQueryURL()  { return 'check/'; }
+
+/*******************************************************************************/
+/************** Queries ********************************************************/
+/*******************************************************************************/
+
+function getCheckQuery($scope){ 
+  return { "type"    : "check"
+         , "program" : getSourceCode() 
+         , "path"    : $scope.localFilePath 
+         };
+}
+
+function getLoadQuery($scope){
+  return { "type"    : "load"
+         , "path"    : $scope.localFilePath
+         };
+}
+
+function getSaveQuery($scope){
+  return { "type"    : "save"
+         , "program" : getSourceCode()
+         , "path"    : $scope.localFilePath
+         };
+}
 
 /*******************************************************************************/
 /************** Tracking Status and Source *************************************/
@@ -165,6 +189,10 @@ function setSourceCode($scope, srcName, srcText){
   clearStatus($scope);
   $scope.sourceFileName = srcName; 
   progEditor.getSession().setValue(srcText);
+}
+
+function getSourceCode(){
+  return progEditor.getSession().getValue();
 }
 
 /*******************************************************************************/
@@ -235,9 +263,45 @@ function LiquidDemoCtrl($scope, $http, $location) {
   $scope.measureDemos  = getDemos("measure");
   $scope.abstRefDemos  = getDemos("absref") ;
   $scope.tutorialDemos = getDemos("tutorial") ;
+  $scope.isLocalServer = (document.location.hostname == "localhost");
+  $scope.localFilePath = "";
 
-  // Is Local Instance
-  $scope.isLocalServer = true;
+  $scope.loadFromLocalPath = function(){ 
+    var srcName = $scope.localFilePath;
+    //alert('so you want to load' + $scope.localFilePath); 
+    if (!srcName){
+      $http.get(getQueryURL(), getLoadQuery($scope))
+           .success(function(data, status){
+             if (data.program) { 
+               setSourceCode($scope, srcName, data.program);
+             } else {
+               alert("Horrors: Load Failed! " + srcName); 
+             }
+           })
+           .error(function(data, status){
+             alert("Horrors: No such file! " + srcName); 
+           });
+    }
+  };
+ 
+  $scope.saveToLocalPath = function(){ 
+    var srcName = $scope.localFilePath;
+    //alert('so you want to save ' + $scope.localFilePath); 
+    if (!srcName) {
+      var query = { "type" : "save",  "program" : getSourceCode();, "path" : srcName};
+      $http.post(getQueryURL(), getSaveQuery($scope))
+           .success(function(data, status){
+             if (data.path){
+               alert("Saved."); 
+             } else {
+               alert("Save Unsuccessful: " + data);
+             }
+           })
+           .error(function(data, status){
+             alert("Save Failed: " + data); 
+           });
+    }
+  };
 
   // Clear Status when editor is changed
   progEditor.on("change", function(e){ 
@@ -273,18 +337,18 @@ function LiquidDemoCtrl($scope, $http, $location) {
   };
   
   // Load a local file into editor
-  $scope.readFile = function () { 
-    debugFiles = $scope.localFileName;
-    loadLocalFile($scope, $scope.localFileName);
-  };
+  // $scope.readFile = function () { 
+  //   debugFiles = $scope.localFileName;
+  //   loadLocalFile($scope, $scope.localFileName);
+  // };
 
   // http://www.cleverweb.nl/javascript/a-simple-search-with-angularjs-and-php/
   $scope.verifySource = function(){ 
-    var query = { "program"  : progEditor.getSession().getValue() };
+    var query = { "program"  : getSourceCode();  };
 
     setStatusChecking($scope);
 
-    $http.post(getVerifierURL(), query)
+    $http.post(getQueryURL(), query)
          .success(function(data, status) {
             debugResp        = debugResp + 1; 
             $scope.status    = status;
