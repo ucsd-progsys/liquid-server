@@ -69,8 +69,8 @@ TODO
     + invoke binary
     + test!
 
-2. File Loading [HEREHEREHEREHERE]
-----------------------------------
+2. File Loading
+---------------
     
     a. liquid.js: 
           + load button
@@ -78,23 +78,14 @@ TODO
 
     b. server
           + add support for "path"
-          + hash "path" (not timestamp) for file name (for repeated query)
 
 3. File Saving
 --------------
 
     c. liquid.js:
-          - save button [saves to path loaded from]
+          + save button [saves to path loaded from]
 
-4. Local Checking
------------------
-
-    i.   build liquid && liquid-server
-    ii.  load file [pass extra params e.g. include dirs as LIQUID pragma]
-    iii. check
-    iv.  save file
-
-5. Permalinks
+4. Permalinks
 -------------
 
     liquid.js:
@@ -113,7 +104,17 @@ TODO
                                  serveDirectory "resources/permalink/"
 
 
-5. Language Customization
+5. Local Checking [HEREHERE]
+----------------------------
+
+    -   [SERVER] hash "path" (not timestamp) for file name (for repeated query)
+    
+    i.  build liquid && liquid-server
+    ii. load file [pass extra params e.g. include dirs as LIQUID pragma]
+    iii.check
+    iv. save file
+
+6. Language Customization
 -------------------------
 
 To support nano-js too.
