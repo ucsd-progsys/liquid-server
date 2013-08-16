@@ -41,13 +41,11 @@ data Files   = Files {
 -- "REST" Queries ----------------------------------------------- 
 -----------------------------------------------------------------
 
-data Query  = Check { program :: LB.ByteString 
-                    }
+data Query  = Check { program :: LB.ByteString }
             | Save  { program :: LB.ByteString 
-                    , path    :: FilePath 
-                    } 
-            | Load  { path    :: FilePath 
-                    } 
+                    , path    :: FilePath      } 
+            | Load  { path    :: FilePath      } 
+            | Perma { program :: LB.ByteString }
             | Junk
 
 type Result = Value
@@ -60,19 +58,22 @@ instance FromJSON Query where
   parseJSON (Object v) = do ty <- v .: "type" 
                             case ty :: String of 
                               "check" -> Check <$> v .: "program" 
+                              "perma" -> Perma <$> v .: "program" 
                               "save"  -> Save  <$> v .: "program" <*> v.: "path" 
-                              "load"  -> Load <$> v .: "path"
+                              "load"  -> Load  <$> v .: "path"
                               _       -> mzero 
   parseJSON _          = mzero 
 
 instance ToJSON Query where
   toJSON q@(Check prg)     = object ["type" .= jsonType q, "program" .= prg]
+  toJSON q@(Perma prg)     = object ["type" .= jsonType q, "program" .= prg]
   toJSON q@(Save  prg pth) = object ["type" .= jsonType q, "program" .= prg, "path" .= pth]
   toJSON q@(Load  pth)     = object ["type" .= jsonType q,                   "path" .= pth]
   toJSON q@(Junk)          = object ["type" .= jsonType q]
 
 jsonType            :: Query -> String 
 jsonType (Check {}) = "check"
+jsonType (Perma {}) = "perma"
 jsonType (Save  {}) = "save"
 jsonType (Load  {}) = "load"
 jsonType (Junk  {}) = "junk"

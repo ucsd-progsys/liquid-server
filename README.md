@@ -59,54 +59,18 @@ Directory Structure
 TODO
 ----
 
-1. PHP functionality [done]
----------------------------
-
-    + basic server
-    + serve  source
-    + remove hquals pane
-    + update checker URL (++ "check/") 
-    + invoke binary
-    + test!
-
+1. PHP functionality
 2. File Loading
----------------
-    
-    a. liquid.js: 
-          + load button
-          + json : add field "path"
-
-    b. server
-          + add support for "path"
-
 3. File Saving
---------------
-
-    c. liquid.js:
-          + save button [saves to path loaded from]
-
 4. Permalinks
--------------
-
-    liquid.js:
-        - add "permalink" button (POST permalink)
-          wait for permalink id { permalink : string }
-          update doc.location to "permalink/id" 
-
-    server:
-        - route "permalink"    , method POST makePermalinkH
-                                     create new id [time]
-                                     write file to "resources/permalink/"
-                                     return permalink id as json 
-                                       { permalink : string} 
-
-        - route "permalink/:id", method GET  loadPermalinkH 
-                                 serveDirectory "resources/permalink/"
-
-
 5. Local Checking [HEREHERE]
-----------------------------
+    1. SERVER: Send back timestamp [as in permalink]
+    2. CLIENT: isRecheck = isUnknown && haveId
+    [ Re | Check ]
 
+
+    -   submit local path with QUERY { path : "/path/to/foo.hs" }
+    -   server files are: "/path/to/_liquid/foo.hs{.json}"
     -   [SERVER] hash "path" (not timestamp) for file name (for repeated query)
     
     i.  build liquid && liquid-server

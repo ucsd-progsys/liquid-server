@@ -7,7 +7,7 @@ import           Language.Liquid.Server.Types
 import           System.IO.Error        (catchIOError)
 import           System.Exit            (ExitCode)
 import           System.Directory       (doesFileExist)
-import           System.FilePath        ((</>), addExtension)
+import           System.FilePath        ((</>), addExtension, splitFileName)
 import           System.Process         (system)
 import           Control.Applicative    ((<$>))
 import           Control.Monad.IO.Class (liftIO)
@@ -27,14 +27,16 @@ main      :: IO ()
 main      = quickHttpServe site
 
 site      :: Snap ()
-site      = route [ ("index.html" , serveFile      "resources/static/index.html") 
-                  , ("log"        , serveFileAs    "text/plain" logFile) 
-                  , ("js/"        , serveDirectory "resources/static/js")
-                  , ("css/"       , serveDirectory "resources/static/css")
-                  , ("img/"       , serveDirectory "resources/static/img")
-                  , ("demos/"     , serveDirectory "resources/static/demos")
-                  , ("query"      , method POST    queryH)
-                  , (""           , defaultH)
+site      = route [ ("index.html"    , serveFile      "resources/static/index.html") 
+                  , ("fullpage.html" , serveFile      "resources/static/fullpage.html")
+                  , ("log"           , serveFileAs    "text/plain" logFile         ) 
+                  , ("js/"           , serveDirectory "resources/static/js"        )
+                  , ("css/"          , serveDirectory "resources/static/css"       )
+                  , ("img/"          , serveDirectory "resources/static/img"       )
+                  , ("demos/"        , serveDirectory "resources/static/demos"     )
+                  , ("permalink/"    , serveDirectory $ sandboxPath config         )
+                  , ("query"         , method POST    queryH                       )
+                  , (""              , defaultH                                    )
                   ]
 
 defaultH :: Snap ()
@@ -53,10 +55,23 @@ getQuery = fromMaybe Junk . decode <$> readRequestBody 1000000
 queryResult :: Query -> IO Result
 ---------------------------------------------------------------
 queryResult q@(Check {}) = checkResult q
-queryResult q@(Load {})  = loadResult  q
-queryResult q@(Save {})  = saveResult  q
+queryResult q@(Load  {}) = loadResult  q
+queryResult q@(Save  {}) = saveResult  q
+queryResult q@(Perma {}) = permaResult q
 queryResult q@(Junk )    = return $ errResult "junk query" 
 
+---------------------------------------------------------------
+permaResult :: Query -> IO Result
+---------------------------------------------------------------
+permaResult q
+  = do f <- genFiles
+       writeQuery q f
+       return $ toJSON $ Load $ permalink $ srcFile f
+
+permalink :: FilePath -> FilePath
+permalink = ("permalink" </>) . snd . splitFileName
+
+-- m >>== f = m >>= (\x -> f x >> return x)
 
 ---------------------------------------------------------------
 loadResult :: Query -> IO Result
@@ -81,13 +96,13 @@ saveResult q = doWrite `catchIOError` err
 checkResult :: Query -> IO Result
 ---------------------------------------------------------------
 checkResult q 
-  = do f <- checkFiles
+  = do f <- genFiles
        writeQuery q f
        runCommand f
        readResult f
 
-checkFiles   :: IO Files
-checkFiles 
+genFiles         :: IO Files
+genFiles 
   = do t        <- (takeWhile (/= '.') . show) <$> getPOSIXTime 
        return    $ Files (sourceName t) (jsonName t)
     where 
@@ -121,9 +136,6 @@ makeCommand t = intercalate " "
     , logFile
     , "2>&1" 
     ]
-
-
-
 
 -----------------------------------------------------------------
 -- Configuration Parameters -------------------------------------

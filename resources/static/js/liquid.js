@@ -1,8 +1,5 @@
 'use strict';
 
-// Globals
-var errorMarkers = [];
-
 /*******************************************************************************r
 /************** Extract Demo from URL ******************************************/
 /*******************************************************************************/
@@ -111,6 +108,9 @@ function errorAceAnnot(err){
   return ann;
 }
 
+// Globals
+var errorMarkers = [];
+
 function setErrors(editor, errs){
   // Add Error Markers
   errorMarkers.forEach(function(m){ editor.session.removeMarker(m); });
@@ -127,8 +127,23 @@ function setErrors(editor, errs){
 /************** URLS ***********************************************************/
 /*******************************************************************************/
 
-function getSrcURL(file){ return ('demos/' + file);}
-function getQueryURL()  { return 'query'; }
+function isPrefix(p, q) { 
+  return (p == q.slice(0, p.length)) 
+}
+
+function getQueryURL(){ 
+  return 'query'; 
+}
+
+function getSrcURL(file){ 
+  if (file.match("/")){
+    return file;
+  } else { 
+    return ('demos/' + file);
+  }
+}
+
+
 
 /*******************************************************************************/
 /************** Queries ********************************************************/
@@ -151,6 +166,12 @@ function getSaveQuery($scope){
   return { type    : "save"
          , program : getSourceCode()
          , path    : $scope.localFilePath
+         };
+}
+
+function getPermaQuery($scope){
+  return { type    : "perma"
+         , program : getSourceCode()
          };
 }
 
@@ -198,6 +219,7 @@ function getSourceCode(){
 /*******************************************************************************/
 /************** Loading Files **************************************************/
 /*******************************************************************************/
+// DEAD CODE. All loading happens via server.
 
 /*@ fileText :: (file, (string) => void) => void */
 function fileText(file, k){
@@ -266,6 +288,8 @@ function LiquidDemoCtrl($scope, $http, $location) {
   $scope.isLocalServer = (document.location.hostname == "localhost");
   $scope.localFilePath = "";
 
+
+  // LOAD a file from disk (only when isLocalServer)
   $scope.loadFromLocalPath = function(){ 
     var srcName = $scope.localFilePath;
     if (srcName){
@@ -286,7 +310,8 @@ function LiquidDemoCtrl($scope, $http, $location) {
            });
     }
   };
- 
+
+  // SAVE a file to disk (only when isLocalServer)
   $scope.saveToLocalPath = function(){ 
     var srcName = $scope.localFilePath;
     //alert('so you want to save ' + $scope.localFilePath); 
@@ -329,8 +354,9 @@ function LiquidDemoCtrl($scope, $http, $location) {
   // Extract demo name from URL 
   $scope.$watch('location.search()', function() {
     $scope.demoName = ($location.search()).demo;
-    if ($scope.demoName in allDemos) 
-      $scope.loadSource(getDemo($scope.demoName));
+    $scope.loadSource({file : $scope.demoName});
+    // if ($scope.demoName in allDemos) 
+    //   $scope.loadSource(getDemo($scope.demoName));
     }, true);
 
   // Update demo name in URL 
@@ -339,6 +365,24 @@ function LiquidDemoCtrl($scope, $http, $location) {
      $scope.loadSource(demo);
   };
   
+  // PERMALINK
+  $scope.makePermalink = function(){
+    // alert('permalink');
+    $http.post(getQueryURL(), getPermaQuery($scope))
+         .success(function(data, status){
+           if (data.path){
+             debugData        = data;
+             $scope.changeTarget({file : data.path});
+           } else {
+             alert("Permalink did not return link: " + data); 
+           }
+         })
+         .error(function(data, status){
+            alert("Permalink Failed: " + status); 
+         });
+  };
+
+
   // Load a local file into editor
   // $scope.readFile = function () { 
   //   debugFiles = $scope.localFileName;
@@ -377,28 +421,29 @@ function LiquidDemoCtrl($scope, $http, $location) {
 /***** Initialize Angular ***********************************************/
 /************************************************************************/
 
-// directive for file upload
-var fileInput = function ($parse) {
-    return {
-        restrict: "EA",
-        template: "<input type='file' class='filestyle' data-icon='false'  />",
-        replace: true,          
-        link: function (scope, element, attrs) {
-            var modelGet = $parse(attrs.fileInput);
-            var modelSet = modelGet.assign;
-            var onChange = $parse(attrs.onChange);
-            var updateModel = function () {
-                scope.$apply(function () {
-                    modelSet(scope, element[0].files[0]);
-                    onChange(scope);
-                });                    
-            };
-            element.bind('change', updateModel);
-        }
-    };
-};
-
 var demo = angular.module("liquidDemo", []);
 demo.controller('LiquidDemoCtrl', LiquidDemoCtrl);
-demo.directive('fileInput', fileInput);
+
+// directive for file upload
+// var fileInput = function ($parse) {
+//     return {
+//         restrict: "EA",
+//         template: "<input type='file' class='filestyle' data-icon='false'  />",
+//         replace: true,          
+//         link: function (scope, element, attrs) {
+//             var modelGet = $parse(attrs.fileInput);
+//             var modelSet = modelGet.assign;
+//             var onChange = $parse(attrs.onChange);
+//             var updateModel = function () {
+//                 scope.$apply(function () {
+//                     modelSet(scope, element[0].files[0]);
+//                     onChange(scope);
+//                 });                    
+//             };
+//             element.bind('change', updateModel);
+//         }
+//     };
+// };
+
+// demo.directive('fileInput', fileInput);
 
