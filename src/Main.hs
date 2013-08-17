@@ -10,9 +10,10 @@ import           System.Directory       (doesFileExist)
 import           System.FilePath        ((</>), addExtension, splitFileName)
 import           System.Process         (system)
 import           Control.Applicative    ((<$>))
+import           Control.Exception      (throw)
 import           Control.Monad.IO.Class (liftIO)
 import           Data.Maybe
-import           Data.List              (intercalate)
+import           Data.List              (isPrefixOf, intercalate)
 import           Data.Aeson                 hiding (Result)
 import qualified Data.ByteString.Lazy as LB
 import           Data.Time.Clock.POSIX
@@ -20,7 +21,7 @@ import           Data.ByteString.Lazy.Char8 (pack)
 
 -- import           Data.Aeson           hiding (Result)
 -- import           Data.Maybe
--- import qualified Data.HashMap.Strict  as M
+import qualified Data.HashMap.Strict  as M
 -- import qualified Data.ByteString      as B
 
 main      :: IO ()
@@ -54,18 +55,18 @@ getQuery = fromMaybe Junk . decode <$> readRequestBody 1000000
 ---------------------------------------------------------------
 queryResult :: Query -> IO Result
 ---------------------------------------------------------------
-queryResult q@(Check {}) = checkResult q
-queryResult q@(Load  {}) = loadResult  q
-queryResult q@(Save  {}) = saveResult  q
-queryResult q@(Perma {}) = permaResult q
-queryResult q@(Junk )    = return $ errResult "junk query" 
+queryResult q@(Check {})   = checkResult   q
+queryResult q@(Recheck {}) = recheckResult q
+queryResult q@(Load  {})   = loadResult    q
+queryResult q@(Save  {})   = saveResult    q
+queryResult q@(Perma {})   = permaResult   q
+queryResult q@(Junk )      = return $ errResult "junk query" 
 
 ---------------------------------------------------------------
 permaResult :: Query -> IO Result
 ---------------------------------------------------------------
 permaResult q
-  = do f <- genFiles
-       writeQuery q f
+  = do f <- writeQuery q =<< genFiles
        return $ toJSON $ Load $ permalink $ srcFile f
 
 permalink :: FilePath -> FilePath
@@ -82,7 +83,6 @@ loadResult q = doRead `catchIOError` err
     err e    = return $ errResult $ pack $ "Load Error: " ++ show e
     ok pgm   = toJSON $ Save pgm (path q) 
 
-
 ---------------------------------------------------------------
 saveResult :: Query -> IO Result
 ---------------------------------------------------------------
@@ -93,13 +93,29 @@ saveResult q = doWrite `catchIOError` err
     ok       = toJSON $ Load (path q) 
 
 ---------------------------------------------------------------
+recheckResult :: Query -> IO Result
+---------------------------------------------------------------
+recheckResult q = queryFiles q >>= writeQuery q >>= execCheck
+
+queryFiles    :: Query -> IO Files
+queryFiles q
+  = do b <- validRecheck src
+       if b then return $ Files src jsn 
+            else throw  $ userError $ "Invalid Recheck Path: " ++ src   
+    where 
+      src        = path q
+      jsn        = src `addExtension` "json"
+
+validRecheck :: FilePath -> IO Bool 
+validRecheck src 
+  = do b1    <- doesFileExist src
+       let b2 = sandboxPath config `isPrefixOf` src
+       return $ b1 && b2
+
+---------------------------------------------------------------
 checkResult :: Query -> IO Result
 ---------------------------------------------------------------
-checkResult q 
-  = do f <- genFiles
-       writeQuery q f
-       runCommand f
-       readResult f
+checkResult q   = genFiles >>= writeQuery q >>= execCheck  
 
 genFiles         :: IO Files
 genFiles 
@@ -111,15 +127,29 @@ genFiles
       ext        = srcSuffix   config
       sandbox    = sandboxPath config
 
-writeQuery     :: Query -> Files -> IO ()
-writeQuery q f = LB.writeFile (srcFile f) (program q)
+---------------------------------------------------------------
+execCheck :: Files -> IO Result
+---------------------------------------------------------------
+execCheck f
+  = do runCommand f
+       r <- readResult f
+       return $ r += ("path", toJSON $ srcFile f) 
 
+---------------------------------------------------------------
+writeQuery     :: Query -> Files -> IO Files
+---------------------------------------------------------------
+writeQuery q f = LB.writeFile (srcFile f) (program q) >> return f
+
+---------------------------------------------------------------
 runCommand    :: Files -> IO ExitCode 
+---------------------------------------------------------------
 runCommand    = systemD . makeCommand . srcFile
   where 
     systemD c = {- putStrLn ("EXEC: " ++ c) >> -} system c  
 
+---------------------------------------------------------------
 readResult   :: Files -> IO Result
+---------------------------------------------------------------
 readResult f = do b <- doesFileExist file
                   if b then decodeRes <$> LB.readFile file
                        else return dummyResult
@@ -127,7 +157,9 @@ readResult f = do b <- doesFileExist file
     file      = jsonFile f
     decodeRes = fromMaybe dummyResult . decode
 
+---------------------------------------------------------------
 makeCommand :: FilePath -> String
+---------------------------------------------------------------
 makeCommand t = intercalate " " 
     [ cmdPrefix  config
     , srcChecker config
@@ -161,5 +193,12 @@ readFile'    :: FilePath -> IO (Maybe LB.ByteString)
 readFile' fp = do b <- doesFileExist fp
                   if b then Just <$> LB.readFile fp
                        else return Nothing
+
+---------------------------------------------------------------
+-- (+=) :: Value -> (Text, Value) -> Value 
+{-@ (+=) :: {v:Value | (Object v)} -> Pair -> Value @-} 
+---------------------------------------------------------------
+(Object o) += (k, v) = Object $ M.insert k v o
+_          +=  _     = throw  $ userError "invalid addition to value"
 
 

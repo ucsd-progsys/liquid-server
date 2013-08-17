@@ -26,6 +26,15 @@ The JSON file has data about:
 
 The above are then reflected on the client side ace-editor based pane.
 
+
+Instructions [TODO]
+-------------------
+
+i.  build liquid && liquid-server
+ii. load file [pass extra params e.g. include dirs as LIQUID pragma]
+iii.check
+iv. save file
+
 Configuration [TODO]
 --------------------
 
@@ -40,8 +49,9 @@ To configure to a new checker, you should just specify:
   3. **js config**      editor config params, list and types of demos 
                         `resources/static/js/config.js`
 
-Files
------
+
+Directory Structure
+-------------------
 
 Directory Structure
   
@@ -50,35 +60,12 @@ Directory Structure
           + index.html
           + js/
           + css/
+          + img/
           + demos/
 
       + sandbox/
 
-      + permalink/
 
-TODO
-----
-
-1. PHP functionality
-2. File Loading
-3. File Saving
-4. Permalinks
-5. Local Checking [Re-Check]
-    + Client
-        - only recheck when you have a permalink-style PATH-ID
-        - like verify-query, but now include PATH-ID
-
-    + Server [
-        1 extend Query with "path"-field
-        2 use {path : ...} ID if present to generate fileNames (reuse)
-        3 return { path : ...} in result after CHECKING
-
-    + WILL OVERWRITE 
-
-    i.  build liquid && liquid-server
-    ii. load file [pass extra params e.g. include dirs as LIQUID pragma]
-    iii.check
-    iv. save file
 
 6. Language Customization
 -------------------------

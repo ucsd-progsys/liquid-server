@@ -156,11 +156,13 @@ function getCheckQuery($scope){
 }
 
 function getRecheckQuery($scope){
-  var q = getCheckQuery($scope);
-  if ($scope.filePath) { 
-    q.path = $scope.filePath;
-  }
-  return q;
+  var p = "";
+  if ($scope.filePath) p = $scope.filePath;
+
+  return { type    : "recheck"
+         , program : getSourceCode() 
+         , path    : p
+         };
 }
 
 function getLoadQuery($scope){
