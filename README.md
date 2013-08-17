@@ -68,20 +68,13 @@ TODO
         - only recheck when you have a permalink-style PATH-ID
         - like verify-query, but now include PATH-ID
 
-    + Server
-        - use PATH-ID if present to generate fileNames (reuse) 
+    + Server [
+        1 extend Query with "path"-field
+        2 use {path : ...} ID if present to generate fileNames (reuse)
+        3 return { path : ...} in result after CHECKING
 
     + WILL OVERWRITE 
 
-    1. SERVER: Send back timestamp [as in permalink]
-    2. CLIENT: isRecheck = isUnknown && haveId
-    [ Re | Check ]
-
-
-    -   submit local path with QUERY { path : "/path/to/foo.hs" }
-    -   server files are: "/path/to/_liquid/foo.hs{.json}"
-    -   [SERVER] hash "path" (not timestamp) for file name (for repeated query)
-    
     i.  build liquid && liquid-server
     ii. load file [pass extra params e.g. include dirs as LIQUID pragma]
     iii.check
