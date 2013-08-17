@@ -63,7 +63,16 @@ TODO
 2. File Loading
 3. File Saving
 4. Permalinks
-5. Local Checking [HEREHERE]
+5. Local Checking [Re-Check]
+    + Client
+        - only recheck when you have a permalink-style PATH-ID
+        - like verify-query, but now include PATH-ID
+
+    + Server
+        - use PATH-ID if present to generate fileNames (reuse) 
+
+    + WILL OVERWRITE 
+
     1. SERVER: Send back timestamp [as in permalink]
     2. CLIENT: isRecheck = isUnknown && haveId
     [ Re | Check ]

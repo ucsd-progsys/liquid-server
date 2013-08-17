@@ -152,8 +152,15 @@ function getSrcURL(file){
 function getCheckQuery($scope){ 
   return { type    : "check"
          , program : getSourceCode() 
-         , path    : $scope.localFilePath 
          };
+}
+
+function getRecheckQuery($scope){
+  var q = getCheckQuery($scope);
+  if ($scope.filePath) { 
+    q.path = $scope.filePath;
+  }
+  return q;
 }
 
 function getLoadQuery($scope){
@@ -194,9 +201,9 @@ function setStatusChecking($scope){
   $scope.isUnknown  = false;
 }
 
-function setStatusResult($scope, result){
-  debugResult = result;
-
+function setStatusResult($scope, data){
+  var result          = getResult(data);
+  debugResult         = result;
   clearStatus($scope);
   $scope.isChecking   = false;
   $scope.isSafe       = (result == "safe"  );
@@ -204,12 +211,15 @@ function setStatusResult($scope, result){
   $scope.isCrash      = (result == "crash" );
   $scope.isError      = (result == "error" );
   $scope.isUnknown    = !($scope.isSafe || $scope.isError || $scope.isUnsafe || $scope.isCrash);
+  $scope.filePath     = data.path;
+  return result;
 }
 
 function setSourceCode($scope, srcName, srcText){
   clearStatus($scope);
-  $scope.sourceFileName = srcName; 
-  progEditor.getSession().setValue(srcText);
+  $scope.filePath       = null;             
+  $scope.sourceFileName = srcName;           
+  progEditor.getSession().setValue(srcText);  
 }
 
 function getSourceCode(){
@@ -273,6 +283,7 @@ function getWarns(d){
 /************** Top-Level Demo Controller **************************************/
 /*******************************************************************************/
 
+var debugQuery  = null;
 var debugData   = null;
 var debugResult = null;
 var debugResp   = 0;
@@ -390,18 +401,17 @@ function LiquidDemoCtrl($scope, $http, $location) {
   // };
 
   // http://www.cleverweb.nl/javascript/a-simple-search-with-angularjs-and-php/
-  $scope.verifySource = function(){ 
+  function verifyQuery(query){ 
+    debugQuery = query;
     setStatusChecking($scope);
-    $http.post(getQueryURL(), getCheckQuery($scope))
+    $http.post(getQueryURL(), query)
          .success(function(data, status) {
             debugResp        = debugResp + 1; 
             $scope.status    = status;
             debugData        = data;
-            $scope.result    = getResult(data);
-            debugResult      = $scope.result;
             $scope.warns     = getWarns(data); 
             $scope.annotHtml = data.annotHtml;
-            setStatusResult($scope, $scope.result);
+            $scope.result    = setStatusResult($scope, data);
            
             // This may be "null" if liquid crashed...
             if (data) { 
@@ -415,6 +425,10 @@ function LiquidDemoCtrl($scope, $http, $location) {
             alert(msg);
          });
   };
+  
+  $scope.verifySource   = function(){ verifyQuery(getCheckQuery($scope));   };
+  $scope.reVerifySource = function(){ verifyQuery(getRecheckQuery($scope)); };
+   
 }
 
 /************************************************************************/
