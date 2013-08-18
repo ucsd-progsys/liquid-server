@@ -8,20 +8,6 @@
    
     <style>
       
-      .buggyuploadbutton {
-        position: relative;
-        top: 150px;
-        font-family: calibri;
-        width: 150px;
-        padding: 10px;
-        -webkit-border-radius: 5px;
-        -moz-border-radius: 5px;
-        border: 1px dashed #BBB; 
-        text-align: center;
-        background-color: #DDD;
-        cursor:pointer;
-      }
-      
       .warningmessage {
         white-space: pre;
         font-family: monospace;
@@ -90,35 +76,16 @@
 <body data-spy="scroll" data-target=".bs-docs-sidebar" ng-app="liquidDemo" ng-controller="LiquidDemoCtrl">
 
   <!-- Navbar ================================================== -->
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div ng-hide="isFullScreen" class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
           
           <div class="nav-collapse collapse">
           <ul class="nav">
-            
-            <li class="active">
-                <a href="./index.html">Demo</a>
-            </li>
-            
-            <li class="">
-                <a href="https://github.com/ucsd-progsys/liquidhaskell">Code</a>
-            </li>
-   
-            <li class="">
-                <a href="http://goto.ucsd.edu/~rjhala/liquid/haskell/blog/about/">About</a>
-            </li>
-
-
-            <li class="">
-               <a href="http://goto.ucsd.edu/~rjhala/liquid/haskell/blog/">Blog</a>
-            </li>
-          
+            <li class="active"><a href="./index.html">Demo</a></li>
+            <li class=""><a href="https://github.com/ucsd-progsys/liquidhaskell">Code</a></li>
+            <li class=""><a href="http://goto.ucsd.edu/~rjhala/liquid/haskell/blog/about/">About</a></li>
+            <li class=""><a href="http://goto.ucsd.edu/~rjhala/liquid/haskell/blog/">Blog</a></li>
           </ul>
           </div>
         </div>
@@ -128,7 +95,7 @@
 
     <!-- SubTitle ================================================== -->
            
-   <header class="jumbotron subhead" id="overview">
+   <header ng-show="!isFullScreen" class="jumbotron subhead" id="overview">
      <div class="container">
          <h1>LiquidHaskell</h1>
          <p class="lead">Refinement Types via SMT and Predicate Abstraction</p>
@@ -141,11 +108,12 @@
  
   <div class="container-fluid">
      <div class="row-fluid">
-       <div class="span2">
-       <!--Sidebar content-->
+
+    <!--
+     <div id="tableOfContents" ng-show="!isFullScreen" class="span2">
        <ul class="nav nav-list">
 
-             <li class="nav-header">Basics</li>
+         <li class="nav-header">Basics</li>
          <li ng-repeat="demo in basicDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
 
          <li class="nav-header">Datatype Measures</li>
@@ -154,23 +122,67 @@
          <li class="nav-header">Abs. Refinements</li>
          <li ng-repeat="demo in abstRefDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
 
-
          <li class="nav-header">HOPA Tutorial</li>
          <li ng-repeat="demo in tutorialDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
 
        </ul>
      </div>
-     
-     <div class="span10">
+     -->
 
+     <div id="code-pane" class="span12">
+       
+      
        <!-- Body content =========================================-->
       
        <!-- FILE LOAD/SAVE -->
-        <div ng-show="isLocalServer" class="input-append">
-          <input  type="text" class="span9" ng-model="localFilePath" placeholder="local file path" id="localFilePath">
-          <button class="btn" type="button" ng-click="loadFromLocalPath()">Load</button>
-          <button class="btn" type="button" ng-click="saveToLocalPath()">Save</button>
+       
+        
+        <div class="input-prepend input-append">
+
+
+          <div class="btn-group">
+           <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Select&nbsp;<span class="caret"></span></a>
+           <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+             <li class="dropdown-submenu">
+               <a tabindex="-1" href="#">Basics</a>
+                 <ul class="dropdown-menu">
+                   <li ng-repeat="demo in basicDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
+                 </ul>
+               </a>
+             </li>
+               
+             <li class="dropdown-submenu">
+                <a tabindex="-1" href="#">Measures</a>
+                 <ul class="dropdown-menu">
+                   <li ng-repeat="demo in measureDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
+                 </ul>
+               </a>
+             </li>
+               
+             <li class="dropdown-submenu">
+               <a tabindex="-1" href="#">Abstract Refinements</a>
+                 <ul class="dropdown-menu">
+                   <li ng-repeat="demo in abstRefDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
+                 </ul>
+               </a>
+             </li>
+
+             <li class="dropdown-submenu">
+               <a tabindex="-1" href="#">HOPA Tutorial</a>
+                 <ul class="dropdown-menu">
+                   <li ng-repeat="demo in tutorialDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
+                 </ul>
+               </a>
+             </li>
+           </ul>
+          </div>
+
+          <input  type="text" class="span9" ng-show="isLocalServer" ng-model="localFilePath" placeholder="local file path" id="localFilePath">
+          <button class="btn" type="button" ng-show="isLocalServer" ng-click="loadFromLocalPath()">Load</button>
+          <button class="btn" type="button" ng-show="isLocalServer" ng-click="saveToLocalPath()">Save</button>
         </div>
+        
+
         <br>
 
 
@@ -196,7 +208,7 @@
              <div id="program-pane" class="welleditor" style="background:#fff">
              <div class="form-horizontal">
                <div ng-show="isLocalServer" class="input-prepend input-append">
-                 <button class="btn btn-info" type="button" ng-show="isUnknown" ng-click="verifySource()">Re-</button>
+                 <button class="btn btn-info" type="button" ng-show="isUnknown" ng-click="verifySource()">Re</button>
                  <button class="btn btn-info" type="button" ng-show="isUnknown" ng-click="verifySource()">Check</button>
                </div>
                <button class="btn"             type="button" ng-show="isChecking" ng-click="verifySource()">Verifying...</button>
@@ -204,12 +216,15 @@
                <button class="btn btn-danger"  type="button" ng-show="isUnsafe">Unsafe</button>
                <button class="btn btn-warning" type="button" ng-show="isError">Error!</button>
                <button class="btn btn-warning" type="button" ng-show="isCrash">Crash!</button>
-               <button class="btn" style="float:right" type="button" ng-click="makePermalink()">Permalink: {{sourceFileName}}</button>
-               <!-- <span style="float:right" class="label large" id="sourceName">PERMALINK: {{sourceFileName}}</span> 
-                    <button class="btn btn-link" type="button" ng-click="makePermalink()">Permalink</button> -->
+
+               <div style="float:right" class="input-prepend input-append">
+                 <button class="btn" type="button" ng-click="makePermalink()">Permalink: {{sourceFileName}}</button>
+                 <button class="btn" type="button" ng-click="toggleFullScreen()">{{embiggen}}</i></button>
+               </div>
+
              </div> 
              <br>
-             <div id="program" style="height: 85%">
+             <div id="program" style="height: 85%"> 
                  -- Wait for it ...
              </div>
              </div>

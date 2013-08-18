@@ -74,6 +74,18 @@ $(window).resize(resizeProgEditor);
 //set initially
 resizeProgEditor();
 
+// Resize Editor
+function toggleEditorSize(x){
+  var ht = 400;
+  if (x.isFullScreen){
+    ht = 600;
+  };
+  $("#program-pane").height(ht); 
+  $("#program").height(ht-60);
+}
+
+
+
 /*******************************************************************************/
 /** Markers For Errors *********************************************************/
 /*******************************************************************************/
@@ -293,6 +305,10 @@ var debugFiles  = null;
 
 function LiquidDemoCtrl($scope, $http, $location) {
 
+  // Start in non-fullscreen
+  $scope.isFullScreen  = false; 
+  $scope.embiggen      = "FullScreen";
+
   // Populate list of demos
   $scope.basicDemos    = getDemos("basic")  ;  
   $scope.measureDemos  = getDemos("measure");
@@ -301,6 +317,15 @@ function LiquidDemoCtrl($scope, $http, $location) {
   $scope.isLocalServer = (document.location.hostname == "localhost");
   $scope.localFilePath = "";
 
+  // For debugging
+  $scope.gong =  function(s) { alert(s); };
+
+  // Toggle fullScreen mode
+  $scope.toggleFullScreen  = function(){
+    $scope.isFullScreen = !$scope.isFullScreen;
+    $scope.embiggen     = ($scope.embiggen == "FullScreen") ? "Shrink" : "FullScreen";
+    toggleEditorSize($scope);
+  }
 
   // LOAD a file from disk (only when isLocalServer)
   $scope.loadFromLocalPath = function(){ 
@@ -350,6 +375,7 @@ function LiquidDemoCtrl($scope, $http, $location) {
       clearStatus($scope);
     });
   });
+  
 
   // Load a particular demo
   $scope.loadSource   = function(demo){
@@ -369,7 +395,8 @@ function LiquidDemoCtrl($scope, $http, $location) {
     $scope.demoName = ($location.search()).demo;
     $scope.loadSource({file : $scope.demoName});
     // if ($scope.demoName in allDemos) 
-    //   $scope.loadSource(getDemo($scope.demoName));
+    if ($scope.demoName in allDemos) 
+       $scope.loadSource(getDemo($scope.demoName));
     }, true);
 
   // Update demo name in URL 
@@ -395,12 +422,6 @@ function LiquidDemoCtrl($scope, $http, $location) {
          });
   };
 
-
-  // Load a local file into editor
-  // $scope.readFile = function () { 
-  //   debugFiles = $scope.localFileName;
-  //   loadLocalFile($scope, $scope.localFileName);
-  // };
 
   // http://www.cleverweb.nl/javascript/a-simple-search-with-angularjs-and-php/
   function verifyQuery(query){ 
@@ -439,27 +460,4 @@ function LiquidDemoCtrl($scope, $http, $location) {
 
 var demo = angular.module("liquidDemo", []);
 demo.controller('LiquidDemoCtrl', LiquidDemoCtrl);
-
-// directive for file upload
-// var fileInput = function ($parse) {
-//     return {
-//         restrict: "EA",
-//         template: "<input type='file' class='filestyle' data-icon='false'  />",
-//         replace: true,          
-//         link: function (scope, element, attrs) {
-//             var modelGet = $parse(attrs.fileInput);
-//             var modelSet = modelGet.assign;
-//             var onChange = $parse(attrs.onChange);
-//             var updateModel = function () {
-//                 scope.$apply(function () {
-//                     modelSet(scope, element[0].files[0]);
-//                     onChange(scope);
-//                 });                    
-//             };
-//             element.bind('change', updateModel);
-//         }
-//     };
-// };
-
-// demo.directive('fileInput', fileInput);
-
+toggleEditorSize({isFullScreen : false });
