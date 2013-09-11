@@ -3,12 +3,12 @@ README
 
 A Generic web server for all the liquid-types based web demos.
 
-There is nothing liquid specific of course, one can put in whatever 
-binary one likes as long as there is a binary that has the following
-behavior:
+There is nothing liquid specific of course, one can put in 
+whatever binary one likes as long as there is a **binary** 
+that has the following behavior:
 
-  + INPUT   Source file `path/to/foo`
-  + OUTPUT  JSON file   `path/to/foo.json` in the format specfied below.
+  + **Input**   Source file `path/to/foo`
+  + **Output**  JSON file   `path/to/foo.json` in the format specfied below.
 
 JSON Format
 -----------
@@ -27,13 +27,34 @@ The JSON file has data about:
 The above are then reflected on the client side ace-editor based pane.
 
 
-Instructions [TODO]
--------------------
+Installation Instructions
+-------------------------
 
-i.  build liquid && liquid-server
-ii. load file [pass extra params e.g. include dirs as LIQUID pragma]
-iii.check
-iv. save file
+1. Build 
+
+    cabal install liquid
+    cabal install liquid-server
+
+2. Run (make sure that the binary `liquid` is in the `$PATH`)
+
+    liquid-server -p 8000
+
+3. Use by pointing your web-browser to 
+
+    http://localhost:8000/index.html
+
+   or the relevant URL. (Don't forget the `index.html`)
+
+Usage Notes
+-----------
+
+1. Command line parameters (e.g. include directories) can be passed 
+   via LIQUID pragmas in the source file. 
+
+2. Include directories don't work for remote use, only local. 
+
+3. When running in local mode, you should also be able to **save** a file.
+
 
 Configuration [TODO]
 --------------------
