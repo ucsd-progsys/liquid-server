@@ -17,7 +17,7 @@ module Language.Liquid.Server.Types (
 
 import           Control.Monad          (mzero)
 import           Control.Applicative    ((<$>), (<*>))
-import           Data.Maybe
+-- import           Data.Maybe
 import           Data.Aeson                 hiding (Result)
 import qualified Data.ByteString.Lazy as LB
 import qualified Data.HashMap.Strict as M
@@ -60,6 +60,7 @@ instance FromJSON Query where
   parseJSON (Object v) = objectQuery v
   parseJSON _          = mzero 
 
+-- objectQuery    :: Object -> Query
 objectQuery v 
   = do ty <- v .: "type" 
        case ty :: String of 

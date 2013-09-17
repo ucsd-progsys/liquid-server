@@ -45,9 +45,9 @@ defaultH = writeLBS "Liquid Demo Server: Oops, there's nothing here!"
 
 queryH   :: Snap ()
 queryH   = writeLBS . encode =<< liftIO . queryResult =<< getQuery  
-  where
-    queryResult' q = dumpQuery q >> queryResult q
-    dumpQuery      = putStrLn . show . toJSON 
+  -- where
+    -- queryResult' q = dumpQuery q >> queryResult q
+    -- dumpQuery      = putStrLn . show . toJSON 
 
 getQuery :: Snap Query 
 getQuery = fromMaybe Junk . decode <$> readRequestBody 1000000
@@ -60,7 +60,7 @@ queryResult q@(Recheck {}) = recheckResult q
 queryResult q@(Load  {})   = loadResult    q
 queryResult q@(Save  {})   = saveResult    q
 queryResult q@(Perma {})   = permaResult   q
-queryResult q@(Junk )      = return $ errResult "junk query" 
+queryResult Junk           = return $ errResult "junk query" 
 
 ---------------------------------------------------------------
 permaResult :: Query -> IO Result
@@ -188,11 +188,11 @@ logFile = (</> "log") $ sandboxPath config
 ---------------------------------------------------------------
 
 ---------------------------------------------------------------
-readFile'    :: FilePath -> IO (Maybe LB.ByteString)
----------------------------------------------------------------
-readFile' fp = do b <- doesFileExist fp
-                  if b then Just <$> LB.readFile fp
-                       else return Nothing
+-- readFile'    :: FilePath -> IO (Maybe LB.ByteString)
+-- ---------------------------------------------------------------
+-- readFile' fp = do b <- doesFileExist fp
+--                   if b then Just <$> LB.readFile fp
+--                        else return Nothing
 
 ---------------------------------------------------------------
 -- (+=) :: Value -> (Text, Value) -> Value 

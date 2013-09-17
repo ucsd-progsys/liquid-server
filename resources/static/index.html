@@ -207,10 +207,13 @@
 
              <div id="program-pane" class="welleditor" style="background:#fff">
              <div class="form-horizontal">
-               <div ng-show="isLocalServer" class="input-prepend input-append">
+
+               <!-- <div ng-show="isLocalServer" class="input-prepend input-append"> -->
+               <div class="input-prepend input-append">
                  <button class="btn btn-info" type="button" ng-show="isUnknown" ng-click="verifySource()">Re</button>
                  <button class="btn btn-info" type="button" ng-show="isUnknown" ng-click="verifySource()">Check</button>
                </div>
+               
                <button class="btn"             type="button" ng-show="isChecking" ng-click="verifySource()">Verifying...</button>
                <button class="btn btn-success" type="button" ng-show="isSafe">Safe</button>
                <button class="btn btn-danger"  type="button" ng-show="isUnsafe">Unsafe</button>
