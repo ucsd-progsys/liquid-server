@@ -12,6 +12,7 @@ var allDemos =
     "vectorbounds.hs"       : { "name" : "Vector Bounds"    , "type" : "basic"  },
     // Measure Demos
     "lenMapReduce.hs"       : { "name" : "Safe List"        , "type" : "measure"},
+    "Csv.hs"                : { "name" : "CSV Lists"        , "type" : "measure"},
     "KMeansHelper.hs"       : { "name" : "K-Means Lib"      , "type" : "measure"},
     "KMeans.hs"             : { "name" : "K-Means"          , "type" : "measure"}, 
     "TalkingAboutSets.hs"   : { "name" : "Talk About Sets"  , "type" : "measure"},
