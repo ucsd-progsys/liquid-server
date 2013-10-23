@@ -233,7 +233,7 @@ function setStatusResult($scope, data){
 function setSourceCode($scope, srcName, srcText){
   clearStatus($scope);
   $scope.filePath       = null;             
-  $scope.sourceFileName = srcName;           
+  $scope.sourceFileName = srcName.split("/").pop(); // drop path prefix
   progEditor.getSession().setValue(srcText);  
 }
 
