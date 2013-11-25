@@ -30,13 +30,6 @@ var allDemos =
     "Loop.hs"              : { "name" : "HO Loop"           , "type" : "tutorial" },
     "Composition.hs"       : { "name" : "Composition"       , "type" : "tutorial" },
     "Array.hs"             : { "name" : "Finite Maps"       , "type" : "tutorial" }
-
-    // "ListSort.hs"       : { "name" : "Sorting Lists"        , "type" : "absref" },
-    // "ListLength.hs"     : { "name" : "List Lengths"      , "type" : "measure"},
-    // "MapReduce.hs"      : { "name" : "Map Reduce"        , "type" : "measure"}, 
-    // "ListElts.hs"           : { "name" : "List Elements" , "type" : "measure"}, 
-
-
   };
 
 function getDemo(name){

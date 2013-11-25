@@ -48,10 +48,10 @@ Installation Instructions
 Usage Notes
 -----------
 
-1. Command line parameters (e.g. include directories) can be passed 
-   via LIQUID pragmas in the source file. 
+1. Command line parameters (e.g. include directories) should be passed 
+   via pragmas (e.g. {-@ LIQUID ... @-}) in the source file. 
 
-2. Include directories don't work for remote use, only local. 
+2. Include directories don't work for remote use, only local.
 
 3. When running in local mode, you should also be able to **save** a file.
 
@@ -86,9 +86,32 @@ Directory Structure
 
       + sandbox/
 
+Generalized Structure
+
+  + resources/
+      + custom/
+          + config.js
+          + demos/
+
+      + static/
+          + index.html
+          + fullpage.html
+          + js/
+          + css/
+          + img/
+
+      + sandbox/
+
 
 
 6. Language Customization
 -------------------------
 
-To support nano-js too.
+  (a) shuffle directories as above
+
+  (b) move all custom stuff into 
+        + config.js 
+        + config.hs
+
+  (c) rejigger index.html and fullpage.html to load from custom/config.js
+        + banner names etc from config.js passed into the angular controller
