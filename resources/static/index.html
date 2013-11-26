@@ -113,34 +113,11 @@
   <div class="container-fluid">
      <div class="row-fluid">
 
-    <!--
-     <div id="tableOfContents" ng-show="!isFullScreen" class="span2">
-       <ul class="nav nav-list">
-
-         <li class="nav-header">Basics</li>
-         <li ng-repeat="demo in basicDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
-
-         <li class="nav-header">Datatype Measures</li>
-         <li ng-repeat="demo in measureDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
-         
-         <li class="nav-header">Abs. Refinements</li>
-         <li ng-repeat="demo in abstRefDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
-
-         <li class="nav-header">HOPA Tutorial</li>
-         <li ng-repeat="demo in tutorialDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
-
-       </ul>
-     </div>
-     -->
-
      <div id="code-pane" class="span12">
-       
       
        <!-- Body content =========================================-->
       
        <!-- FILE LOAD/SAVE -->
-       
-       
         <div class="input-prepend input-append">
 
           <div class="btn-group">
@@ -149,7 +126,7 @@
               <li ng-repeat="cat in categories" class="dropdown-submenu">
                  <a tabindex="-1" href="#">{{cat.name}}</a>
                    <ul class="dropdown-menu">
-                   <li ng-repeat="demo in getDemos(cat.type)"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
+                   <li ng-repeat="demo in cat.demos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
                    </ul>
                  </a>
               </li>

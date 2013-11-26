@@ -27,6 +27,13 @@ function getDefaultDemo(){
   // debugDemo = ds[1];
   return ds[1];
 }
+
+function getCategories(){
+  function tx(c){return {type: c.type, name: c.name, demos: getDemos(c.type)}};
+  return allCategories.map(tx);
+}
+  
+
 /*******************************************************************************/
 /************** Setting Up Editor **********************************************/
 /*******************************************************************************/
@@ -292,7 +299,7 @@ function LiquidDemoCtrl($scope, $http, $location) {
   $scope.demoTitle     = demoTitle;
   $scope.demoSubtitle  = demoSubtitle;
   $scope.links         = allLinks;
-  $scope.categories    = allCategories;
+  $scope.categories    = getCategories();
   $scope.isLocalServer = (document.location.hostname == "localhost");
   $scope.localFilePath = "";
 
@@ -375,10 +382,11 @@ function LiquidDemoCtrl($scope, $http, $location) {
   // Extract demo name from URL 
   $scope.$watch('location.search()', function() {
     $scope.demoName = ($location.search()).demo;
-    //$scope.loadSource({file : $scope.demoName});
-    // if ($scope.demoName in allDemos) 
-    if ($scope.demoName in allDemos) 
-       $scope.loadSource(getDemo($scope.demoName));
+    var newDemo = {file : $scope.demoName};
+    if ($scope.demoName in allDemos){
+      newDemo = getDemo($scope.demoName);
+    }
+    $scope.loadSource(newDemo);
     }, true);
 
   // Update demo name in URL 
@@ -389,7 +397,6 @@ function LiquidDemoCtrl($scope, $http, $location) {
   
   // PERMALINK
   $scope.makePermalink = function(){
-    // alert('permalink');
     $http.post(getQueryURL(), getPermaQuery($scope))
          .success(function(data, status){
            if (data.path){
