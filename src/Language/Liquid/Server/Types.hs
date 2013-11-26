@@ -26,12 +26,12 @@ import qualified Data.HashMap.Strict as M
 -----------------------------------------------------------------
 
 data Config = Config { 
-    toolName    :: String 
-  , srcSuffix   :: String
-  , srcChecker  :: FilePath
-  , cmdPrefix   :: String
-  , themeFile   :: FilePath
-  , modeFile    :: FilePath
+    toolName    :: String     -- used to lookup resources/custom/toolName 
+  , srcSuffix   :: String     -- hs, js etc.
+  , srcChecker  :: FilePath   -- checker binary; must be in your $PATH 
+  , cmdPrefix   :: String     -- extra command line params to be passed to `srcChecker`
+  , themeFile   :: FilePath   -- /ace/js/theme-THEMEFILE.js
+  , modeFile    :: FilePath   -- /ace/js/mode-MODEFILE.js
   }
 
 data Files   = Files { 

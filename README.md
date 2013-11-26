@@ -27,8 +27,8 @@ The JSON file has data about:
 The above are then reflected on the client side ace-editor based pane.
 
 
-Installation Instructions
--------------------------
+Installation 
+------------
 
 1. Build 
 
@@ -48,52 +48,13 @@ Installation Instructions
 Usage Notes
 -----------
 
-1. Command line parameters (e.g. include directories) should be passed 
-   via pragmas (e.g. {-@ LIQUID ... @-}) in the source file. 
+1. Command line parameters for the tool (e.g. include directories) 
+   should be passed via pragmas (e.g. {-@ LIQUID ... @-}) in the 
+   source file. 
 
 2. Include directories don't work for remote use, only local.
 
 3. When running in local mode, you should also be able to **save** a file.
-
-
-Configuration [TODO]
---------------------
-
-To configure to a new checker, you should just specify:
-
-  1. **checker binary** specified by a shell-command string
-                        `checkerCommand`
-
-  2. **demo files**     specified by the contents of 
-                        `resources/static/demos/`
-
-  3. **js config**      editor config params, list and types of demos 
-                        `resources/static/js/config.js`
-
-Configuration
--------------
-
-   src/Config.hs
-   resources/static/index.html {js/ace/mode-XXX.js, js/theme/theme-YYY.js}
-   resources/static/js/config.js
-   resources/static/demos
-          + config.js
-
-
-Templates
----------
-
-use Config.hs to generate:
-
-(a) generate
-    {index, fullpage}.html: 
-      js/ace/mode-XXX.js
-      js/ace/theme-XXX.js
-
-(b) copy  
-    resources/custom/XXX/js ---> js/config.js
-
-
 
 Directory Structure
 -------------------
@@ -122,17 +83,17 @@ Directory Structure
 
        ...
 
+Customization
+-------------
 
+To configure to a new checker called `toolName`
 
-6. Language Customization
--------------------------
+  1. Create a suitable `config` in `src/Language/Liquid/Server/Config.hs`
 
-+ shuffle directories as above
+  2. Create a suitable: 
+      resources/custom/toolName/config.js
+      resources/custom/toolName/demos/
+      resources/custom/toolName/sandbox/
 
-+ move all custom stuff into 
-    + src/Config.hs
-    + resources/custom/TOOLNAME/config.js 
+     As an example, see `resources/custom/liquidhaskell/`
 
-+ rejigger index.html and fullpage.html to load from custom/config.js
-
-+ automate templating
