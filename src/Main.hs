@@ -3,7 +3,7 @@
 import           Snap.Core hiding (path)
 import           Snap.Util.FileServe
 import           Snap.Http.Server     hiding (Config)
-import           Language.Liquid.Server.Types 
+
 import           System.IO.Error        (catchIOError)
 import           System.Exit            (ExitCode)
 import           System.Directory       (doesFileExist)
@@ -20,29 +20,32 @@ import           Data.Time.Clock.POSIX
 import           Data.ByteString.Lazy.Char8 (pack)
 import qualified Data.HashMap.Strict  as M
 import           Data.ByteString (unpack)
+import           Language.Liquid.Server.Types 
+import           Language.Liquid.Server.Config
+
 
 main      :: IO ()
-main      = quickHttpServe site
+main      = quickHttpServe $ site config 
 
-site      :: Snap ()
-site      = route [ ("index.html"    , serveFile      $ staticPath </> "index.html"   ) 
+site      :: Config -> Snap ()
+site cfg  = route [ ("index.html"    , serveFile      $ staticPath </> "index.html"   ) 
                   , ("fullpage.html" , serveFile      $ staticPath </> "fullpage.html")
                   , ("js/"           , serveDirectory $ staticPath </> "js"           )
                   , ("css/"          , serveDirectory $ staticPath </> "css"          )
                   , ("img/"          , serveDirectory $ staticPath </> "img"          )
-                  , ("demos/"        , serveDirectory $ demoPath config               )
-                  , ("permalink/"    , serveDirectory $ sandboxPath config            )
-                  , ("custom/:js"    , customHandler config                           ) 
-                  , ("query"         , method POST    queryH                          )
-                  , ("log"           , serveFileAs    "text/plain" logFile            ) 
+                  , ("demos/"        , serveDirectory $ demoPath cfg                  )
+                  , ("permalink/"    , serveDirectory $ sandboxPath cfg               )
+                  , ("custom/:js"    , customHandler cfg                              ) 
+                  , ("query"         , method POST    $ queryH cfg                    )
+                  , ("log"           , serveFileAs    "text/plain" $ logFile cfg      ) 
                   , (""              , defaultH                                       )
                   ]
 
 defaultH :: Snap ()
 defaultH = writeLBS "Liquid Demo Server: Oops, there's nothing here!"
 
-queryH   :: Snap ()
-queryH   = writeLBS . encode =<< liftIO . queryResult =<< getQuery  
+queryH    :: Config -> Snap ()
+queryH c  = writeLBS . encode =<< liftIO . queryResult c =<< getQuery  
   -- where
     -- queryResult' q = dumpQuery q >> queryResult q
     -- dumpQuery      = putStrLn . show . toJSON 
@@ -51,20 +54,20 @@ getQuery :: Snap Query
 getQuery = fromMaybe Junk . decode <$> readRequestBody 1000000
 
 ---------------------------------------------------------------
-queryResult :: Query -> IO Result
+queryResult :: Config -> Query -> IO Result
 ---------------------------------------------------------------
-queryResult q@(Check {})   = checkResult   q
-queryResult q@(Recheck {}) = recheckResult q
-queryResult q@(Load  {})   = loadResult    q
-queryResult q@(Save  {})   = saveResult    q
-queryResult q@(Perma {})   = permaResult   q
-queryResult Junk           = return $ errResult "junk query" 
+queryResult c q@(Check {})   = checkResult   c q
+queryResult c q@(Recheck {}) = recheckResult c q
+queryResult _ q@(Load  {})   = loadResult      q
+queryResult _ q@(Save  {})   = saveResult      q
+queryResult c q@(Perma {})   = permaResult   c q
+queryResult _ Junk           = return $ errResult "junk query" 
 
 ---------------------------------------------------------------
-permaResult :: Query -> IO Result
+permaResult :: Config -> Query -> IO Result
 ---------------------------------------------------------------
-permaResult q
-  = do f <- writeQuery q =<< genFiles
+permaResult config q
+  = do f <- writeQuery q =<< genFiles config
        return $ toJSON $ Load $ permalink $ srcFile f
 
 permalink :: FilePath -> FilePath
@@ -91,32 +94,32 @@ saveResult q = doWrite `catchIOError` err
     ok       = toJSON $ Load (path q) 
 
 ---------------------------------------------------------------
-recheckResult :: Query -> IO Result
+recheckResult :: Config -> Query -> IO Result
 ---------------------------------------------------------------
-recheckResult q = queryFiles q >>= writeQuery q >>= execCheck
+recheckResult c q = queryFiles c q >>= writeQuery q >>= execCheck c
 
-queryFiles    :: Query -> IO Files
-queryFiles q
-  = do b <- validRecheck src
+queryFiles    :: Config -> Query -> IO Files
+queryFiles config q
+  = do b <- validRecheck config src
        if b then return $ Files src jsn 
             else throw  $ userError $ "Invalid Recheck Path: " ++ src   
     where 
       src        = path q
       jsn        = src `addExtension` "json"
 
-validRecheck :: FilePath -> IO Bool 
-validRecheck src 
+validRecheck :: Config -> FilePath -> IO Bool 
+validRecheck config src 
   = do b1    <- doesFileExist src
        let b2 = sandboxPath config `isPrefixOf` src
        return $ b1 && b2
 
 ---------------------------------------------------------------
-checkResult :: Query -> IO Result
+checkResult :: Config -> Query -> IO Result
 ---------------------------------------------------------------
-checkResult q   = genFiles >>= writeQuery q >>= execCheck  
+checkResult c q  = genFiles c >>= writeQuery q >>= execCheck c 
 
-genFiles         :: IO Files
-genFiles 
+genFiles         :: Config -> IO Files
+genFiles config 
   = do t        <- (takeWhile (/= '.') . show) <$> getPOSIXTime 
        return    $ Files (sourceName t) (jsonName t)
     where 
@@ -126,10 +129,10 @@ genFiles
       sandbox    = sandboxPath config
 
 ---------------------------------------------------------------
-execCheck :: Files -> IO Result
+execCheck :: Config -> Files -> IO Result
 ---------------------------------------------------------------
-execCheck f
-  = do runCommand f
+execCheck c f
+  = do runCommand c f
        r <- readResult f
        return $ r += ("path", toJSON $ srcFile f) 
 
@@ -139,11 +142,11 @@ writeQuery     :: Query -> Files -> IO Files
 writeQuery q f = LB.writeFile (srcFile f) (program q) >> return f
 
 ---------------------------------------------------------------
-runCommand    :: Files -> IO ExitCode 
+runCommand     :: Config -> Files -> IO ExitCode 
 ---------------------------------------------------------------
-runCommand    = systemD . makeCommand . srcFile
+runCommand cfg = systemD . makeCommand cfg . srcFile
   where 
-    systemD c = {- putStrLn ("EXEC: " ++ c) >> -} system c  
+    systemD c  = {- putStrLn ("EXEC: " ++ c) >> -} system c  
 
 ---------------------------------------------------------------
 readResult   :: Files -> IO Result
@@ -156,14 +159,14 @@ readResult f = do b <- doesFileExist file
     decodeRes = fromMaybe dummyResult . decode
 
 ---------------------------------------------------------------
-makeCommand :: FilePath -> String
+makeCommand :: Config -> FilePath -> String
 ---------------------------------------------------------------
-makeCommand t = intercalate " " 
+makeCommand config t = intercalate " " 
     [ cmdPrefix  config
     , srcChecker config
     , t
     , ">"
-    , logFile
+    , logFile config
     , "2>&1" 
     ]
 
@@ -171,20 +174,11 @@ makeCommand t = intercalate " "
 -- Configuration Parameters -------------------------------------
 -----------------------------------------------------------------
 
-config :: Config
-config = liquidhaskell
 
-liquidhaskell  = Config { 
-    toolName   = "liquidhaskell"
-  , srcSuffix  = "hs" 
-  , srcChecker = "liquid"
-  , cmdPrefix  = ""
-  , themeFile  = "theme-xcode.js"
-  , modeFile   = "mode-haskell.js"
-  }
+-- nanojs         = Config { }
 
-logFile :: FilePath
-logFile = (</> "log") $ sandboxPath config
+logFile :: Config -> FilePath
+logFile = (</> "log") . sandboxPath 
 
 ---------------------------------------------------------------
 -- | Global Paths ---------------------------------------------
@@ -202,8 +196,6 @@ demoPath, sandboxPath, configPath :: Config -> FilePath
 demoPath        = customPath "demos"     . toolName
 sandboxPath     = customPath "sandbox"   . toolName
 configPath      = customPath "config.js" . toolName
-
-
 
 customHandler :: Config -> Snap ()
 customHandler cfg 
