@@ -110,20 +110,18 @@ Directory Structure
           + demos/
 
   + custom/
-       liquidhaskell/
+       TOOLNAME1/
          config.js
          demos/
          sandbox/
 
-       nanojs/
+       TOOLNAME2/
          config.js
          demos/
          sandbox/
 
-       TOOLNAME/
-         config.js
-         demos/
-         sandbox/
+       ...
+
 
 
 6. Language Customization

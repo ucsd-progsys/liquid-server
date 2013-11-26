@@ -30,6 +30,8 @@ data Config = Config {
   , srcSuffix   :: String
   , srcChecker  :: FilePath
   , cmdPrefix   :: String
+  , themeFile   :: FilePath
+  , modeFile    :: FilePath
   }
 
 data Files   = Files { 

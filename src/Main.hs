@@ -19,21 +19,23 @@ import qualified Data.ByteString.Lazy as LB
 import           Data.Time.Clock.POSIX
 import           Data.ByteString.Lazy.Char8 (pack)
 import qualified Data.HashMap.Strict  as M
+import           Data.ByteString (unpack)
 
 main      :: IO ()
 main      = quickHttpServe site
 
 site      :: Snap ()
-site      = route [ ("index.html"    , serveFile      "resources/static/index.html") 
-                  , ("fullpage.html" , serveFile      "resources/static/fullpage.html")
-                  , ("log"           , serveFileAs    "text/plain" logFile         ) 
-                  , ("js/"           , serveDirectory "resources/static/js"        )
-                  , ("css/"          , serveDirectory "resources/static/css"       )
-                  , ("img/"          , serveDirectory "resources/static/img"       )
-                  , ("demos/"        , serveDirectory $ demoPath config            )
-                  , ("permalink/"    , serveDirectory $ sandboxPath config         )
-                  , ("query"         , method POST    queryH                       )
-                  , (""              , defaultH                                    )
+site      = route [ ("index.html"    , serveFile      $ staticPath </> "index.html"   ) 
+                  , ("fullpage.html" , serveFile      $ staticPath </> "fullpage.html")
+                  , ("js/"           , serveDirectory $ staticPath </> "js"           )
+                  , ("css/"          , serveDirectory $ staticPath </> "css"          )
+                  , ("img/"          , serveDirectory $ staticPath </> "img"          )
+                  , ("demos/"        , serveDirectory $ demoPath config               )
+                  , ("permalink/"    , serveDirectory $ sandboxPath config            )
+                  , ("custom/:js"    , customHandler config                           ) 
+                  , ("query"         , method POST    queryH                          )
+                  , ("log"           , serveFileAs    "text/plain" logFile            ) 
+                  , (""              , defaultH                                       )
                   ]
 
 defaultH :: Snap ()
@@ -177,21 +179,42 @@ liquidhaskell  = Config {
   , srcSuffix  = "hs" 
   , srcChecker = "liquid"
   , cmdPrefix  = ""
+  , themeFile  = "theme-xcode.js"
+  , modeFile   = "mode-haskell.js"
   }
 
 logFile :: FilePath
 logFile = (</> "log") $ sandboxPath config
 
 ---------------------------------------------------------------
+-- | Global Paths ---------------------------------------------
+---------------------------------------------------------------
+
+staticPath      = "resources/static"
+editorPath      = staticPath </> "js/ace" 
+customPath t n  = "resources/custom" </> n </> t  
+
+---------------------------------------------------------------
 -- | Extracting Paths from Config -----------------------------
 ---------------------------------------------------------------
 
-demoPath, sandboxPath :: Config -> FilePath
+demoPath, sandboxPath, configPath :: Config -> FilePath
+demoPath        = customPath "demos"     . toolName
+sandboxPath     = customPath "sandbox"   . toolName
+configPath      = customPath "config.js" . toolName
 
-demoPath        = customPath "demos"   . toolName
-sandboxPath     = customPath "sandbox" . toolName
-customPath t n  = "resources/custom" </> n </> t  
 
+
+customHandler :: Config -> Snap ()
+customHandler cfg 
+  = do js <- getParam "js"
+       case fromMaybe "junk" js of
+         "theme.js"  -> serveFile $ editorPath </> themeFile  cfg
+         "mode.js"   -> serveFile $ editorPath </> modeFile   cfg
+         "config.js" -> serveFile $ configPath cfg
+         other       -> writeLBS  $ LB.concat ["Liquid Demo Server: Unexpected custom file ", b2lb other] 
+
+b2lb = LB.pack . unpack 
 ---------------------------------------------------------------
 -- | Generic helpers, could be in a misc ----------------------
 ---------------------------------------------------------------

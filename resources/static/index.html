@@ -1,7 +1,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>{{demoTitle}} · Demo</title>
+    <title>Liquid Demo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -84,7 +84,8 @@
           <ul class="nav">
             <li class="active"><a href="./index.html">Demo</a></li>
             <li class="" ng-repeat="link in links"><a href="{{link.url}}">{{link.name}}</a></li>
-          <!--
+          
+            <!--
             <li class=""><a href="https://github.com/ucsd-progsys/liquidhaskell">Code</a></li>
             <li class=""><a href="http://goto.ucsd.edu/~rjhala/liquid/haskell/blog/about/">About</a></li>
             <li class=""><a href="http://goto.ucsd.edu/~rjhala/liquid/haskell/blog/">Blog</a></li>
@@ -232,12 +233,14 @@
 
 
   <script src="js/ace/ace.js" type="text/javascript" charset="utf-8"></script> 
-  <script src="js/ace/theme-xcode.js" type="text/javascript" charset="utf-8"></script>
-  <script src="js/ace/mode-haskell.js" type="text/javascript" charset="utf-8"></script>
-  
+  <!--  <script src="js/ace/theme-xcode.js" type="text/javascript" charset="utf-8"></script>
+        <script src="js/ace/mode-haskell.js" type="text/javascript" charset="utf-8"></script>
+   -->
+  <script src="custom/theme.js" type="text/javascript" charset="utf-8"></script>
+  <script src="custom/mode.js"  type="text/javascript" charset="utf-8"></script>
   <script src="js/tooltip.js"></script> 
   <script src="js/annot.js"></script> 
-  <script src="js/config.js"></script>
+  <script src="custom/config.js"></script>
   <script src="js/liquid.js"></script>
     
   <!--Site Meter
