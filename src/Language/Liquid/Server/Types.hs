@@ -26,10 +26,10 @@ import qualified Data.HashMap.Strict as M
 -----------------------------------------------------------------
 
 data Config = Config { 
-    srcSuffix   :: String
+    toolName    :: String 
+  , srcSuffix   :: String
   , srcChecker  :: FilePath
   , cmdPrefix   :: String
-  , sandboxPath :: FilePath
   }
 
 data Files   = Files { 

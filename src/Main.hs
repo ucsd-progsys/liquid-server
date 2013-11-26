@@ -18,11 +18,7 @@ import           Data.Aeson                 hiding (Result)
 import qualified Data.ByteString.Lazy as LB
 import           Data.Time.Clock.POSIX
 import           Data.ByteString.Lazy.Char8 (pack)
-
--- import           Data.Aeson           hiding (Result)
--- import           Data.Maybe
 import qualified Data.HashMap.Strict  as M
--- import qualified Data.ByteString      as B
 
 main      :: IO ()
 main      = quickHttpServe site
@@ -34,7 +30,7 @@ site      = route [ ("index.html"    , serveFile      "resources/static/index.ht
                   , ("js/"           , serveDirectory "resources/static/js"        )
                   , ("css/"          , serveDirectory "resources/static/css"       )
                   , ("img/"          , serveDirectory "resources/static/img"       )
-                  , ("demos/"        , serveDirectory "resources/static/demos"     )
+                  , ("demos/"        , serveDirectory $ demoPath config            )
                   , ("permalink/"    , serveDirectory $ sandboxPath config         )
                   , ("query"         , method POST    queryH                       )
                   , (""              , defaultH                                    )
@@ -174,14 +170,27 @@ makeCommand t = intercalate " "
 -----------------------------------------------------------------
 
 config :: Config
-config = Config { srcSuffix   = "hs" 
-                , srcChecker  = "liquid"
-                , cmdPrefix   = "" -- "GHC_PACKAGE_PATH=/home/rjhala/research/liquid/.hsenv_liquid/ghc/lib/ghc-7.6.3/package.conf.d"
-                , sandboxPath = "resources/sandbox/"
-                }
+config = liquidhaskell
+
+liquidhaskell  = Config { 
+    toolName   = "liquidhaskell"
+  , srcSuffix  = "hs" 
+  , srcChecker = "liquid"
+  , cmdPrefix  = ""
+  }
 
 logFile :: FilePath
 logFile = (</> "log") $ sandboxPath config
+
+---------------------------------------------------------------
+-- | Extracting Paths from Config -----------------------------
+---------------------------------------------------------------
+
+demoPath, sandboxPath :: Config -> FilePath
+
+demoPath        = customPath "demos"   . toolName
+sandboxPath     = customPath "sandbox" . toolName
+customPath t n  = "resources/custom" </> n </> t  
 
 ---------------------------------------------------------------
 -- | Generic helpers, could be in a misc ----------------------

@@ -70,6 +70,30 @@ To configure to a new checker, you should just specify:
   3. **js config**      editor config params, list and types of demos 
                         `resources/static/js/config.js`
 
+Configuration
+-------------
+
+   src/Config.hs
+   resources/static/index.html {js/ace/mode-XXX.js, js/theme/theme-YYY.js}
+   resources/static/js/config.js
+   resources/static/demos
+          + config.js
+
+
+Templates
+---------
+
+use Config.hs to generate:
+
+(a) generate
+    {index, fullpage}.html: 
+      js/ace/mode-XXX.js
+      js/ace/theme-XXX.js
+
+(b) copy  
+    resources/custom/XXX/js ---> js/config.js
+
+
 
 Directory Structure
 -------------------
@@ -79,39 +103,38 @@ Directory Structure
   + resources/
       + static/
           + index.html
-          + js/
-          + css/
-          + img/
-          + demos/
-
-      + sandbox/
-
-Generalized Structure
-
-  + resources/
-      + custom/
-          + config.js
-          + demos/
-
-      + static/
-          + index.html
           + fullpage.html
           + js/
           + css/
           + img/
+          + demos/
 
-      + sandbox/
+  + custom/
+       liquidhaskell/
+         config.js
+         demos/
+         sandbox/
 
+       nanojs/
+         config.js
+         demos/
+         sandbox/
+
+       TOOLNAME/
+         config.js
+         demos/
+         sandbox/
 
 
 6. Language Customization
 -------------------------
 
-  (a) shuffle directories as above
++ shuffle directories as above
 
-  (b) move all custom stuff into 
-        + config.js 
-        + config.hs
++ move all custom stuff into 
+    + src/Config.hs
+    + resources/custom/TOOLNAME/config.js 
 
-  (c) rejigger index.html and fullpage.html to load from custom/config.js
-        + banner names etc from config.js passed into the angular controller
++ rejigger index.html and fullpage.html to load from custom/config.js
+
++ automate templating
