@@ -237,13 +237,9 @@ customPath ts  = joinPath ("resources" : "custom" : ts)
 --          other       -> writeLBS  $ LB.concat ["Liquid Demo Server: Unexpected custom file ", b2lb other] 
 
 
--- logServeFile f p 
---   = do liftIO $ putStrLn $ "customHandler: " ++ show f ++ " serving " ++ p
---        serveFile p
-
-logServeFile f p 
-   = do liftIO $ putStrLn $ "customHandler: " ++ show f ++ " serving " ++ p
-        serveFile p
+logServeFile f p = serveFile p
+--    = do liftIO $ putStrLn $ "customHandler: " ++ show f ++ " serving " ++ p
+--         serveFile p
 
 
 
