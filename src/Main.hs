@@ -9,11 +9,12 @@ import           System.Exit            (ExitCode)
 import           System.Directory       (doesFileExist)
 import           System.FilePath        ((</>), addExtension, splitFileName)
 import           System.Process         (system)
+import           System.Environment     (getArgs)
 import           Control.Applicative    ((<$>))
 import           Control.Exception      (throw)
 import           Control.Monad.IO.Class (liftIO)
 import           Data.Maybe
-import           Data.List              (isPrefixOf, intercalate)
+import           Data.List              (isSuffixOf, isPrefixOf, intercalate)
 import           Data.Aeson                 hiding (Result)
 import qualified Data.ByteString.Lazy as LB
 import           Data.Time.Clock.POSIX
@@ -21,11 +22,14 @@ import           Data.ByteString.Lazy.Char8 (pack)
 import qualified Data.HashMap.Strict  as M
 import           Data.ByteString (unpack)
 import           Language.Liquid.Server.Types 
-import           Language.Liquid.Server.Config
+-- import           Language.Liquid.Server.Config
 
 
 main      :: IO ()
-main      = quickHttpServe $ site config 
+main      = do c <- getConfig
+               case c of
+                 Right cfg -> quickHttpServe $ site cfg
+                 Left f    -> error $ "Malformed configuration file: " ++ f
 
 site      :: Config -> Snap ()
 site cfg  = route [ ("index.html"    , serveFile      $ staticPath </> "index.html"   ) 
@@ -52,6 +56,28 @@ queryH c  = writeLBS . encode =<< liftIO . queryResult c =<< getQuery
 
 getQuery :: Snap Query 
 getQuery = fromMaybe Junk . decode <$> readRequestBody 1000000
+
+---------------------------------------------------------------
+getConfig :: IO (Either FilePath Config) 
+---------------------------------------------------------------
+getConfig 
+  = do f <- getConfigFile 
+       c <- decode <$> LB.readFile f
+       putStrLn $ "Config: " ++ show c
+       case c of -- return $ fromMaybe (err f) c
+         Just cfg -> return $ Right cfg
+         Nothing  -> return $ Left f
+
+
+getConfigFile 
+  = do args <- getArgs
+       case [p | p <- args, ".json" `isSuffixOf` p] of
+         f:_ -> do putStrLn $ "Using config file: " ++ f 
+                   return f 
+         []  -> do putStrLn $ "No config file specified, using: " ++ defaultConfigFile
+                   return defaultConfigFile
+
+defaultConfigFile = customPath "config.json" "liquidhaskell" 
 
 ---------------------------------------------------------------
 queryResult :: Config -> Query -> IO Result

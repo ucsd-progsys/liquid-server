@@ -72,11 +72,13 @@ Directory Structure
 
   + custom/
        TOOLNAME1/
+         config.json
          config.js
          demos/
          sandbox/
 
        TOOLNAME2/
+         config.json
          config.js
          demos/
          sandbox/
@@ -86,14 +88,15 @@ Directory Structure
 Customization
 -------------
 
-To configure to a new checker called `toolName`
+To configure to a new checker called `toolName` create a directory
 
-  1. Create a suitable `config` in `src/Language/Liquid/Server/Config.hs`
+    resources/custom/toolName/
 
-  2. Create a suitable: 
-      resources/custom/toolName/config.js
-      resources/custom/toolName/demos/
-      resources/custom/toolName/sandbox/
+and populate it with:
 
-     As an example, see `resources/custom/liquidhaskell/`
+    config.json
+    config.js
+    demos/
+    sandbox/
 
+As an example, see `resources/custom/liquidhaskell/`

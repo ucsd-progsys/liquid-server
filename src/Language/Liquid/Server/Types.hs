@@ -30,9 +30,9 @@ data Config = Config {
   , srcSuffix   :: String     -- hs, js etc.
   , srcChecker  :: FilePath   -- checker binary; must be in your $PATH 
   , cmdPrefix   :: String     -- extra command line params to be passed to `srcChecker`
-  , themeFile   :: FilePath   -- /ace/js/theme-THEMEFILE.js
-  , modeFile    :: FilePath   -- /ace/js/mode-MODEFILE.js
-  }
+  , themeFile   :: FilePath   -- theme-THEMEFILE.js
+  , modeFile    :: FilePath   -- mode-MODEFILE.js
+  } deriving (Show)
 
 data Files   = Files { 
     srcFile  :: FilePath
@@ -55,7 +55,23 @@ data Query  = Check   { program :: LB.ByteString }
 type Result = Value
 
 ----------------------------------------------------------------
--- JSON Serialization ------------------------------------------
+-- JSON Serialization: Configuration ---------------------------
+----------------------------------------------------------------
+
+instance FromJSON Config where
+  parseJSON (Object v) = objectConfig v
+  parseJSON _          = mzero
+
+objectConfig v = Config <$> v .: "toolName" 
+                        <*> v .: "srcSuffix"
+                        <*> v .: "srcChecker"
+                        <*> v .: "cmdPrefix"
+                        <*> v .: "themeFile"
+                        <*> v .: "modeFile"
+
+
+----------------------------------------------------------------
+-- JSON Serialization: Query -----------------------------------
 ----------------------------------------------------------------
 
 instance FromJSON Query where
