@@ -27,8 +27,8 @@ The JSON file has data about:
 The above are then reflected on the client side ace-editor based pane.
 
 
-Installation Instructions
--------------------------
+Installation 
+------------
 
 1. Build 
 
@@ -48,28 +48,13 @@ Installation Instructions
 Usage Notes
 -----------
 
-1. Command line parameters (e.g. include directories) can be passed 
-   via LIQUID pragmas in the source file. 
+1. Command line parameters for the tool (e.g. include directories) 
+   should be passed via pragmas (e.g. {-@ LIQUID ... @-}) in the 
+   source file. 
 
-2. Include directories don't work for remote use, only local. 
+2. Include directories don't work for remote use, only local.
 
 3. When running in local mode, you should also be able to **save** a file.
-
-
-Configuration [TODO]
---------------------
-
-To configure to a new checker, you should just specify:
-
-  1. **checker binary** specified by a shell-command string
-                        `checkerCommand`
-
-  2. **demo files**     specified by the contents of 
-                        `resources/static/demos/`
-
-  3. **js config**      editor config params, list and types of demos 
-                        `resources/static/js/config.js`
-
 
 Directory Structure
 -------------------
@@ -79,16 +64,39 @@ Directory Structure
   + resources/
       + static/
           + index.html
+          + fullpage.html
           + js/
           + css/
           + img/
           + demos/
 
-      + sandbox/
+  + custom/
+       TOOLNAME1/
+         config.json
+         config.js
+         demos/
+         sandbox/
 
+       TOOLNAME2/
+         config.json
+         config.js
+         demos/
+         sandbox/
 
+       ...
 
-6. Language Customization
--------------------------
+Customization
+-------------
 
-To support nano-js too.
+To configure to a new checker called `toolName` create a directory
+
+    resources/custom/toolName/
+
+and populate it with:
+
+    config.json
+    config.js
+    demos/
+    sandbox/
+
+As an example, see `resources/custom/liquidhaskell/`

@@ -4,40 +4,7 @@
 /************** Extract Demo from URL ******************************************/
 /*******************************************************************************/
 
-var allDemos =
-  { // Basic Demos
-    "blank.hs"              : { "name" : "Blank"            , "type" : "basic"  },
-    "refinements101.hs"     : { "name" : "Refinements 101"  , "type" : "basic"  },
-    "refinements101reax.hs" : { "name" : "Refinements 102"  , "type" : "basic"  },
-    "vectorbounds.hs"       : { "name" : "Vector Bounds"    , "type" : "basic"  },
-    // Measure Demos
-    "lenMapReduce.hs"       : { "name" : "Safe List"        , "type" : "measure"},
-    "Csv.hs"                : { "name" : "CSV Lists"        , "type" : "measure"},
-    "KMeansHelper.hs"       : { "name" : "K-Means Lib"      , "type" : "measure"},
-    "KMeans.hs"             : { "name" : "K-Means"          , "type" : "measure"}, 
-    "TalkingAboutSets.hs"   : { "name" : "Talk About Sets"  , "type" : "measure"},
-    "UniqueZipper.hs"       : { "name" : "Unique Zippers"   , "type" : "measure"},
-    "LambdaEval.hs"         : { "name" : "Lambda Eval"      , "type" : "measure"}, 
-    "treesum.hs"            : { "name" : "List-Tree Sum"    , "type" : "measure"},
-    // Abstract Refinement Demos
-    "absref101.hs"          : { "name" : "Parametric Invariants", "type" : "absref" },
-    "Order.hs"              : { "name" : "Ordered Lists"        , "type" : "absref" },
-    "Map.hs"                : { "name" : "BinSearch Tree"       , "type" : "absref" },
-    "Foldr.hs"              : { "name" : "Induction"            , "type" : "absref" },
-    "IMaps.hs"              : { "name" : "Indexed Maps"         , "type" : "absref" },
-    // HOPA Tutorial Demos
-    "SimpleRefinements.hs" : { "name" : "Simple Refinements", "type" : "tutorial" },  
-    "Loop.hs"              : { "name" : "HO Loop"           , "type" : "tutorial" },
-    "Composition.hs"       : { "name" : "Composition"       , "type" : "tutorial" },
-    "Array.hs"             : { "name" : "Finite Maps"       , "type" : "tutorial" }
 
-    // "ListSort.hs"       : { "name" : "Sorting Lists"        , "type" : "absref" },
-    // "ListLength.hs"     : { "name" : "List Lengths"      , "type" : "measure"},
-    // "MapReduce.hs"      : { "name" : "Map Reduce"        , "type" : "measure"}, 
-    // "ListElts.hs"           : { "name" : "List Elements" , "type" : "measure"}, 
-
-
-  };
 
 function getDemo(name){
   var d = allDemos[name];
@@ -54,13 +21,26 @@ function getDemos(ty){
   return a;
 }
 
+function getDefaultDemo(){
+  var cat = allCategories[0].type;
+  var ds  = getDemos(cat);
+  // debugDemo = ds[1];
+  return ds[1];
+}
+
+function getCategories(){
+  function tx(c){return {type: c.type, name: c.name, demos: getDemos(c.type)}};
+  return allCategories.map(tx);
+}
+  
+
 /*******************************************************************************/
 /************** Setting Up Editor **********************************************/
 /*******************************************************************************/
 
 var progEditor  = ace.edit("program");
-progEditor.setTheme("ace/theme/xcode");
-var SrcMode     = require("ace/mode/haskell").Mode;
+progEditor.setTheme(editorTheme);                   // progEditor.setTheme("ace/theme/xcode");
+var SrcMode     = require(editorMode).Mode;         // var SrcMode     = require("ace/mode/haskell").Mode;
 progEditor.getSession().setMode(new SrcMode());
 var typeTooltip = new TokenTooltip(progEditor, getAnnot);
 
@@ -111,7 +91,7 @@ function errorMarker(editor, err){
 }
 
 function errorAceAnnot(err){
-  var etext = "Liquid Type Error";
+  var etext = defaultErrText;
   if (err.message) { etext = err.message; }
   var ann = { row   : err.start.line - 1
             , column: err.start.column
@@ -293,7 +273,6 @@ function getWarns(d){
   return ws;
 }
 
-
 /*******************************************************************************/
 /************** Top-Level Demo Controller **************************************/
 /*******************************************************************************/
@@ -303,18 +282,18 @@ var debugData   = null;
 var debugResult = null;
 var debugResp   = 0;
 var debugFiles  = null;
+var debugDemo   = null;
+var debugSrcURL = null;
 
 function LiquidDemoCtrl($scope, $http, $location) {
 
   // Start in non-fullscreen
   $scope.isFullScreen  = false; 
   $scope.embiggen      = "FullScreen";
-
-  // Populate list of demos
-  $scope.basicDemos    = getDemos("basic")  ;  
-  $scope.measureDemos  = getDemos("measure");
-  $scope.abstRefDemos  = getDemos("absref") ;
-  $scope.tutorialDemos = getDemos("tutorial") ;
+  $scope.demoTitle     = demoTitle;
+  $scope.demoSubtitle  = demoSubtitle;
+  $scope.links         = allLinks;
+  $scope.categories    = getCategories();
   $scope.isLocalServer = (document.location.hostname == "localhost");
   $scope.localFilePath = "";
 
@@ -380,8 +359,10 @@ function LiquidDemoCtrl($scope, $http, $location) {
 
   // Load a particular demo
   $scope.loadSource   = function(demo){
+    // debugDemo   = demo;
     var srcName = demo.file;
     var srcURL  = getSrcURL(srcName);
+    debugSrcURL = srcURL;
     $http.get(srcURL)
          .success(function(srcText) { setSourceCode($scope, srcName, srcText); })
          .error(function(data, stat){ alert("Horrors: No such file! " + srcURL); })
@@ -389,15 +370,17 @@ function LiquidDemoCtrl($scope, $http, $location) {
   };
 
   // Initialize with Test000.hs
-  $scope.loadSource($scope.basicDemos[1]);
+  debugDemo = getDefaultDemo();
+  $scope.loadSource(debugDemo); //getDefaultDemo());
 
   // Extract demo name from URL 
   $scope.$watch('location.search()', function() {
     $scope.demoName = ($location.search()).demo;
-    $scope.loadSource({file : $scope.demoName});
-    // if ($scope.demoName in allDemos) 
-    if ($scope.demoName in allDemos) 
-       $scope.loadSource(getDemo($scope.demoName));
+    var newDemo = {file : $scope.demoName};
+    if ($scope.demoName in allDemos){
+      newDemo = getDemo($scope.demoName);
+    }
+    $scope.loadSource(newDemo);
     }, true);
 
   // Update demo name in URL 
@@ -408,7 +391,6 @@ function LiquidDemoCtrl($scope, $http, $location) {
   
   // PERMALINK
   $scope.makePermalink = function(){
-    // alert('permalink');
     $http.post(getQueryURL(), getPermaQuery($scope))
          .success(function(data, status){
            if (data.path){

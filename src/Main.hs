@@ -3,48 +3,55 @@
 import           Snap.Core hiding (path)
 import           Snap.Util.FileServe
 import           Snap.Http.Server     hiding (Config)
-import           Language.Liquid.Server.Types 
+
 import           System.IO.Error        (catchIOError)
 import           System.Exit            (ExitCode)
 import           System.Directory       (doesFileExist)
-import           System.FilePath        ((</>), addExtension, splitFileName)
+import           System.FilePath        ((</>), joinPath, addExtension, splitFileName)
 import           System.Process         (system)
+import           System.Environment     (getArgs)
 import           Control.Applicative    ((<$>))
 import           Control.Exception      (throw)
 import           Control.Monad.IO.Class (liftIO)
 import           Data.Maybe
-import           Data.List              (isPrefixOf, intercalate)
+import           Data.List              (isSuffixOf, isPrefixOf, intercalate)
 import           Data.Aeson                 hiding (Result)
 import qualified Data.ByteString.Lazy as LB
 import           Data.Time.Clock.POSIX
 import           Data.ByteString.Lazy.Char8 (pack)
-
--- import           Data.Aeson           hiding (Result)
--- import           Data.Maybe
 import qualified Data.HashMap.Strict  as M
--- import qualified Data.ByteString      as B
+import           Data.ByteString (unpack)
+import           Language.Liquid.Server.Types 
+-- import           Language.Liquid.Server.Config
+
 
 main      :: IO ()
-main      = quickHttpServe site
+main      = do c <- getConfig
+               case c of
+                 Right cfg -> quickHttpServe $ site cfg
+                 Left f    -> error $ "Malformed configuration file: " ++ f
 
-site      :: Snap ()
-site      = route [ ("index.html"    , serveFile      "resources/static/index.html") 
-                  , ("fullpage.html" , serveFile      "resources/static/fullpage.html")
-                  , ("log"           , serveFileAs    "text/plain" logFile         ) 
-                  , ("js/"           , serveDirectory "resources/static/js"        )
-                  , ("css/"          , serveDirectory "resources/static/css"       )
-                  , ("img/"          , serveDirectory "resources/static/img"       )
-                  , ("demos/"        , serveDirectory "resources/static/demos"     )
-                  , ("permalink/"    , serveDirectory $ sandboxPath config         )
-                  , ("query"         , method POST    queryH                       )
-                  , (""              , defaultH                                    )
+site      :: Config -> Snap ()
+site cfg  = route [ ("index.html"    , serveFile      $ staticPath </> "index.html"   ) 
+                  , ("fullpage.html" , serveFile      $ staticPath </> "fullpage.html")
+                  , ("config.js"     , logServeFile "config.js" $ configPath cfg      )
+                  , ("theme.js"      , logServeFile "theme.js"  $ themePath cfg       )
+                  , ("mode.js"       , logServeFile "mode.js"   $ modePath  cfg       )
+                  , ("js/"           , serveDirectory $ staticPath </> "js"           )
+                  , ("css/"          , serveDirectory $ staticPath </> "css"          )
+                  , ("img/"          , serveDirectory $ staticPath </> "img"          )
+                  , ("demos/"        , serveDirectory $ demoPath cfg                  )
+                  , ("permalink/"    , serveDirectory $ sandboxPath cfg               )
+                  , ("query"         , method POST    $ queryH cfg                    )
+                  , ("log"           , serveFileAs    "text/plain" $ logFile cfg      ) 
+                  , (""              , defaultH                                       )
                   ]
 
 defaultH :: Snap ()
 defaultH = writeLBS "Liquid Demo Server: Oops, there's nothing here!"
 
-queryH   :: Snap ()
-queryH   = writeLBS . encode =<< liftIO . queryResult =<< getQuery  
+queryH    :: Config -> Snap ()
+queryH c  = writeLBS . encode =<< liftIO . queryResult c =<< getQuery  
   -- where
     -- queryResult' q = dumpQuery q >> queryResult q
     -- dumpQuery      = putStrLn . show . toJSON 
@@ -53,20 +60,42 @@ getQuery :: Snap Query
 getQuery = fromMaybe Junk . decode <$> readRequestBody 1000000
 
 ---------------------------------------------------------------
-queryResult :: Query -> IO Result
+getConfig :: IO (Either FilePath Config) 
 ---------------------------------------------------------------
-queryResult q@(Check {})   = checkResult   q
-queryResult q@(Recheck {}) = recheckResult q
-queryResult q@(Load  {})   = loadResult    q
-queryResult q@(Save  {})   = saveResult    q
-queryResult q@(Perma {})   = permaResult   q
-queryResult Junk           = return $ errResult "junk query" 
+getConfig 
+  = do f <- getConfigFile 
+       c <- decode <$> LB.readFile f
+       putStrLn $ "Config: " ++ show c
+       case c of -- return $ fromMaybe (err f) c
+         Just cfg -> return $ Right cfg
+         Nothing  -> return $ Left f
+
+
+getConfigFile 
+  = do args <- getArgs
+       case [p | p <- args, ".json" `isSuffixOf` p] of
+         f:_ -> do putStrLn $ "Using config file: " ++ f 
+                   return f 
+         []  -> do putStrLn $ "No config file specified, using: " ++ defaultConfigFile
+                   return defaultConfigFile
+
+defaultConfigFile = customPath ["liquidhaskell", "config.json"]
 
 ---------------------------------------------------------------
-permaResult :: Query -> IO Result
+queryResult :: Config -> Query -> IO Result
 ---------------------------------------------------------------
-permaResult q
-  = do f <- writeQuery q =<< genFiles
+queryResult c q@(Check {})   = checkResult   c q
+queryResult c q@(Recheck {}) = recheckResult c q
+queryResult _ q@(Load  {})   = loadResult      q
+queryResult _ q@(Save  {})   = saveResult      q
+queryResult c q@(Perma {})   = permaResult   c q
+queryResult _ Junk           = return $ errResult "junk query" 
+
+---------------------------------------------------------------
+permaResult :: Config -> Query -> IO Result
+---------------------------------------------------------------
+permaResult config q
+  = do f <- writeQuery q =<< genFiles config
        return $ toJSON $ Load $ permalink $ srcFile f
 
 permalink :: FilePath -> FilePath
@@ -93,32 +122,32 @@ saveResult q = doWrite `catchIOError` err
     ok       = toJSON $ Load (path q) 
 
 ---------------------------------------------------------------
-recheckResult :: Query -> IO Result
+recheckResult :: Config -> Query -> IO Result
 ---------------------------------------------------------------
-recheckResult q = queryFiles q >>= writeQuery q >>= execCheck
+recheckResult c q = queryFiles c q >>= writeQuery q >>= execCheck c
 
-queryFiles    :: Query -> IO Files
-queryFiles q
-  = do b <- validRecheck src
+queryFiles    :: Config -> Query -> IO Files
+queryFiles config q
+  = do b <- validRecheck config src
        if b then return $ Files src jsn 
             else throw  $ userError $ "Invalid Recheck Path: " ++ src   
     where 
       src        = path q
       jsn        = src `addExtension` "json"
 
-validRecheck :: FilePath -> IO Bool 
-validRecheck src 
+validRecheck :: Config -> FilePath -> IO Bool 
+validRecheck config src 
   = do b1    <- doesFileExist src
        let b2 = sandboxPath config `isPrefixOf` src
        return $ b1 && b2
 
 ---------------------------------------------------------------
-checkResult :: Query -> IO Result
+checkResult :: Config -> Query -> IO Result
 ---------------------------------------------------------------
-checkResult q   = genFiles >>= writeQuery q >>= execCheck  
+checkResult c q  = genFiles c >>= writeQuery q >>= execCheck c 
 
-genFiles         :: IO Files
-genFiles 
+genFiles         :: Config -> IO Files
+genFiles config 
   = do t        <- (takeWhile (/= '.') . show) <$> getPOSIXTime 
        return    $ Files (sourceName t) (jsonName t)
     where 
@@ -128,10 +157,10 @@ genFiles
       sandbox    = sandboxPath config
 
 ---------------------------------------------------------------
-execCheck :: Files -> IO Result
+execCheck :: Config -> Files -> IO Result
 ---------------------------------------------------------------
-execCheck f
-  = do runCommand f
+execCheck c f
+  = do runCommand c f
        r <- readResult f
        return $ r += ("path", toJSON $ srcFile f) 
 
@@ -141,11 +170,11 @@ writeQuery     :: Query -> Files -> IO Files
 writeQuery q f = LB.writeFile (srcFile f) (program q) >> return f
 
 ---------------------------------------------------------------
-runCommand    :: Files -> IO ExitCode 
+runCommand     :: Config -> Files -> IO ExitCode 
 ---------------------------------------------------------------
-runCommand    = systemD . makeCommand . srcFile
+runCommand cfg = systemD . makeCommand cfg . srcFile
   where 
-    systemD c = {- putStrLn ("EXEC: " ++ c) >> -} system c  
+    systemD c  = {- putStrLn ("EXEC: " ++ c) >> -} system c  
 
 ---------------------------------------------------------------
 readResult   :: Files -> IO Result
@@ -158,14 +187,14 @@ readResult f = do b <- doesFileExist file
     decodeRes = fromMaybe dummyResult . decode
 
 ---------------------------------------------------------------
-makeCommand :: FilePath -> String
+makeCommand :: Config -> FilePath -> String
 ---------------------------------------------------------------
-makeCommand t = intercalate " " 
+makeCommand config t = intercalate " " 
     [ cmdPrefix  config
     , srcChecker config
     , t
     , ">"
-    , logFile
+    , logFile config
     , "2>&1" 
     ]
 
@@ -173,16 +202,53 @@ makeCommand t = intercalate " "
 -- Configuration Parameters -------------------------------------
 -----------------------------------------------------------------
 
-config :: Config
-config = Config { srcSuffix   = "hs" 
-                , srcChecker  = "liquid"
-                , cmdPrefix   = "" -- "GHC_PACKAGE_PATH=/home/rjhala/research/liquid/.hsenv_liquid/ghc/lib/ghc-7.6.3/package.conf.d"
-                , sandboxPath = "resources/sandbox/"
-                }
 
-logFile :: FilePath
-logFile = (</> "log") $ sandboxPath config
+-- nanojs         = Config { }
 
+logFile :: Config -> FilePath
+logFile = (</> "log") . sandboxPath 
+
+---------------------------------------------------------------
+-- | Global Paths ---------------------------------------------
+---------------------------------------------------------------
+
+themePath      = (editorPath </>) . themeFile
+modePath       = (editorPath </>) . modeFile 
+editorPath     = staticPath </> "js/ace" 
+demoPath c     = customPath [toolName c, "demos"]
+sandboxPath c  = customPath [toolName c, "sandbox"]
+configPath c   = customPath [toolName c, "config.js"] 
+staticPath     = "resources/static"
+customPath ts  = joinPath ("resources" : "custom" : ts)
+
+
+---------------------------------------------------------------
+-- | Redirecting Custom Files ---------------------------------
+---------------------------------------------------------------
+
+-- customHandler :: Config -> Snap ()
+-- customHandler cfg 
+--   = do js <- getParam "js"
+--        let f = fromMaybe "junk" js 
+--        case f of
+--          "theme.js"  -> logServeFile f $ editorPath </> themeFile  cfg
+--          "mode.js"   -> logServeFile f $ editorPath </> modeFile   cfg
+--          "config.js" -> logServeFile f $ configPath cfg
+--          other       -> writeLBS  $ LB.concat ["Liquid Demo Server: Unexpected custom file ", b2lb other] 
+
+
+-- logServeFile f p 
+--   = do liftIO $ putStrLn $ "customHandler: " ++ show f ++ " serving " ++ p
+--        serveFile p
+
+logServeFile f p 
+   = do liftIO $ putStrLn $ "customHandler: " ++ show f ++ " serving " ++ p
+        serveFile p
+
+
+
+
+b2lb = LB.pack . unpack 
 ---------------------------------------------------------------
 -- | Generic helpers, could be in a misc ----------------------
 ---------------------------------------------------------------
