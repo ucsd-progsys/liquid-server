@@ -1,0 +1,7 @@
+{ "toolName"   : "nanojs"      
+, "srcSuffix"  : "js" 
+, "srcChecker" : "nanojs liquid"
+, "cmdPrefix"  : ""
+, "themeFile"  : "theme-xcode.js"
+, "modeFile"   : "mode-javascript.js"
+}

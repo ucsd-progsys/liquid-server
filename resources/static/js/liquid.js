@@ -290,12 +290,6 @@ function LiquidDemoCtrl($scope, $http, $location) {
   // Start in non-fullscreen
   $scope.isFullScreen  = false; 
   $scope.embiggen      = "FullScreen";
-
-  // Populate list of demos
-  // $scope.basicDemos    = getDemos("basic")  ;  
-  // $scope.measureDemos  = getDemos("measure");
-  // $scope.abstRefDemos  = getDemos("absref") ;
-  // $scope.tutorialDemos = getDemos("tutorial") ;
   $scope.demoTitle     = demoTitle;
   $scope.demoSubtitle  = demoSubtitle;
   $scope.links         = allLinks;

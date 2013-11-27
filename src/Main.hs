@@ -7,7 +7,7 @@ import           Snap.Http.Server     hiding (Config)
 import           System.IO.Error        (catchIOError)
 import           System.Exit            (ExitCode)
 import           System.Directory       (doesFileExist)
-import           System.FilePath        ((</>), addExtension, splitFileName)
+import           System.FilePath        ((</>), joinPath, addExtension, splitFileName)
 import           System.Process         (system)
 import           System.Environment     (getArgs)
 import           Control.Applicative    ((<$>))
@@ -34,12 +34,14 @@ main      = do c <- getConfig
 site      :: Config -> Snap ()
 site cfg  = route [ ("index.html"    , serveFile      $ staticPath </> "index.html"   ) 
                   , ("fullpage.html" , serveFile      $ staticPath </> "fullpage.html")
+                  , ("config.js"     , logServeFile "config.js" $ configPath cfg      )
+                  , ("theme.js"      , logServeFile "theme.js"  $ themePath cfg       )
+                  , ("mode.js"       , logServeFile "mode.js"   $ modePath  cfg       )
                   , ("js/"           , serveDirectory $ staticPath </> "js"           )
                   , ("css/"          , serveDirectory $ staticPath </> "css"          )
                   , ("img/"          , serveDirectory $ staticPath </> "img"          )
                   , ("demos/"        , serveDirectory $ demoPath cfg                  )
                   , ("permalink/"    , serveDirectory $ sandboxPath cfg               )
-                  , ("custom/:js"    , customHandler cfg                              ) 
                   , ("query"         , method POST    $ queryH cfg                    )
                   , ("log"           , serveFileAs    "text/plain" $ logFile cfg      ) 
                   , (""              , defaultH                                       )
@@ -77,7 +79,7 @@ getConfigFile
          []  -> do putStrLn $ "No config file specified, using: " ++ defaultConfigFile
                    return defaultConfigFile
 
-defaultConfigFile = customPath "config.json" "liquidhaskell" 
+defaultConfigFile = customPath ["liquidhaskell", "config.json"]
 
 ---------------------------------------------------------------
 queryResult :: Config -> Query -> IO Result
@@ -210,27 +212,41 @@ logFile = (</> "log") . sandboxPath
 -- | Global Paths ---------------------------------------------
 ---------------------------------------------------------------
 
-staticPath      = "resources/static"
-editorPath      = staticPath </> "js/ace" 
-customPath t n  = "resources/custom" </> n </> t  
+themePath      = (editorPath </>) . themeFile
+modePath       = (editorPath </>) . modeFile 
+editorPath     = staticPath </> "js/ace" 
+demoPath c     = customPath [toolName c, "demos"]
+sandboxPath c  = customPath [toolName c, "sandbox"]
+configPath c   = customPath [toolName c, "config.js"] 
+staticPath     = "resources/static"
+customPath ts  = joinPath ("resources" : "custom" : ts)
+
 
 ---------------------------------------------------------------
--- | Extracting Paths from Config -----------------------------
+-- | Redirecting Custom Files ---------------------------------
 ---------------------------------------------------------------
 
-demoPath, sandboxPath, configPath :: Config -> FilePath
-demoPath        = customPath "demos"     . toolName
-sandboxPath     = customPath "sandbox"   . toolName
-configPath      = customPath "config.js" . toolName
+-- customHandler :: Config -> Snap ()
+-- customHandler cfg 
+--   = do js <- getParam "js"
+--        let f = fromMaybe "junk" js 
+--        case f of
+--          "theme.js"  -> logServeFile f $ editorPath </> themeFile  cfg
+--          "mode.js"   -> logServeFile f $ editorPath </> modeFile   cfg
+--          "config.js" -> logServeFile f $ configPath cfg
+--          other       -> writeLBS  $ LB.concat ["Liquid Demo Server: Unexpected custom file ", b2lb other] 
 
-customHandler :: Config -> Snap ()
-customHandler cfg 
-  = do js <- getParam "js"
-       case fromMaybe "junk" js of
-         "theme.js"  -> serveFile $ editorPath </> themeFile  cfg
-         "mode.js"   -> serveFile $ editorPath </> modeFile   cfg
-         "config.js" -> serveFile $ configPath cfg
-         other       -> writeLBS  $ LB.concat ["Liquid Demo Server: Unexpected custom file ", b2lb other] 
+
+-- logServeFile f p 
+--   = do liftIO $ putStrLn $ "customHandler: " ++ show f ++ " serving " ++ p
+--        serveFile p
+
+logServeFile f p 
+   = do liftIO $ putStrLn $ "customHandler: " ++ show f ++ " serving " ++ p
+        serveFile p
+
+
+
 
 b2lb = LB.pack . unpack 
 ---------------------------------------------------------------
