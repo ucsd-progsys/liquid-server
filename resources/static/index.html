@@ -119,8 +119,36 @@
        <!-- Body content =========================================-->
       
        <!-- FILE LOAD/SAVE -->
-        <div class="input-prepend input-append">
+       <div class="row-fluid">
+         <div class="span4">
+            <div class="btn-group">
+              <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Select Demo&nbsp;<span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li ng-repeat="cat in categories" class="dropdown-submenu">
+                   <a tabindex="-1" href="#">{{cat.name}}</a>
+                     <ul class="dropdown-menu">
+                     <li ng-repeat="demo in cat.demos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
+                     </ul>
+                   </a>
+                </li>
+              </ul>
+            </div>
+          </div>
 
+         <div class="span8">
+            <form style="float:right" ng-show="isLocalServer" class="form-inline">
+              <input  type="search" class="input-large" ng-model="localFilePath" placeholder="/path/to/file" id="localFilePath">
+              </input>
+              <div class="input-prepend input-append">
+                <button class="btn" type="button" ng-click="loadFromLocalPath()">Load</button>
+                <button class="btn" type="button" ng-click="saveToLocalPath()">Save</button>
+              </div>
+            </form>
+          </div>
+         </div>
+
+       <!--
+       <div class="input-prepend input-append">
           <div class="btn-group">
             <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Select Demo&nbsp;<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
@@ -133,49 +161,11 @@
               </li>
             </ul>
           </div>
-
-          <!-- <div class="btn-group">
-           <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Select Demo&nbsp;<span class="caret"></span></a>
-           <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-             <li class="dropdown-submenu">
-               <a tabindex="-1" href="#">Basics</a>
-                 <ul class="dropdown-menu">
-                   <li ng-repeat="demo in basicDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
-                 </ul>
-               </a>
-             </li>
-               
-             <li class="dropdown-submenu">
-                <a tabindex="-1" href="#">Measures</a>
-                 <ul class="dropdown-menu">
-                   <li ng-repeat="demo in measureDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
-                 </ul>
-               </a>
-             </li>
-               
-             <li class="dropdown-submenu">
-               <a tabindex="-1" href="#">Abstract Refinements</a>
-                 <ul class="dropdown-menu">
-                   <li ng-repeat="demo in abstRefDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
-                 </ul>
-               </a>
-             </li>
-
-             <li class="dropdown-submenu">
-               <a tabindex="-1" href="#">HOPA Tutorial</a>
-                 <ul class="dropdown-menu">
-                   <li ng-repeat="demo in tutorialDemos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
-                 </ul>
-               </a>
-             </li>
-           </ul>
-          </div> -->
-
           <input  type="text" class="span9" ng-show="isLocalServer" ng-model="localFilePath" placeholder="local file path" id="localFilePath">
           <button class="btn" type="button" ng-show="isLocalServer" ng-click="loadFromLocalPath()">Load</button>
           <button class="btn" type="button" ng-show="isLocalServer" ng-click="saveToLocalPath()">Save</button>
         </div>
-        
+        -->
 
         <br>
 
