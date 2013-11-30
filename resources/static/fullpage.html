@@ -1,7 +1,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>LiquidHaskell · Demo</title>
+    <title>Liquid · Demo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -79,11 +79,21 @@
         <!-- Body content =========================================-->
 
         <!-- FILE LOAD/SAVE -->
-        <div ng-show="isLocalServer" class="input-append">
+        <!-- <div ng-show="isLocalServer" class="input-append">
           <input  type="text" class="span9" ng-model="localFilePath" placeholder="local file path" id="localFilePath">
           <button class="btn" type="button" ng-click="loadFromLocalPath()">Load</button>
           <button class="btn" type="button" ng-click="saveToLocalPath()">Save</button>
-        </div>
+        </div> -->
+
+        <form ng-show="isLocalServer" class="form-inline"> 
+           <input  type="search" class="input-large" ng-model="localFilePath" placeholder="/path/to/file" id="localFilePath">
+           </input>
+           <div class="input-prepend input-append">
+              <button class="btn" type="button" ng-click="loadFromLocalPath()">Load</button>
+              <button class="btn" type="button" ng-click="saveToLocalPath()">Save</button>
+           </div>
+        </form>
+
         <br>
 
        <div class="tab-content">
@@ -133,13 +143,12 @@
 
 <!-- JavaScript below! ============================================== -->
 
-
   <script src="js/ace/ace.js" type="text/javascript" charset="utf-8"></script> 
-  <script src="js/ace/theme-xcode.js" type="text/javascript" charset="utf-8"></script>
-  <script src="js/ace/mode-haskell.js" type="text/javascript" charset="utf-8"></script>
-  
+  <script src="theme.js" type="text/javascript" charset="utf-8"></script>
+  <script src="mode.js"  type="text/javascript" charset="utf-8"></script>
   <script src="js/tooltip.js"></script> 
   <script src="js/annot.js"></script> 
+  <script src="config.js"></script>
   <script src="js/liquid.js"></script>
     
   <!--Site Meter
