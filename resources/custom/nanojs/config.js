@@ -13,16 +13,10 @@ var demoSubtitle  = "Liquid Types for JavaScript";
 
 var allLinks = [ { url: "https://github.com/ucsd-pl/nano-js"          , name: "Code" }]; 
 
-// , { url: "http://goto.ucsd.edu/~rjhala/liquid/haskell/blog/about/", name: "About"} 
-// , { url: "http://goto.ucsd.edu/~rjhala/liquid/haskell/blog/"      , name: "Blog" }
-// ];
-
 /************** Editor Modes ***************************************************/
 var toolName       = "nanojs";
 var editorTheme    = "ace/theme/xcode";
 var editorMode     = "ace/mode/javascript";
-// var themeFile      = "theme-xcode.js";
-// var modeFile       = "mode-javascript.js";
 var defaultErrText = "Type Error";
  
 /************** List of Demos **************************************************/
