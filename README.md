@@ -30,45 +30,45 @@ i.e. with any present whitespace, in the tooltips.
 
 Example 1 
 
-   { "status":"error"
-   , "types" : {}
-   , "errors":[{"message":"Crash: Type ErrorsTC-ERROR Type identifier 'strin' unbound"
-               ,"stop"   :{"column":31,"line":1}
-               ,"start"  :{"column":25,"line":1}}
-              ]
-   }
+    { "status":"error"
+    , "types" : {}
+    , "errors":[{"message":"Crash: Type ErrorsTC-ERROR Type identifier 'strin' unbound"
+                ,"stop"   :{"column":31,"line":1}
+                ,"start"  :{"column":25,"line":1}}
+               ]
+    }
 
 Example 2
 
-  { "status":"safe"
-  , "types" :{"4":{"7": { "col":7
-                        , "ident":"y_SSA_0"
-                        , "row":4
-                        , "ann": "{v : String | (v = lit#dog),\n              (v = lq_tmp_nano1),\n              (ttag([v]) = lit#string)}"}
-                  ,"11":{"col":11
-                        ,"ident":"lq_tmp_nano1"
-                        ,"row":4
-                        ,"ann":"{v : String | (v = lit#dog),(ttag([v]) = lit#string)}"}   
-                  }
-             ,"2":{"10":{"col":10
-                        ,"ident":"foo"
-                        ,"row":2
-                        ,"ann":"(VV#0:Int) =\u003e String"}
-                  ,"14":{"col":14
-                        ,"ident":"x"
-                        ,"row":2
-                        ,"ann":"{v : Int | (ttag([v]) = lit#number)}"
-                        }
-                  }
-             ,"6":{"10":{"col":10
-                        ,"ident":"lq_tmp_nano2"
-                        ,"row":6
-                        ,"ann":"{v : String | (v = lit#cat),(ttag([v]) = lit#string)}" 
-                        }
-                  }
-             } 
-  ,"errors":[]
-  }
+    { "status":"safe"
+    , "types" :{"4":{"7": { "col":7
+                          , "ident":"y_SSA_0"
+                          , "row":4
+                          , "ann": "{v : String | (v = lit#dog),\n              (v = lq_tmp_nano1),\n              (ttag([v]) = lit#string)}"}
+                    ,"11":{"col":11
+                          ,"ident":"lq_tmp_nano1"
+                          ,"row":4
+                          ,"ann":"{v : String | (v = lit#dog),(ttag([v]) = lit#string)}"}   
+                    }
+               ,"2":{"10":{"col":10
+                          ,"ident":"foo"
+                          ,"row":2
+                          ,"ann":"(VV#0:Int) =\u003e String"}
+                    ,"14":{"col":14
+                          ,"ident":"x"
+                          ,"row":2
+                          ,"ann":"{v : Int | (ttag([v]) = lit#number)}"
+                          }
+                    }
+               ,"6":{"10":{"col":10
+                          ,"ident":"lq_tmp_nano2"
+                          ,"row":6
+                          ,"ann":"{v : String | (v = lit#cat),(ttag([v]) = lit#string)}" 
+                          }
+                    }
+               } 
+    ,"errors":[]
+    }
 
 **Note** you can populate the `types` field regardless of the value of the
 `status` field. The types, if provided, are reflected on the client side 
@@ -84,7 +84,7 @@ Installation
 
 2. Run (make sure that the `toolName` binary, described below, is in the `$PATH`)
 
-    liquid-server -p 8000
+    liquid-server -p 8000 resources/custom/toolName/config.json
 
 3. Use by pointing your web-browser to 
 
