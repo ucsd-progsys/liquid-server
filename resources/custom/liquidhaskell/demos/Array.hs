@@ -13,9 +13,17 @@ data Vec a <dom :: Int -> Prop, rng :: Int -> a -> Prop>
 
 -- Describing interesting vectors:
 
-{-@ type IdVec = 
-     Vec <{\v -> (v < 100)}, {\j v -> (v = j)}> Int
+{-@ type IdVec N = 
+     Vec <{\v -> (v < N)}, {\j v -> (v = j)}> Int
   @-}
+
+{-@ idv :: n:Nat -> (IdVec n) @-}
+idv n   = V (\k -> if 0 < k && k < n
+                     then k 
+                     else liquidError "eeks")
+
+-- Hmm. How can we fix the pesky error?
+
 
 {-@ type ZeroTerm N = 
      Vec <{\v -> (0 <= v && v < N)}, {\j v -> (j = N - 1 => v = 0)}> Int
@@ -47,6 +55,9 @@ get i (V f) = f i
       Vec <d, r> a @-}
 set :: Int -> a -> Vec a -> Vec a
 set i v (V f) = V $ \k -> if k == i then v else f k
+
+-- Help! can you fix the above so it typechecks?
+
 
 -- | Using Vectors
 
