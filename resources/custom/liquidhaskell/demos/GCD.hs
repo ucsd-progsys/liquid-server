@@ -13,9 +13,8 @@ fibBad n      = fibBad (n-1) + fibBad (n-2)
 
 {-@ fibOk :: Nat -> Nat @-}
 fibOk n 
-  | n <= 1    = 1
-  | otherwise = fibOk (n-1) + fibOk (n-2)
-
+  | n <= 0    = 1
+  | otherwise = fibOk (n-1) + fibOk (n-2) -- Can you figure out the problem?
 
 
 
