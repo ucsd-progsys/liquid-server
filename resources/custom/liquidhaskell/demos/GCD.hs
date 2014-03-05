@@ -2,22 +2,11 @@ module GCD where
 
 import Prelude hiding (gcd, mod)
 
+{-@ fib  :: Nat -> Nat @-}
+fib 0    = 1
+fib n    = fibBad (n-1) + fibBad (n-2)
 
-fibOk  :: Int -> Int
-fibBad :: Int -> Int
-
-{-@ fibBad    :: Int -> Int @-}
-fibBad 0      = 1
-fibBad 1      = 1
-fibBad n      = fibBad (n-1) + fibBad (n-2)
-
-{-@ fibOk :: Nat -> Nat @-}
-fibOk n 
-  | n <= 0    = 1
-  | otherwise = fibOk (n-1) + fibOk (n-2) -- Can you figure out the problem?
-
-
-
+-- Eh, can you figure out the problem?
 
 
 {-@ mod :: a:Nat -> b:{v:Nat| ((v < a) && (v > 0))} -> {v:Nat | v < b} @-}
