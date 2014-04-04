@@ -16,6 +16,8 @@ import           Control.Monad.IO.Class (liftIO)
 import           Data.Maybe
 import           Data.List              (isSuffixOf, isPrefixOf, intercalate)
 import           Data.Aeson                 hiding (Result)
+import qualified Data.Text.Lazy       as T
+import qualified Data.Text.Lazy.IO    as TIO 
 import qualified Data.ByteString.Lazy as LB
 import           Data.Time.Clock.POSIX
 import           Data.ByteString.Lazy.Char8 (pack)
@@ -66,7 +68,7 @@ getConfig
   = do f <- getConfigFile 
        c <- decode <$> LB.readFile f
        putStrLn $ "Config: " ++ show c
-       case c of -- return $ fromMaybe (err f) c
+       case c of
          Just cfg -> return $ Right cfg
          Nothing  -> return $ Left f
 
@@ -108,8 +110,8 @@ loadResult :: Query -> IO Result
 ---------------------------------------------------------------
 loadResult q = doRead `catchIOError` err
   where 
-    doRead   = LB.readFile (path q) >>= return . ok
-    err e    = return $ errResult $ pack $ "Load Error: " ++ show e
+    doRead   = TIO.readFile (path q) >>= return . ok
+    err e    = return $ errResult $ T.pack $ "Load Error: " ++ show e
     ok pgm   = toJSON $ Save pgm (path q) 
 
 ---------------------------------------------------------------
@@ -117,8 +119,8 @@ saveResult :: Query -> IO Result
 ---------------------------------------------------------------
 saveResult q = doWrite `catchIOError` err
   where 
-    doWrite  = LB.writeFile (path q) (program q) >> return ok
-    err e    = return $ errResult $ pack $ "Save Error: " ++ show e
+    doWrite  = TIO.writeFile (path q) (program q) >> return ok
+    err e    = return $ errResult $ T.pack $ "Save Error: " ++ show e
     ok       = toJSON $ Load (path q) 
 
 ---------------------------------------------------------------
@@ -167,7 +169,7 @@ execCheck c f
 ---------------------------------------------------------------
 writeQuery     :: Query -> Files -> IO Files
 ---------------------------------------------------------------
-writeQuery q f = LB.writeFile (srcFile f) (program q) >> return f
+writeQuery q f = TIO.writeFile (srcFile f) (program q) >> return f
 
 ---------------------------------------------------------------
 runCommand     :: Config -> Files -> IO ExitCode 

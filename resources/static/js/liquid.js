@@ -39,6 +39,7 @@ function getCategories(){
 /*******************************************************************************/
 
 var progEditor  = ace.edit("program");
+progEditor.setKeyboardHandler("ace/keyboard/vim");
 progEditor.setTheme(editorTheme);                   // progEditor.setTheme("ace/theme/xcode");
 var SrcMode     = require(editorMode).Mode;         // var SrcMode     = require("ace/mode/haskell").Mode;
 progEditor.getSession().setMode(new SrcMode());
