@@ -2,6 +2,19 @@ module SimpleRefinements where
 import Prelude hiding ((!!), length)
 import Language.Haskell.Liquid.Prelude
 
+zero, zero', one :: Int
+
+{-@ type EqZero = {v:Int | v = 0} @-}
+
+{-@ zero :: EqZero @-}
+zero = 0
+
+{-@ zero' :: Nat @-}
+zero'     = zero
+
+{-@ one :: Nat @-}
+one = 1
+
 infixr `C`
 data L a = N | C a (L a)
 

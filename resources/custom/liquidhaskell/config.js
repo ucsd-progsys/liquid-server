@@ -34,6 +34,7 @@ var allCategories = [ { type : "basic"    , name: "Basics" }
 var allDemos =
   { // Basic Demos
     "blank.hs"              : { name : "Blank"            , type : "basic"  },
+    "evens.hs"              : { name : "Even numbers"     , type : "basic"  },
     "refinements101.hs"     : { name : "Refinements 101"  , type : "basic"  },
     "refinements101reax.hs" : { name : "Refinements 102"  , type : "basic"  },
     "vectorbounds.hs"       : { name : "Vector Bounds"    , type : "basic"  },
