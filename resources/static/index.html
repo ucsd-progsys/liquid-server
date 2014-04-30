@@ -120,8 +120,10 @@
       
        <!-- FILE LOAD/SAVE -->
        <div class="row-fluid">
-         
-         <div class="span4">
+        
+
+
+         <div class="span2">
             <div class="btn-group">
               <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Select Demo&nbsp;<span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
@@ -137,8 +139,16 @@
          </div>
 
          <div class="span2">
-           Vim <input type="checkbox" ng-model="vimMode"> 
+           <div class="btn-group">
+              <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Editor&nbsp;<span class="caret"></span></a>
+                 <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                   <li><a href="" ng-click="keyBindingsVim()">Vim</a></li>
+                   <li><a href="" ng-click="keyBindingsEmacs()">Emacs</a></li>
+                   <li><a href="" ng-click="keyBindingsNone()">None</a></li>
+                 </ul>
+           </div>
          </div>
+
 
          <div class="span8">
             <form style="float:right" ng-show="isLocalServer" class="form-inline">
