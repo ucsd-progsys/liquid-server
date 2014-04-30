@@ -120,6 +120,7 @@
       
        <!-- FILE LOAD/SAVE -->
        <div class="row-fluid">
+         
          <div class="span4">
             <div class="btn-group">
               <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Select Demo&nbsp;<span class="caret"></span></a>
@@ -133,7 +134,11 @@
                 </li>
               </ul>
             </div>
-          </div>
+         </div>
+
+         <div class="span2">
+           Vim <input type="checkbox" ng-model="vimMode"> 
+         </div>
 
          <div class="span8">
             <form style="float:right" ng-show="isLocalServer" class="form-inline">
@@ -146,26 +151,6 @@
             </form>
           </div>
          </div>
-
-       <!--
-       <div class="input-prepend input-append">
-          <div class="btn-group">
-            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Select Demo&nbsp;<span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-              <li ng-repeat="cat in categories" class="dropdown-submenu">
-                 <a tabindex="-1" href="#">{{cat.name}}</a>
-                   <ul class="dropdown-menu">
-                   <li ng-repeat="demo in cat.demos"><a href="" ng-click="changeTarget(demo)">{{demo.name}}</a></li>
-                   </ul>
-                 </a>
-              </li>
-            </ul>
-          </div>
-          <input  type="text" class="span9" ng-show="isLocalServer" ng-model="localFilePath" placeholder="local file path" id="localFilePath">
-          <button class="btn" type="button" ng-show="isLocalServer" ng-click="loadFromLocalPath()">Load</button>
-          <button class="btn" type="button" ng-show="isLocalServer" ng-click="saveToLocalPath()">Save</button>
-        </div>
-        -->
 
         <br>
 
