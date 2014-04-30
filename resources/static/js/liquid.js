@@ -377,7 +377,7 @@ function LiquidDemoCtrl($scope, $http, $location) {
 
   // Extract demo name from URL 
   $scope.$watch('location.search()', function() {
-    debugZ  = ($location.search()).demo;
+    // debugZ  = ($location.search()).demo;
     $scope.demoName = ($location.search()).demo;
     var newDemo = {file : $scope.demoName};
     if ($scope.demoName in allDemos){
