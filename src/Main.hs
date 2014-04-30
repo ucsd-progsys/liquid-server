@@ -151,10 +151,12 @@ checkResult c q  = genFiles c >>= writeQuery q >>= execCheck c
 genFiles         :: Config -> IO Files
 genFiles config 
   = do t        <- (takeWhile (/= '.') . show) <$> getPOSIXTime 
-       return    $ Files (sourceName t) (jsonName t)
+       return    $ Files (srcFile t) (jsonFile t)
     where 
-      jsonName   = (`addExtension` "json") . sourceName 
-      sourceName = (sandbox </>) . (`addExtension` ext) 
+      jsonFile t = sandbox </> tmpDir config </> jsonName t
+      jsonName t = srcName t `addExtension` "json"
+      srcFile  t = sandbox </> srcName t 
+      srcName  t = t `addExtension` ext
       ext        = srcSuffix   config
       sandbox    = sandboxPath config
 
