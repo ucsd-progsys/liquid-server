@@ -2,7 +2,7 @@
 
 {-@ LIQUID "--notermination"           @-}
 
-module PuttingThingsInOrder where
+module PuttingThingsInOrder (digitsP) where
 
 import Prelude hiding (break)
 
@@ -43,7 +43,7 @@ sparseVecP = KVP [ (12 ,  34.1 )
 -- Monomorphic Association Lists
 -- -----------------------------
 
-{-@ data Assoc v <p :: Int -> Prop> = KV (z :: [(Int<p>, v)]) @-}
+{-@ data Assoc v <p :: Int -> Prop> = KV { keyVals :: [(Int<p>, v)] } @-}
 data Assoc v = KV [(Int, v)]
 
 
