@@ -1,11 +1,12 @@
 {-@ LIQUID "--no-termination" @-}
 
-module Loop where
+module Loop (listNatSum, listEvenSum, add) where
+
 import Prelude hiding ((!!), length)
 import Language.Haskell.Liquid.Prelude (liquidError)
 
-(!)          :: L a -> Int -> a
-length          :: L a -> Int
+(!)    :: L a -> Int -> a
+length :: L a -> Int
 
 
 infixr `C`
