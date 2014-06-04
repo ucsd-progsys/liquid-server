@@ -6,6 +6,10 @@ data L a = N | C a (L a)
 {-@ data L a = N
              | C (x :: a) (xs :: L {v:a | x <= v})  @-}
 
+okList  = 0 `C` 1 `C` 2 `C` N
+
+badList = 0 `C` 2 `C` 1 `C` N
+
 
 {-@ insert :: Ord a => a -> L a -> L a @-}
 insert :: Ord a => a -> L a -> L a
