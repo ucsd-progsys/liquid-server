@@ -49,6 +49,7 @@ var allDemos =
     "treesum.hs"            : { name : "List-Tree Sum"    , type : "measure"},
     // Abstract Refinement Demos
     "absref101.hs"          : { name : "Parametric Invariants", type : "absref" },
+    "filter.hs"             : { name : "A Fine Filter"        , type : "absref" },
     "Order.hs"              : { name : "Ordered Lists"        , type : "absref" },
     "Map.hs"                : { name : "BinSearch Tree"       , type : "absref" },
     "Foldr.hs"              : { name : "Induction"            , type : "absref" },
