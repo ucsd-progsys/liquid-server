@@ -24,7 +24,7 @@ import           Data.ByteString.Lazy.Char8 (pack)
 import qualified Data.HashMap.Strict  as M
 import           Data.ByteString (unpack)
 import           Language.Liquid.Server.Types 
--- import           Language.Liquid.Server.Config
+-- import        Language.Liquid.Server.Config
 
 
 main      :: IO ()
