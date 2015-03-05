@@ -5,4 +5,5 @@
 , "themeFile"  : "theme-xcode.js"
 , "modeFile"   : "mode-haskell.js"
 , "tmpDir"     : ".liquid"
+, "port"       : 8090
 }
