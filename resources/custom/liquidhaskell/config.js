@@ -41,6 +41,7 @@ var allDemos =
     "product.hs"            : { name : "Vector Product"   , type : "basic"  },
 
     // Measure Demos
+    "Vectors.hs"            : { name : "Vectors"          , type : "measure"},
     "lenMapReduce.hs"       : { name : "Safe List"        , type : "measure"},
     "Csv.hs"                : { name : "CSV Lists"        , type : "measure"},
     "KMeansHelper.hs"       : { name : "K-Means Lib"      , type : "measure"},
