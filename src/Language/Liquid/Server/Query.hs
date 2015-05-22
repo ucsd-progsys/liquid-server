@@ -26,18 +26,18 @@ import           Language.Liquid.Server.Ticket
 ---------------------------------------------------------------
 queryResult :: Config -> Ticket -> Query -> IO Result
 ---------------------------------------------------------------
-queryResult c _ q@(Check {})   = checkResult   c q
-queryResult c _ q@(Recheck {}) = recheckResult c q
-queryResult _ _ q@(Load  {})   = loadResult      q
-queryResult _ _ q@(Save  {})   = saveResult      q
-queryResult c _ q@(Perma {})   = permaResult   c q
+queryResult c t q@(Check {})   = checkResult   c t q
+queryResult c _ q@(Recheck {}) = recheckResult c   q
+queryResult _ _ q@(Load  {})   = loadResult        q
+queryResult _ _ q@(Save  {})   = saveResult        q
+queryResult c t q@(Perma {})   = permaResult   c t q
 queryResult _ _ Junk           = return $ errResult "junk query"
 
 ---------------------------------------------------------------
-permaResult :: Config -> Query -> IO Result
+permaResult :: Config -> Ticket -> Query -> IO Result
 ---------------------------------------------------------------
-permaResult config q
-  = do f <- writeQuery q =<< genFiles config
+permaResult config t q
+  = do f <- writeQuery q =<< genFiles config t
        return $ toJSON $ Load $ permalink $ srcFile f
 
 permalink :: FilePath -> FilePath
@@ -50,7 +50,7 @@ loadResult :: Query -> IO Result
 ---------------------------------------------------------------
 loadResult q = doRead `catchIOError` err
   where
-    doRead   = TIO.readFile (path q) >>= return . ok
+    doRead   = ok <$> TIO.readFile (path q) -- >>= return . ok
     err e    = return $ errResult $ T.pack $ "Load Error: " ++ show e
     ok pgm   = toJSON $ Save pgm (path q)
 
@@ -84,12 +84,12 @@ validRecheck config src
        return $ b1 && b2
 
 ---------------------------------------------------------------
-checkResult :: Config -> Query -> IO Result
+checkResult :: Config -> Ticket -> Query -> IO Result
 ---------------------------------------------------------------
-checkResult c q  = genFiles c >>= writeQuery q >>= execCheck c
+checkResult c t q = genFiles c t >>= writeQuery q >>= execCheck c
 
-genFiles         :: Config -> IO Files
-genFiles config
+genFiles         :: Config -> Ticket -> IO Files
+genFiles config ticket
   = do t        <- (takeWhile (/= '.') . show) <$> getPOSIXTime
        return    $ Files (srcF t) (jsonF t)
     where
