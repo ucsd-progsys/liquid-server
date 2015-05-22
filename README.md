@@ -10,6 +10,8 @@ that has the following behavior:
   + **Input**   Source file `path/to/foo`
   + **Output**  JSON file   `path/to/foo.json` in the format specfied below.
 
+Now with **concurrency**
+
 JSON Format
 -----------
 
