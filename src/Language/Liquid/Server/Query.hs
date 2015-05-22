@@ -90,7 +90,7 @@ checkResult c t q = genFiles c t >>= writeQuery q >>= execCheck c
 
 genFiles         :: Config -> Ticket -> IO Files
 genFiles config ticket
-  = do t        <- (takeWhile (/= '.') . show) <$> getPOSIXTime
+  = do t        <- nextId ticket
        return    $ Files (srcF t) (jsonF t)
     where
       jsonF t    = sandbox </> tmpDir config </> jsonName t
@@ -99,6 +99,14 @@ genFiles config ticket
       srcName  t = t `addExtension` ext
       ext        = srcSuffix   config
       sandbox    = sandboxPath config
+
+
+nextId :: Ticket -> IO String
+nextId t = do
+  tick  <- (takeWhile (/= '.') . show) <$> getPOSIXTime
+  tock  <- show <$> nextTicket t
+  return $ tick ++ "_" ++ tock
+
 
 ---------------------------------------------------------------
 execCheck :: Config -> Files -> IO Result
