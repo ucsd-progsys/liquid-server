@@ -6,4 +6,5 @@
 , "modeFile"   : "mode-haskell.js"
 , "tmpDir"     : ".liquid"
 , "port"       : 8090 
+, "srcTester"  : "target"
 }
