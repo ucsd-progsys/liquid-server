@@ -177,9 +177,7 @@ upperCaseString n s = ucs n 0 s
 
 {-@ measure fib :: Int -> Int @-}
 
-{-@ axiom_fib :: i:Int -> {v: Bool | (Prop(v) <=>
-                            (fib(i) = ((i <= 1) ? 1 : ((fib(i-1)) + (fib(i-2))))))}
-  @-}
+{-@ axiom_fib :: i:Int -> {v: Bool | Prop v <=> (fib i = (if i <= 1 then 1 else (fib (i-1) + fib (i-2)))) } @-}
 axiom_fib :: Int -> Bool
 axiom_fib i = undefined
 

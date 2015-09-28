@@ -1,6 +1,6 @@
 module LiquidArray where
 
-import Language.Haskell.Liquid.Prelude (liquidAssume)
+import Language.Haskell.Liquid.Prelude (liquidAssume, liquidError)
 
 -- |Indexed-Dependent Refinements
 
@@ -61,7 +61,8 @@ set i v (V f) = V $ \k -> if k == i then v else f k
 
 -- | Using Vectors
 
-{-@ assume axiom_fib :: i:Int -> {v: Bool | (Prop(v) <=> (fib(i) = ((i <= 1) ? 1 : ((fib(i-1)) + (fib(i-2)))))) } @-}
+{-@ axiom_fib :: i:Int -> {v: Bool | Prop v <=> (fib i = (if i <= 1 then 1 else (fib (i-1) + fib (i-2)))) } @-}
+
 axiom_fib :: Int -> Bool
 axiom_fib i = undefined
 
@@ -83,3 +84,6 @@ fibMemo t i
                n        = liquidAssume (axiom_fib i) (n1 + n2)
            in  (set i n t2,  n)
       n -> (t, n)
+
+
+
