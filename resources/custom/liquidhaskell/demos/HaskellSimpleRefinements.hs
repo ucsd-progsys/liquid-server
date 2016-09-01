@@ -1,4 +1,4 @@
-{-@ LIQUID "--short" @-}
+{-@ LIQUID "--short-names" @-}
 
 module SimpleRefinements where
 import Prelude hiding ((!!), length)
