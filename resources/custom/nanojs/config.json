@@ -4,4 +4,5 @@
 , "cmdPrefix"  : ""
 , "themeFile"  : "theme-xcode.js"
 , "modeFile"   : "mode-javascript.js"
+, "tmpDir"     : ""
 }

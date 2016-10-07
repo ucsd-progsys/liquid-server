@@ -34,10 +34,12 @@ var allCategories = [ { type : "basic"    , name: "Basics" }
 var allDemos =
   { // Basic Demos
     "blank.hs"              : { name : "Blank"            , type : "basic"  },
+    "evens.hs"              : { name : "Even numbers"     , type : "basic"  },
     "refinements101.hs"     : { name : "Refinements 101"  , type : "basic"  },
     "refinements101reax.hs" : { name : "Refinements 102"  , type : "basic"  },
     "vectorbounds.hs"       : { name : "Vector Bounds"    , type : "basic"  },
     // Measure Demos
+    "Vectors.hs"            : { name : "Vectors"          , type : "measure"},
     "lenMapReduce.hs"       : { name : "Safe List"        , type : "measure"},
     "Csv.hs"                : { name : "CSV Lists"        , type : "measure"},
     "KMeansHelper.hs"       : { name : "K-Means Lib"      , type : "measure"},
@@ -48,6 +50,7 @@ var allDemos =
     "treesum.hs"            : { name : "List-Tree Sum"    , type : "measure"},
     // Abstract Refinement Demos
     "absref101.hs"          : { name : "Parametric Invariants", type : "absref" },
+    "filter.hs"             : { name : "A Fine Filter"        , type : "absref" },
     "Order.hs"              : { name : "Ordered Lists"        , type : "absref" },
     "Map.hs"                : { name : "BinSearch Tree"       , type : "absref" },
     "Foldr.hs"              : { name : "Induction"            , type : "absref" },

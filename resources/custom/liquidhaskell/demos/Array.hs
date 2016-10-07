@@ -1,6 +1,6 @@
 module LiquidArray where
 
-import Language.Haskell.Liquid.Prelude (liquidAssume)
+import Language.Haskell.Liquid.Prelude (liquidAssume, liquidError)
 
 -- |Indexed-Dependent Refinements
 
@@ -13,9 +13,17 @@ data Vec a <dom :: Int -> Prop, rng :: Int -> a -> Prop>
 
 -- Describing interesting vectors:
 
-{-@ type IdVec = 
-     Vec <{\v -> (v < 100)}, {\j v -> (v = j)}> Int
+{-@ type IdVec N = 
+     Vec <{\v -> (v < N)}, {\j v -> (v = j)}> Int
   @-}
+
+{-@ idv :: n:Nat -> (IdVec n) @-}
+idv n   = V (\k -> if 0 < k && k < n
+                     then k 
+                     else liquidError "eeks")
+
+-- Hmm. How can we fix the pesky error?
+
 
 {-@ type ZeroTerm N = 
      Vec <{\v -> (0 <= v && v < N)}, {\j v -> (j = N - 1 => v = 0)}> Int
@@ -48,9 +56,13 @@ get i (V f) = f i
 set :: Int -> a -> Vec a -> Vec a
 set i v (V f) = V $ \k -> if k == i then v else f k
 
+-- Help! can you fix the above so it typechecks?
+
+
 -- | Using Vectors
 
-{-@ assume axiom_fib :: i:Int -> {v: Bool | (Prop(v) <=> (fib(i) = ((i <= 1) ? 1 : ((fib(i-1)) + (fib(i-2)))))) } @-}
+{-@ axiom_fib :: i:Int -> {v: Bool | Prop v <=> (fib i = (if i <= 1 then 1 else (fib (i-1) + fib (i-2)))) } @-}
+
 axiom_fib :: Int -> Bool
 axiom_fib i = undefined
 
@@ -72,3 +84,6 @@ fibMemo t i
                n        = liquidAssume (axiom_fib i) (n1 + n2)
            in  (set i n t2,  n)
       n -> (t, n)
+
+
+

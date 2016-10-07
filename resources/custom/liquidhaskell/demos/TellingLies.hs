@@ -1,17 +1,18 @@
 {-@ LIQUID "--no-termination" @-}
+{-@ LIQUID "--short-names"    @-}
 
 module TellingLies where
 
 import Language.Haskell.Liquid.Prelude (liquidError)
 
-divide  :: Int -> Int -> Int
+safeDiv  :: Int -> Int -> Int
 foo     :: Int -> Int
 explode :: Int
 
 -- | Going Wrong 
-{-@ divide :: n:Int -> d:{v:Int | v /= 0} -> Int @-}
-divide n 0 = liquidError "no you didn't!"
-divide n d = n `div` d
+{-@ safeDiv :: n:Int -> d:{v:Int | v /= 0} -> Int @-}
+safeDiv n 0 = liquidError "Please don't safeDiv-by-zero"
+safeDiv n d = n `div` d
 
 {-@ foo :: n:Int -> {v:Nat | v < n} @-}
 foo n | n > 0     = n - 1
@@ -19,4 +20,6 @@ foo n | n > 0     = n - 1
 
 
 explode = let z = 0
-          in  (\x -> (2013 `divide` z)) (foo z)
+              d = foo z
+          in  
+              (\x -> 2013 `safeDiv` z) d

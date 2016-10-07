@@ -1,4 +1,4 @@
-module Map where
+module Map (empty, insert, delete) where
 
 -- | In this example, we show how we can use multi-parameter abstract refinements
 -- to encode ordering invarants on binary search trees.

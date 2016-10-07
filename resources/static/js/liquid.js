@@ -39,6 +39,7 @@ function getCategories(){
 /*******************************************************************************/
 
 var progEditor  = ace.edit("program");
+
 progEditor.setTheme(editorTheme);                   // progEditor.setTheme("ace/theme/xcode");
 var SrcMode     = require(editorMode).Mode;         // var SrcMode     = require("ace/mode/haskell").Mode;
 progEditor.getSession().setMode(new SrcMode());
@@ -143,8 +144,8 @@ function getSrcURL(file){
 /*******************************************************************************/
 
 function getCheckQuery($scope){ 
-  return { type    : "check"
-         , program : getSourceCode() 
+  return { type    : "check",
+           program : getSourceCode() 
          };
 }
 
@@ -152,15 +153,15 @@ function getRecheckQuery($scope){
   var p = "";
   if ($scope.filePath) p = $scope.filePath;
 
-  return { type    : "recheck"
-         , program : getSourceCode() 
-         , path    : p
+  return { type    : "recheck", 
+           program : getSourceCode(), 
+           path    : p
          };
 }
 
 function getLoadQuery($scope){
-  return { type    : "load"
-         , path    : $scope.localFilePath
+  return { type    : "load", 
+           path    : $scope.localFilePath
          };
 }
 
@@ -240,7 +241,7 @@ function loadLocalFile($scope, file){
   if (window.File && window.FileList && window.FileReader && file) {
     if (file.type.match('text')) {
       fileText(file, function(srcText){ 
-        setSourceCode($scope, file.name, srcText) 
+        setSourceCode($scope, file.name, srcText); 
       });
     } else { 
       alert("Can only load text files.");
@@ -284,6 +285,7 @@ var debugResp   = 0;
 var debugFiles  = null;
 var debugDemo   = null;
 var debugSrcURL = null;
+var debugZ      = null;
 
 function LiquidDemoCtrl($scope, $http, $location) {
 
@@ -305,7 +307,7 @@ function LiquidDemoCtrl($scope, $http, $location) {
     $scope.isFullScreen = !$scope.isFullScreen;
     $scope.embiggen     = ($scope.embiggen == "FullScreen") ? "Shrink" : "FullScreen";
     toggleEditorSize($scope);
-  }
+  };
 
   // LOAD a file from disk (only when isLocalServer)
   $scope.loadFromLocalPath = function(){ 
@@ -359,7 +361,7 @@ function LiquidDemoCtrl($scope, $http, $location) {
 
   // Load a particular demo
   $scope.loadSource   = function(demo){
-    // debugDemo   = demo;
+    debugDemo   = demo;
     var srcName = demo.file;
     var srcURL  = getSrcURL(srcName);
     debugSrcURL = srcURL;
@@ -375,6 +377,7 @@ function LiquidDemoCtrl($scope, $http, $location) {
 
   // Extract demo name from URL 
   $scope.$watch('location.search()', function() {
+    // debugZ  = ($location.search()).demo;
     $scope.demoName = ($location.search()).demo;
     var newDemo = {file : $scope.demoName};
     if ($scope.demoName in allDemos){
@@ -388,7 +391,12 @@ function LiquidDemoCtrl($scope, $http, $location) {
      $location.search('demo', demo.file);
      $scope.loadSource(demo);
   };
-  
+ 
+  // Change editor keybindings
+  $scope.keyBindingsNone  = function (){ progEditor.setKeyboardHandler(null); };
+  $scope.keyBindingsVim   = function (){ progEditor.setKeyboardHandler("ace/keyboard/vim"); };
+  $scope.keyBindingsEmacs = function (){ progEditor.setKeyboardHandler("ace/keyboard/emacs"); };
+
   // PERMALINK
   $scope.makePermalink = function(){
     $http.post(getQueryURL(), getPermaQuery($scope))
