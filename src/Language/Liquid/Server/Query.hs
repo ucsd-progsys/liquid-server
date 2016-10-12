@@ -4,10 +4,10 @@ module Language.Liquid.Server.Query (queryResult) where
 
 
 import           System.IO.Error        (catchIOError)
-import           System.Exit            (ExitCode)
-import           System.Directory       (doesFileExist)
+import           System.Exit            (ExitCode(..))
+import           System.Directory       (doesFileExist, findExecutable)
 import           System.FilePath        ((</>), addExtension, splitFileName)
-import           System.Process         (system)
+import           System.Process         (readProcessWithExitCode, system)
 import           Control.Applicative    ((<$>))
 import           Control.Exception      (throw)
 import           Data.Maybe
@@ -28,6 +28,7 @@ queryResult :: Config -> Ticket -> Query -> IO Result
 ---------------------------------------------------------------
 queryResult c t q@(Check {})   = checkResult   c t q
 queryResult c _ q@(Recheck {}) = recheckResult c   q
+queryResult c t q@(Test  {})   = testResult    c t q
 queryResult _ _ q@(Load  {})   = loadResult        q
 queryResult _ _ q@(Save  {})   = saveResult        q
 queryResult c t q@(Perma {})   = permaResult   c t q
@@ -116,6 +117,32 @@ execCheck c f
        r <- readResult f
        return $ r += ("path", toJSON $ srcFile f)
 
+
+---------------------------------------------------------------
+testResult :: Config -> Ticket -> Query -> IO Result
+---------------------------------------------------------------
+testResult c t q = genFiles c t >>= writeQuery q >>= execTest c q
+
+
+---------------------------------------------------------------
+execTest :: Config -> Query -> Files -> IO Result
+---------------------------------------------------------------
+execTest c q f
+  = do Just bin <- findExecutable (srcTester c)
+       (x,o,e) <- readProcessWithExitCode
+                    bin [srcFile f, T.unpack (binder q)] ""
+       print o
+       print e
+       writeFile (logFile c) (o ++ "\n" ++ e)
+       let r = case x of
+                 ExitSuccess -> mkResult [ ("status", "safe") ]
+                 ExitFailure 1 -> mkResult [ ("status", "unsafe")
+                                           , ("message", T.pack o)]
+                 ExitFailure 2 -> errResult (T.pack e)
+       print r
+       return $ r += ("path", toJSON $ srcFile f)
+
+
 ---------------------------------------------------------------
 writeQuery     :: Query -> Files -> IO Files
 ---------------------------------------------------------------
@@ -141,7 +168,7 @@ readResult f = do b <- doesFileExist file
 ---------------------------------------------------------------
 makeCommand :: Config -> FilePath -> String
 ---------------------------------------------------------------
-makeCommand config t = intercalate " "
+makeCommand config t = unwords
     [ cmdPrefix  config
     , srcChecker config
     , t
@@ -149,6 +176,11 @@ makeCommand config t = intercalate " "
     , logFile config
     , "2>&1"
     ]
+
+
+makeTestCommand :: Config -> FilePath -> T.Text -> String
+makeTestCommand config t bnd
+  = unwords [ srcTester config, t, show bnd, ">", logFile config, "2>&1" ]
 
 ---------------------------------------------------------------
 -- | Redirecting Custom Files ---------------------------------

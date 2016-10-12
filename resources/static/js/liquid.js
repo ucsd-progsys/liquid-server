@@ -12,10 +12,10 @@ function getDemo(name){
   return res;
 }
 
-function getDemos(ty){ 
+function getDemos(ty){
   var a = [];
-  for (var k in allDemos) { 
-    if (allDemos[k].type == ty) 
+  for (var k in allDemos) {
+    if (allDemos[k].type == ty)
       a.push(getDemo(k));
   };
   return a;
@@ -32,7 +32,7 @@ function getCategories(){
   function tx(c){return {type: c.type, name: c.name, demos: getDemos(c.type)}};
   return allCategories.map(tx);
 }
-  
+
 
 /*******************************************************************************/
 /************** Setting Up Editor **********************************************/
@@ -62,7 +62,7 @@ function toggleEditorSize(x){
   if (x.isFullScreen){
     ht = 600;
   };
-  $("#program-pane").height(ht); 
+  $("#program-pane").height(ht);
   $("#program").height(ht-60);
 }
 
@@ -73,12 +73,12 @@ function toggleEditorSize(x){
 /*******************************************************************************/
 
 function errorRange(err){
-  
+
   var row0 = err.start.line - 1;
   var col0 = err.start.column - 1;
   var row1 = err.stop.line - 1;
   var col1 = err.stop.column - 1;
- 
+
   if (row0 == row1 && col0 == col1){
     return new Range(row0, col0, row0, col0 + 1);
   } else {
@@ -109,7 +109,7 @@ function setErrors(editor, errs){
   // Add Error Markers
   errorMarkers.forEach(function(m){ editor.session.removeMarker(m); });
   errorMarkers = errs.map(function(e){ return errorMarker(editor, e);});
-  
+
   // Add Gutter Annotations
   editor.session.clearAnnotations();
   var annotations  = errs.map(errorAceAnnot);
@@ -121,18 +121,18 @@ function setErrors(editor, errs){
 /************** URLS ***********************************************************/
 /*******************************************************************************/
 
-function isPrefix(p, q) { 
-  return (p == q.slice(0, p.length)) 
+function isPrefix(p, q) {
+  return (p == q.slice(0, p.length))
 }
 
-function getQueryURL(){ 
-  return 'query'; 
+function getQueryURL(){
+  return 'query';
 }
 
-function getSrcURL(file){ 
+function getSrcURL(file){
   if (file.match("/")){
     return file;
-  } else { 
+  } else {
     return ('demos/' + file);
   }
 }
@@ -143,9 +143,9 @@ function getSrcURL(file){
 /************** Queries ********************************************************/
 /*******************************************************************************/
 
-function getCheckQuery($scope){ 
+function getCheckQuery($scope){
   return { type    : "check",
-           program : getSourceCode() 
+           program : getSourceCode()
          };
 }
 
@@ -153,14 +153,21 @@ function getRecheckQuery($scope){
   var p = "";
   if ($scope.filePath) p = $scope.filePath;
 
-  return { type    : "recheck", 
-           program : getSourceCode(), 
+  return { type    : "recheck",
+           program : getSourceCode(),
            path    : p
          };
 }
 
+function getTestQuery($scope){
+  return { type    : "test",
+           program : getSourceCode(),
+           binder  : getBinder()
+         };
+}
+
 function getLoadQuery($scope){
-  return { type    : "load", 
+  return { type    : "load",
            path    : $scope.localFilePath
          };
 }
@@ -213,13 +220,17 @@ function setStatusResult($scope, data){
 
 function setSourceCode($scope, srcName, srcText){
   clearStatus($scope);
-  $scope.filePath       = null;             
+  $scope.filePath       = null;
   $scope.sourceFileName = srcName.split("/").pop(); // drop path prefix
-  progEditor.getSession().setValue(srcText);  
+  progEditor.getSession().setValue(srcText);
 }
 
 function getSourceCode(){
   return progEditor.getSession().getValue();
+}
+
+function getBinder(){
+  return document.getElementById("binder").value;
 }
 
 /*******************************************************************************/
@@ -240,10 +251,10 @@ function fileText(file, k){
 function loadLocalFile($scope, file){
   if (window.File && window.FileList && window.FileReader && file) {
     if (file.type.match('text')) {
-      fileText(file, function(srcText){ 
-        setSourceCode($scope, file.name, srcText); 
+      fileText(file, function(srcText){
+        setSourceCode($scope, file.name, srcText);
       });
-    } else { 
+    } else {
       alert("Can only load text files.");
     }
   } else {
@@ -256,18 +267,18 @@ function loadLocalFile($scope, file){
 /** Extracting JSON Results ****************************************************/
 /*******************************************************************************/
 
-function getResult(d) { 
+function getResult(d) {
   var res = "crash";
   if (d) {
-    res = d.status; 
+    res = d.status;
   }
   return res;
 }
 
-function getWarns(d){ 
+function getWarns(d){
   var ws = [];
   if (d && d.errors){
-    var ws = d.errors.map(function(x){ 
+    var ws = d.errors.map(function(x){
                return x.message;
              });
   }
@@ -290,7 +301,7 @@ var debugZ      = null;
 function LiquidDemoCtrl($scope, $http, $location) {
 
   // Start in non-fullscreen
-  $scope.isFullScreen  = false; 
+  $scope.isFullScreen  = false;
   $scope.embiggen      = "FullScreen";
   $scope.demoTitle     = demoTitle;
   $scope.demoSubtitle  = demoSubtitle;
@@ -310,54 +321,54 @@ function LiquidDemoCtrl($scope, $http, $location) {
   };
 
   // LOAD a file from disk (only when isLocalServer)
-  $scope.loadFromLocalPath = function(){ 
+  $scope.loadFromLocalPath = function(){
     var srcName = $scope.localFilePath;
     if (srcName){
-      // alert('so you want to load' + $scope.localFilePath); 
+      // alert('so you want to load' + $scope.localFilePath);
       $http.post(getQueryURL(), getLoadQuery($scope))
            .success(function(data, status){
              debugData = data;
-             if (data.program) { 
+             if (data.program) {
                setSourceCode($scope, srcName, data.program);
              } else if (data.error) {
-               alert("Load Error " + data.error); 
+               alert("Load Error " + data.error);
              } else {
-               alert("Horrors: Load Failed! " + srcName); 
+               alert("Horrors: Load Failed! " + srcName);
              }
            })
            .error(function(data, status){
-             alert("Load Error: No response for " + srcName); 
+             alert("Load Error: No response for " + srcName);
            });
     }
   };
 
   // SAVE a file to disk (only when isLocalServer)
-  $scope.saveToLocalPath = function(){ 
+  $scope.saveToLocalPath = function(){
     var srcName = $scope.localFilePath;
-    //alert('so you want to save ' + $scope.localFilePath); 
+    //alert('so you want to save ' + $scope.localFilePath);
     if (srcName) {
       $http.post(getQueryURL(), getSaveQuery($scope))
            .success(function(data, status){
              debugData = data;
              if (data.path){
-               alert("Saved."); 
+               alert("Saved.");
              } else {
                alert("Save Unsuccessful: " + data);
              }
            })
            .error(function(data, status){
-             alert("Save Failed: " + data); 
+             alert("Save Failed: " + data);
            });
     }
   };
 
   // Clear Status when editor is changed
-  progEditor.on("change", function(e){ 
+  progEditor.on("change", function(e){
     $scope.$apply(function(){
       clearStatus($scope);
     });
   });
-  
+
 
   // Load a particular demo
   $scope.loadSource   = function(demo){
@@ -375,7 +386,7 @@ function LiquidDemoCtrl($scope, $http, $location) {
   debugDemo = getDefaultDemo();
   $scope.loadSource(debugDemo); //getDefaultDemo());
 
-  // Extract demo name from URL 
+  // Extract demo name from URL
   $scope.$watch('location.search()', function() {
     // debugZ  = ($location.search()).demo;
     $scope.demoName = ($location.search()).demo;
@@ -386,12 +397,12 @@ function LiquidDemoCtrl($scope, $http, $location) {
     $scope.loadSource(newDemo);
     }, true);
 
-  // Update demo name in URL 
+  // Update demo name in URL
   $scope.changeTarget = function(demo) {
      $location.search('demo', demo.file);
      $scope.loadSource(demo);
   };
- 
+
   // Change editor keybindings
   $scope.keyBindingsNone  = function (){ progEditor.setKeyboardHandler(null); };
   $scope.keyBindingsVim   = function (){ progEditor.setKeyboardHandler("ace/keyboard/vim"); };
@@ -405,44 +416,63 @@ function LiquidDemoCtrl($scope, $http, $location) {
              debugData        = data;
              $scope.changeTarget({file : data.path});
            } else {
-             alert("Permalink did not return link: " + data); 
+             alert("Permalink did not return link: " + data);
            }
          })
          .error(function(data, status){
-            alert("Permalink Failed: " + status); 
+            alert("Permalink Failed: " + status);
          });
   };
 
 
   // http://www.cleverweb.nl/javascript/a-simple-search-with-angularjs-and-php/
-  function verifyQuery(query){ 
+  function verifyQuery(query){
     debugQuery = query;
     setStatusChecking($scope);
     $http.post(getQueryURL(), query)
          .success(function(data, status) {
-            debugResp        = debugResp + 1; 
+            debugResp        = debugResp + 1;
             $scope.status    = status;
             debugData        = data;
-            $scope.warns     = getWarns(data); 
+            $scope.warns     = getWarns(data);
             $scope.annotHtml = data.annotHtml;
             $scope.result    = setStatusResult($scope, data);
-           
+
             // This may be "null" if liquid crashed...
-            if (data) { 
+            if (data) {
               setAnnots(data.types);
               setErrors(progEditor, data.errors);
             };
-            
+
         })
          .error(function(data, status) {
             var msg = (data || "Request failed") + status;
             alert(msg);
          });
   };
-  
+
+  function testQuery(query){
+    debugQuery = query;
+    setStatusChecking($scope);
+    $http.post(getQueryURL(), query)
+         .success(function(data, status) {
+            debugResp        = debugResp + 1;
+            $scope.status    = status;
+            debugData        = data;
+            $scope.result    = setStatusResult($scope, data);
+            $scope.warns     = [data.message];
+
+        })
+         .error(function(data, status) {
+            var msg = (data || "Request failed") + status;
+            alert(msg);
+         });
+  };
+
   $scope.verifySource   = function(){ verifyQuery(getCheckQuery($scope));   };
   $scope.reVerifySource = function(){ verifyQuery(getRecheckQuery($scope)); };
-   
+  $scope.testSource     = function(){ testQuery(getTestQuery($scope));    };
+
 }
 
 /************************************************************************/
