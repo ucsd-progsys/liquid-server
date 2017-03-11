@@ -4,13 +4,13 @@ module Language.Liquid.Server.Scotty (start) where
 
 import Web.Scotty
 import System.FilePath        ((</>)) -- , joinPath, addExtension, splitFileName)
-import Control.Applicative    ((<$>))
+-- import Control.Applicative    ((<$>))
 import Control.Monad.IO.Class (liftIO)
 import Data.Maybe
 import Data.Aeson       hiding (Result, json)
 -- import Network.Wai
 
-import Network.Wai.Middleware.RequestLogger
+-- import Network.Wai.Middleware.RequestLogger
 import Network.Wai.Middleware.Static
 import Network.Wai.Middleware.Cors
 
