@@ -34,5 +34,6 @@ var allDemos =
     "beta.lc"               : { name : "Beta Reduction"   , type : "basic"  },
     "bool.lc"               : { name : "Church Booleans"  , type : "basic"  },
     "nats.lc"               : { name : "Church Numerals"  , type : "basic"  },
+    "arith.lc"              : { name : "Add/Mul Numerals" , type : "basic"  },
     "compose.lc"            : { name : "Composition"      , type : "basic"  },
   };
