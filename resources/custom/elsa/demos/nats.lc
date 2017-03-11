@@ -19,3 +19,8 @@ eval succ_one :
   =b> \f x -> f ((\x -> f x) x)
   =b> \f x -> f (f x)
   =d> two
+
+eval succ_one_tr :
+  incr one
+  =*> two
+
