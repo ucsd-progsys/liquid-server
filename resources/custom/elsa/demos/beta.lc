@@ -1,4 +1,12 @@
 
 eval beta : 
   (\f x -> f (f x)) g
-y
+  =b> \x ->  g (g x)
+
+
+eval your_turn : 
+  (\f x -> f (f x)) incr one
+
+
+
+
