@@ -16,11 +16,12 @@ var allLinks = [ { url: "https://github.com/ucsd-progsys/elsa" , name: "Code" }
 
 /************** Editor Modes ***************************************************/
 
-var toolName       = "elsa";
-var editorTheme    = "ace/theme/xcode";
-var editorMode     = "ace/mode/haskell";
-var defaultErrText = "Invalid Evaluation";
- 
+var toolName         = "elsa";
+var editorTheme      = "ace/theme/xcode";
+var editorMode       = "ace/mode/haskell";
+var defaultErrText   = "Invalid Evaluation";
+var showErrorBanners = false;
+
 /************** List of Demos **************************************************/
 
 var allCategories = [ { type : "basic"    , name: "Basics" }

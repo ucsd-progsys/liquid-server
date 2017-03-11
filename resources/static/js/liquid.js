@@ -290,14 +290,15 @@ var debugZ      = null;
 function LiquidDemoCtrl($scope, $http, $location) {
 
   // Start in non-fullscreen
-  $scope.isFullScreen  = false; 
-  $scope.embiggen      = "FullScreen";
-  $scope.demoTitle     = demoTitle;
-  $scope.demoSubtitle  = demoSubtitle;
-  $scope.links         = allLinks;
-  $scope.categories    = getCategories();
-  $scope.isLocalServer = (document.location.hostname == "localhost");
-  $scope.localFilePath = "";
+  $scope.isFullScreen     = false; 
+  $scope.embiggen         = "FullScreen";
+  $scope.demoTitle        = demoTitle;
+  $scope.demoSubtitle     = demoSubtitle;
+  $scope.links            = allLinks;
+  $scope.categories       = getCategories();
+  $scope.isLocalServer    = (document.location.hostname == "localhost");
+  $scope.localFilePath    = "";
+  $scope.showErrorBanners = showErrorBanners;
 
   // For debugging
   $scope.gong =  function(s) { alert(s); };
