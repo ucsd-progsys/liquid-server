@@ -39,6 +39,8 @@ var allDemos =
     "refinements101.hs"     : { name : "Refinements 101"  , type : "basic"  },
     "refinements101reax.hs" : { name : "Refinements 102"  , type : "basic"  },
     "vectorbounds.hs"       : { name : "Vector Bounds"    , type : "basic"  },
+    "product.hs"            : { name : "Vector Product"   , type : "basic"  },
+
     // Measure Demos
     "Vectors.hs"            : { name : "Vectors"          , type : "measure"},
     "lenMapReduce.hs"       : { name : "Safe List"        , type : "measure"},
