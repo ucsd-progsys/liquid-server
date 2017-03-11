@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-   
+
     <style>
-      
+
       .warningmessage {
         white-space: pre;
         font-family: monospace;
@@ -28,40 +28,40 @@
       }
 
       .typeToolTip {
-        z-index:25; 
+        z-index:25;
         background-color: #D8D8D8;
         border-radius: 5px 5px;
-        
-        -moz-border-radius: 5px; 
-        -webkit-border-radius: 5px; 
-        
-        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1); 
-        -webkit-box-shadow: 5px 5px rgba(0, 0, 0, 0.1);
-        -moz-box-shadow: 5px 5px rgba(0, 0, 0, 0.1); 
 
-        font-family: 'Monaco', 
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+
+        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+        -webkit-box-shadow: 5px 5px rgba(0, 0, 0, 0.1);
+        -moz-box-shadow: 5px 5px rgba(0, 0, 0, 0.1);
+
+        font-family: 'Monaco',
                      'Menlo',
-                     'Ubuntu Mono', 
+                     'Ubuntu Mono',
                      'Consolas',
-                     'source-code-pro', 
+                     'source-code-pro',
                      monospace;
 
         font-size: 12px;
-                   
+
         white-space: pre;
         display:block;
-        position: fixed; 
-        left: 1em; top: 2em; 
+        position: fixed;
+        left: 1em; top: 2em;
         z-index: 99;
-        margin-left: 5; 
-        background: #FFFFAA; 
+        margin-left: 5;
+        background: #FFFFAA;
         border: 2px solid #FFAD33;
         padding: 0.8em 1em;
       }
 
 
     </style>
-      
+
     <!-- Le styles -->
     <link href="css/bootstrap-readable.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
@@ -79,18 +79,11 @@
     <div ng-hide="isFullScreen" class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          
+
           <div class="nav-collapse collapse">
           <ul class="nav">
             <li class="active"><a href="./index.html">Demo</a></li>
             <li class="" ng-repeat="link in links"><a href="{{link.url}}">{{link.name}}</a></li>
-          
-            <!--
-            <li class=""><a href="https://github.com/ucsd-progsys/liquidhaskell">Code</a></li>
-            <li class=""><a href="http://goto.ucsd.edu/~rjhala/liquid/haskell/blog/about/">About</a></li>
-            <li class=""><a href="http://goto.ucsd.edu/~rjhala/liquid/haskell/blog/">Blog</a></li>
-            -->
-
           </ul>
           </div>
         </div>
@@ -99,7 +92,7 @@
 
 
     <!-- SubTitle ================================================== -->
-           
+
    <header ng-show="!isFullScreen" class="jumbotron subhead" id="overview">
      <div class="container">
        <h1>{{demoTitle}}</h1>
@@ -107,20 +100,20 @@
      </div>
    </header>
 
-   
+
    <!-- Actual Body ================================================== -->
-   
- 
+
+
   <div class="container-fluid">
      <div class="row-fluid">
 
      <div id="code-pane" class="span12">
-      
+
        <!-- Body content =========================================-->
-      
+
        <!-- FILE LOAD/SAVE -->
        <div class="row-fluid">
-        
+
 
 
          <div class="span2">
@@ -167,22 +160,26 @@
 
         <div class="tab-content">
            <div class="tab-pane active" id="tabSrc">
-             <div ng-show="isError" class="alert alert-block" ng-repeat="warn in warns">
-               <button type="button" class="close" data-dismiss="alert">×</button>
-               <strong>Error:</strong> 
-                 <div class="warningmessage">{{warn}}</div>
-             </div>
 
-             <div ng-show="isUnsafe" class="alert alert-error" ng-repeat="warn in warns">
-               <button type="button" class="close" data-dismiss="alert">×</button>
-               <strong>Unsafe!</strong>
-                 <div class="warningmessage">{{warn}}</div>
+            <div ng-show="showErrorBanners">
+               <div ng-show="isError" class="alert alert-block" ng-repeat="warn in warns">
+                 <button type="button" class="close" data-dismiss="alert">×</button>
+                 <strong>Error:</strong>
+                   <div class="warningmessage">{{warn}}</div>
+               </div>
+
+               <div ng-show="isUnsafe" class="alert alert-error" ng-repeat="warn in warns">
+                 <button type="button" class="close" data-dismiss="alert">×</button>
+                 <strong>Unsafe!</strong>
+                   <div class="warningmessage">{{warn}}</div>
+               </div>
              </div>
 
              <div ng-show="isCrash" class="alert alert-block">
                <button type="button" class="close" data-dismiss="alert">×</button>
                <strong>Crash!</strong> Uh oh, there was a crash. See the <a href="log" target="_blank">log</a>.
              </div>
+
 
              <div id="program-pane" class="welleditor" style="background:#fff">
              <div class="form-horizontal">
@@ -192,7 +189,7 @@
                  <button class="btn btn-info" type="button" ng-show="isUnknown" ng-click="verifySource()">Re</button>
                  <button class="btn btn-info" type="button" ng-show="isUnknown" ng-click="verifySource()">Check</button>
                </div>
-               
+
                <button class="btn"             type="button" ng-show="isChecking" ng-click="verifySource()">Verifying...</button>
                <button class="btn btn-success" type="button" ng-show="isSafe">Safe</button>
                <button class="btn btn-danger"  type="button" ng-show="isUnsafe">Unsafe</button>
@@ -204,34 +201,34 @@
                  <button class="btn" type="button" ng-click="toggleFullScreen()">{{embiggen}}</i></button>
                </div>
 
-             </div> 
+             </div>
              <br>
-             <div id="program" style="height: 85%"> 
+             <div id="program" style="height: 85%">
                  -- Wait for it ...
              </div>
              </div>
            </div>
          </div>
-       </div> 
+       </div>
 
 <!-- JavaScript below! ============================================== -->
 
-  <script src="js/ace/ace.js" type="text/javascript" charset="utf-8"></script> 
+  <script src="js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
   <script src="theme.js" type="text/javascript" charset="utf-8"></script>
   <script src="mode.js"  type="text/javascript" charset="utf-8"></script>
-  <script src="js/tooltip.js"></script> 
-  <script src="js/annot.js"></script> 
+  <script src="js/tooltip.js"></script>
+  <script src="js/annot.js"></script>
   <script src="config.js"></script>
   <script src="js/liquid.js"></script>
-   
+
   <!--Site Meter
-  <script type="text/javascript" 
+  <script type="text/javascript"
     src="http://s23.sitemeter.com/js/counter.js?site=s23liquidtypes">
   </script>
   <noscript>
-    <a href="http://s23.sitemeter.com/stats.asp?site=s23liquidtypes" 
+    <a href="http://s23.sitemeter.com/stats.asp?site=s23liquidtypes"
       target="_top">
-      <img src="http://s23.sitemeter.com/meter.asp?site=s23liquidtypes" 
+      <img src="http://s23.sitemeter.com/meter.asp?site=s23liquidtypes"
       alt="Site Meter" border="0"/></a>
   /</noscript>
   Copyright (c)2009 Site Meter -->

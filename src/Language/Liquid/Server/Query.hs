@@ -8,7 +8,6 @@ import           System.Exit            (ExitCode)
 import           System.Directory       (doesFileExist)
 import           System.FilePath        ((</>), addExtension, splitFileName)
 import           System.Process         (system)
-import           Control.Applicative    ((<$>))
 import           Control.Exception      (throw)
 import           Data.Maybe
 import           Data.List              (isPrefixOf, intercalate)

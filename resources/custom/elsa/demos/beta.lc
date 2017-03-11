@@ -1,0 +1,4 @@
+
+eval beta : 
+  (\f x -> f (f x)) g
+y

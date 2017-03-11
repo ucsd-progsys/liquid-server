@@ -18,10 +18,11 @@ var allLinks = [ { url: "https://github.com/ucsd-progsys/liquidhaskell"         
 
 /************** Editor Modes ***************************************************/
 
-var toolName       = "liquidhaskell";
-var editorTheme    = "ace/theme/xcode";
-var editorMode     = "ace/mode/haskell";
-var defaultErrText = "Liquid Type Error";
+var toolName         = "liquidhaskell";
+var editorTheme      = "ace/theme/xcode";
+var editorMode       = "ace/mode/haskell";
+var defaultErrText   = "Liquid Type Error";
+var showErrorBanners = false;
  
 /************** List of Demos **************************************************/
 

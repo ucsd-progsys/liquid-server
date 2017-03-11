@@ -1,0 +1,9 @@
+{ "toolName"   : "elsa"      
+, "srcSuffix"  : "lc" 
+, "srcChecker" : "elsa --server"
+, "cmdPrefix"  : ""
+, "themeFile"  : "theme-xcode.js"
+, "modeFile"   : "mode-haskell.js"
+, "tmpDir"     : ".elsa"
+, "port"       : 8090 
+}
