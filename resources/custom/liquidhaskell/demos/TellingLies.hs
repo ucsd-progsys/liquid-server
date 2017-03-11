@@ -1,5 +1,5 @@
 {-@ LIQUID "--no-termination" @-}
-{-@ LIQUID "--short"          @-}
+{-@ LIQUID "--short-names"    @-}
 
 module TellingLies where
 
