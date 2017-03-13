@@ -39,8 +39,8 @@ eval add_zero_zero :
 
 eval add_two_two :
   add two two
-  =*> four
+  =~> four
 
 eval mul_two_three :
   mul two three
-  =*> six
+  =~> six
