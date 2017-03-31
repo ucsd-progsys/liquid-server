@@ -1,0 +1,20 @@
+let TRUE  = \x y -> x
+let FALSE = \x y -> y 
+let ITE   = \b x y -> b x y 
+
+eval ite_true:
+  ITE TRUE e1 e2
+  =d> (\b x y -> b    x  y) TRUE e1 e2    -- expand def ITE  
+  =b>   (\x y -> TRUE x  y)      e1 e2    -- beta-step
+  =b>     (\y -> TRUE e1 y)         e2    -- beta-step
+  =b>            TRUE e1 e2               -- expand def TRUE
+  =d>     (\x y -> x) e1 e2               -- beta-step
+  =b>       (\y -> e1)   e2               -- beta-step
+  =b> e1
+
+eval ite_false:
+  ITE FALSE e1 e2
+  
+  -- fill these in! 
+
+  =b> e2

@@ -61,7 +61,7 @@ set i v (V f) = V $ \k -> if k == i then v else f k
 
 -- | Using Vectors
 
-{-@ axiom_fib :: i:Int -> {v: Bool | Prop v <=> (fib i = (if i <= 1 then 1 else (fib (i-1) + fib (i-2)))) } @-}
+{-@ axiom_fib :: i:Int -> {v: Bool | v <=> (fib i = (if i <= 1 then 1 else (fib (i-1) + fib (i-2)))) } @-}
 
 axiom_fib :: Int -> Bool
 axiom_fib i = undefined

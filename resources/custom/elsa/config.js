@@ -33,6 +33,7 @@ var allDemos =
     "alpha.lc"              : { name : "Alpha Conversion" , type : "basic"  },
     "beta.lc"               : { name : "Beta Reduction"   , type : "basic"  },
     "bool.lc"               : { name : "Church Booleans"  , type : "basic"  },
+    "ite.lc"                : { name : "Church Branches"  , type : "basic"  },
     "nats.lc"               : { name : "Church Numerals"  , type : "basic"  },
     "arith.lc"              : { name : "Add/Mul Numerals" , type : "basic"  },
     "compose.lc"            : { name : "Composition"      , type : "basic"  },
