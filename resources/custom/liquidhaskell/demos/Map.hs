@@ -7,7 +7,7 @@ module Map (empty, insert, delete) where
 
 
 {-@
-  data Map k a <l :: k -> k -> Prop, r :: k -> k -> Prop>
+  data Map k a <l :: k -> k -> Bool, r :: k -> k -> Bool>
       = Tip
       | Bin (sz    :: Size)
             (key   :: k)

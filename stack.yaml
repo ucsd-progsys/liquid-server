@@ -3,4 +3,6 @@ packages:
 - '.'
 extra-deps: []
 
-resolver: nightly-2016-05-21
+# resolver: nightly-2016-05-21
+resolver: lts-8.9
+

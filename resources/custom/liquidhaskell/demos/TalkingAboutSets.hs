@@ -13,9 +13,9 @@ import Prelude  hiding (reverse, filter)
 -- measure Set_dif  :: (Set a) -> (Set a) -> (Set a)   -- ^ difference
 
 -- | Set Predicates
--- measure Set_emp  :: (Set a) -> Prop                 -- ^ emptiness
--- measure Set_mem  :: a -> (Set a) -> Prop            -- ^ membership
--- measure Set_sub  :: (Set a) -> (Set a) -> Prop      -- ^ inclusion
+-- measure Set_emp  :: (Set a) -> Bool                 -- ^ emptiness
+-- measure Set_mem  :: a -> (Set a) -> Bool            -- ^ membership
+-- measure Set_sub  :: (Set a) -> (Set a) -> Bool      -- ^ inclusion
 
 
 -- | Talking about Sets (In Code)
@@ -27,12 +27,12 @@ import Prelude  hiding (reverse, filter)
 -- Data.Set.union        :: Ord a => xs:(Set a) -> ys:(Set a) -> {v:(Set a) | v = (Set_cup xs ys)}
 -- Data.Set.intersection :: Ord a => xs:(Set a) -> ys:(Set a) -> {v:(Set a) | v = (Set_cap xs ys)}
 -- Data.Set.difference   :: Ord a => xs:(Set a) -> ys:(Set a) -> {v:(Set a) | v = (Set_dif xs ys)}
--- Data.Set.isSubsetOf :: Ord a => xs:(Set a) -> ys:(Set a) -> {v:Bool | (Prop v) <=> (Set_sub xs ys)}
--- Data.Set.member     :: Ord a => x:a -> xs:(Set a) -> {v:Bool | (Prop v) <=> (Set_mem x xs)}
+-- Data.Set.isSubsetOf :: Ord a => xs:(Set a) -> ys:(Set a) -> {v:Bool | (v) <=> (Set_sub xs ys)}
+-- Data.Set.member     :: Ord a => x:a -> xs:(Set a) -> {v:Bool | (v) <=> (Set_mem x xs)}
 
 -- | Proving Theorems With LiquidHaskell
 
-{-@ boolAssert :: {v: Bool | (Prop v)} -> {v:Bool | (Prop v)} @-}
+{-@ boolAssert :: {v: Bool | (v)} -> {v:Bool | (v)} @-}
 boolAssert True   = True
 boolAssert False  = error "boolAssert: False? Never!"
 

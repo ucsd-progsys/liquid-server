@@ -43,7 +43,7 @@ sparseVecP = KVP [ (12 ,  34.1 )
 -- Monomorphic Association Lists
 -- -----------------------------
 
-{-@ data Assoc v <p :: Int -> Prop> = KV { keyVals :: [(Int<p>, v)] } @-}
+{-@ data Assoc v <p :: Int -> Bool> = KV { keyVals :: [(Int<p>, v)] } @-}
 data Assoc v = KV [(Int, v)]
 
 
@@ -76,7 +76,7 @@ break p xs@(x:xs')
 
 -- Dependent Tuples via Abstract Refinements
 -- 
--- data (a,b)<p :: a -> b -> Prop> = (x:a, b<p x>)
+-- data (a,b)<p :: a -> b -> Bool> = (x:a, b<p x>)
 
 -- Instantiate the `p` in *different* ways.
 
@@ -92,11 +92,11 @@ plusOnes = [(0,1), (5,6), (999,1000)]
 -- Abstractly Refined Lists
 ---------------------------------------------------------------
 
--- data [a] <p :: a -> a -> Prop> 
+-- data [a] <p :: a -> a -> Bool> 
 --   = []  
 --   | (:) (hd :: a) (tl :: [a<p h>]<p>) -> [a]<p>
 
--- * The type is parameterized with a refinement `p :: a -> a -> Prop`
+-- * The type is parameterized with a refinement `p :: a -> a -> Bool`
 --   Think of `p` as a *binary relation* over the `a` values comprising
 --   the list.
 
@@ -245,7 +245,7 @@ sort = mergeAll . sequences
 
 data Vec a = Null | Cons a (Vec a)
 
-{-@ data Vec a <p :: a -> a -> Prop> 
+{-@ data Vec a <p :: a -> a -> Bool> 
       = Null
       | Cons (h :: a) (t :: Vec <p> (a<p h>))
   @-}
