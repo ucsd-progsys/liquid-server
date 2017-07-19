@@ -5,7 +5,7 @@ import Language.Haskell.Liquid.Prelude
 
 data G = G { y:: Int}
 
-{-@ data G <p :: Int -> Prop>= G ( y:: Int<p>) @-}
+{-@ data G <p :: Int -> Bool>= G ( y:: Int<p>) @-}
 
 bar = let zero = 0 in
       let g    = G zero in
@@ -20,7 +20,7 @@ data IL a = IN | IC {ix::a, ixs:: IL a}
 
 data L a = N | C {x::a, xs::L a}
 
-{-@ data L a <p :: a -> a -> Prop> = 
+{-@ data L a <p :: a -> a -> Bool> = 
       N 
     | C (x::a) (xs:: L <p> a<p x>)    @-}
 

@@ -28,9 +28,9 @@ incr3      = compose1 incr incr2
 
 -- | An Abstract Type for Compose: Second Attempt
 
-{-@ compose2 :: forall <p :: b -> c -> Prop,
-                        q :: a -> b -> Prop, 
-                        r :: a -> c -> Prop>. 
+{-@ compose2 :: forall <p :: b -> c -> Bool,
+                        q :: a -> b -> Bool, 
+                        r :: a -> c -> Bool>. 
                 f:(y:b -> c<p y>)
              -> g:(x:a -> b<q x>)
              ->  x:a -> c<r x>
@@ -53,9 +53,9 @@ chain p q r = \ x y z -> q x y ==> p y z ==> r x z
 {-@ bound chain @-}
 
 {-@
-compose :: forall <p :: b -> c -> Prop,
-                   q :: a -> b -> Prop, 
-                   r :: a -> c -> Prop>. 
+compose :: forall <p :: b -> c -> Bool,
+                   q :: a -> b -> Bool, 
+                   r :: a -> c -> Bool>. 
            (Chain b c a p q r)
         => (y:b -> c<p y>)
         -> (z:a -> b<q z>)
