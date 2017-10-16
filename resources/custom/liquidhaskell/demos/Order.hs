@@ -76,7 +76,7 @@ break p xs@(x:xs')
 
 -- Dependent Tuples via Abstract Refinements
 -- 
--- data (a,b)<p :: a -> b -> Bool> = (x:a, b<p x>)
+-- data (a,b)<p :: a -> b -> Prop> = (x:a, b<p x>)
 
 -- Instantiate the `p` in *different* ways.
 
@@ -84,7 +84,7 @@ break p xs@(x:xs')
 plusOnes = [(0,1), (5,6), (999,1000)]
 
 {-@ break :: (a -> Bool) -> x:[a]
-          -> ([a], [a])<{\y z -> (Break x y z)}> @-}
+          -> ([a], [a])<\y -> {z:[a] |  (Break x y z)}> @-}
 
 {-@ predicate Break X Y Z   = (len X) = (len Y) + (len Z) @-}
 
@@ -92,11 +92,11 @@ plusOnes = [(0,1), (5,6), (999,1000)]
 -- Abstractly Refined Lists
 ---------------------------------------------------------------
 
--- data [a] <p :: a -> a -> Bool> 
+-- data [a] <p :: a -> a -> Prop> 
 --   = []  
 --   | (:) (hd :: a) (tl :: [a<p h>]<p>) -> [a]<p>
 
--- * The type is parameterized with a refinement `p :: a -> a -> Bool`
+-- * The type is parameterized with a refinement `p :: a -> a -> Prop`
 --   Think of `p` as a *binary relation* over the `a` values comprising
 --   the list.
 
@@ -152,6 +152,7 @@ insert y (x:xs)
 -- i.e. with a `foldr`, that works too. Can you figure out why?
 
 {-@ insertSort' :: (Ord a) => [a] -> IncrList a @-}
+insertSort' :: Ord a => [a] -> [a]
 insertSort' xs  = foldr insert [] xs
 
 
