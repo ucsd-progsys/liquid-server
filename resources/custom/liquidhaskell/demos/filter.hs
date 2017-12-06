@@ -95,7 +95,7 @@ getOdds2     = filter2 isOdd
 -- | Take 3: Add Abstract Refinement
 --------------------------------------------------------------------------
 
-{-@ filter3      :: forall a <p :: a -> Prop>.
+{-@ filter3      :: forall a <p :: a -> Bool>.
                       (a -> Maybe a<p>) -> [a] -> [a<p>] @-}
 filter3 f []     = []
 filter3 f (x:xs) = case f x of
@@ -125,7 +125,7 @@ doubles       = filter3 (\x -> Just (x + x))
 
 --------------------------------------------------------------------------
 
-{-@ filter      :: forall a <p :: a -> Prop>.
+{-@ filter      :: forall a <p :: a -> Bool>.
                        (x:a -> Maybe {v:a<p> | v = x})
                     -> xs:[a]
                     -> {v:[a<p>] | Set_sub (elts v) (elts xs)} @-}

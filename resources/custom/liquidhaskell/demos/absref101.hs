@@ -43,7 +43,7 @@ maxInt x y = if x <= y then y else x
 -- So, we would like to _abstract_ over the refinements that both arguments and the result have.
 -- We can acchieve this with with _abstract refinements_, which let us quantify or parameterize a type over its constituent refinements.  For example, we can type `maxInt` as
 
-{-@ maxInt :: forall <p :: Int -> Prop>. x:Int <p> -> y:Int <p> -> Int <p>@-}
+{-@ maxInt :: forall <p :: Int -> Bool>. x:Int <p> -> y:Int <p> -> Int <p>@-}
 
 
 -- where `Int<p>` is an abbreviation for the refinement type `{v:Int | p(v)}`.
@@ -63,13 +63,13 @@ maxInt x y = if x <= y then y else x
 
 -- By the same reasoning, we can define the `maximumInt` operator on lists:
 
-{-@ maximumInt :: forall <p :: Int -> Prop>. x:[Int <p>] -> Int <p>@-}
+{-@ maximumInt :: forall <p :: Int -> Bool>. x:[Int <p>] -> Int <p>@-}
 maximumInt ::  [Int] -> Int
 maximumInt (x:xs) = foldr maxInt x xs
 
 
 -- \begin{code}Now, we can use the function `isEven` from Language.Haskell.Liquid.Prelude library:
--- {- assume isEven :: x:Int -> {v:Bool | (Prop(v) <=> ((x mod 2) = 0))} -}
+-- {- assume isEven :: x:Int -> {v:Bool | (v <=> ((x mod 2) = 0))} -}
 -- isEven   :: Int -> Bool
 -- isEven x = x `mod` 2 == 0
 -- \end{code}
@@ -121,11 +121,11 @@ maxEvens1 xs = maximumInt xs''
 -- the monomorphic `Int` case, we establish that
 
 
-{-@ maxPoly :: forall <p :: a -> Prop>. (Ord a) => x:a<p> -> y:a<p> -> a<p> @-}
+{-@ maxPoly :: forall <p :: a -> Bool>. (Ord a) => x:a<p> -> y:a<p> -> a<p> @-}
 maxPoly     :: (Ord a) => a -> a -> a
 maxPoly x y = if x <= y then y else x
 
-{-@ maximumPoly :: forall <p :: a -> Prop>. (Ord a) => x:[a<p>] -> a<p> @-}
+{-@ maximumPoly :: forall <p :: a -> Bool>. (Ord a) => x:[a<p>] -> a<p> @-}
 maximumPoly :: (Ord a) => [a] -> a
 maximumPoly (x:xs) = foldr maxPoly x xs
 

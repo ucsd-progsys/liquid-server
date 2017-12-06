@@ -7,7 +7,7 @@ import Language.Haskell.Liquid.Prelude (liquidAssume, liquidError)
 data Vec a = V (Int -> a)
 
 {-@
-data Vec a <dom :: Int -> Prop, rng :: Int -> a -> Prop>
+data Vec a <dom :: Int -> Bool, rng :: Int -> a -> Bool>
      = V {a :: i:Int<dom> -> a <rng i>}
   @-}
 
@@ -37,18 +37,18 @@ idv n   = V (\k -> if 0 < k && k < n
 
 -- |Operations on Vectors
 
-{-@ empty :: forall <p :: Int -> a -> Prop>. Vec <{\v -> 0=1}, p> a @-}
+{-@ empty :: forall <p :: Int -> a -> Bool>. Vec <{\v -> 0=1}, p> a @-}
 empty     :: Vec  a
 empty     = V $ \_ -> (error "Empty array!")
 
-{-@ get :: forall a <r :: Int -> a -> Prop, d :: Int -> Prop>.
+{-@ get :: forall a <r :: Int -> a -> Bool, d :: Int -> Bool>.
              i: Int<d> ->
              a: Vec<d, r> a ->
              a<r i> @-}
 get :: Int -> Vec a -> a
 get i (V f) = f i
 
-{-@ set :: forall a <r :: Int -> a -> Prop, d :: Int -> Prop>.
+{-@ set :: forall a <r :: Int -> a -> Bool, d :: Int -> Bool>.
       i: Int<d> ->
       x: a<r i> ->
       a: Vec <{v:Int<d> | v != i}, r> a -> 

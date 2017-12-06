@@ -7,7 +7,7 @@ module ListSort (insertSort, mergeSort, quickSort) where
 -- | Describing Sorted Lists
 
 -- The list type is refined with an abstract refinement:
--- data [a] <p :: a -> a -> Prop> where
+-- data [a] <p :: a -> a -> Bool> where
 --   | []  :: [a] <p>
 --   | (:) :: h:a -> [a<p h>]<p> -> [a]<p>
 

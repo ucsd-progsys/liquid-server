@@ -29,7 +29,7 @@ a = (1 `C` 2 `C` 3 `C` 4 `C` N) !! 3
 
 -- | More measures
 
-{-@ measure isNull :: L a -> Prop
+{-@ measure isNull :: L a -> Bool 
     isNull (N) = true
     isNull (C x xs) = false
   @-}

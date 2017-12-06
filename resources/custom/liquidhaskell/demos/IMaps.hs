@@ -23,7 +23,7 @@ import Language.Haskell.Liquid.Prelude (liquidAssume)
 
 
 -- \begin{code}We specify vectors as
--- type Vec a <dom :: Int -> Prop, rng :: Int -> a -> Prop>
+-- type Vec a <dom :: Int -> Bool, rng :: Int -> a -> Bool>
 --   = (i:Int <dom> -> a<rng i>)
 -- \end{code}
 
@@ -40,7 +40,7 @@ type Vec a = Int -> a
 -- We can use the following basic functions to create vectors:
 
 
-{- empty :: forall <rng :: Int -> a -> Prop>.
+{- empty :: forall <rng :: Int -> a -> Bool>.
               i:{v: Int | 0 = 1} ->  a<rng> -}
 
 {-@ empty :: i: {v: Int | 0 = 1} -> a @-}
@@ -60,7 +60,7 @@ create x = (\_ -> x)
 -- We can write the following `get` function for reading the contents of a vector at a given index:
 
 
-{-@ get :: forall a <d :: x0:Int -> Prop, r :: x0: Int -> x1:a -> Prop>.
+{-@ get :: forall a <d :: x0:Int -> Bool, r :: x0: Int -> x1:a -> Bool>.
              i: Int<d> ->
              a: (j: Int<d> -> a<r j>) ->
              a<r i>
@@ -74,7 +74,7 @@ get i a = a i
 -- The type for `set`, which _updates_ the vector at a given index, is even more interesting, as it allows us to _extend_ the domain of the vector:
 
 
-{-@ set :: forall a <r :: x0: Int -> x1: a -> Prop, d :: x0: Int -> Prop>.
+{-@ set :: forall a <r :: x0: Int -> x1: a -> Bool, d :: x0: Int -> Bool>.
       i: Int<d> ->
       x: a<r i> ->
       a: (j: {v: Int<d> | v != i} -> a<r j>) ->
@@ -96,7 +96,7 @@ set i x a = \k -> if k == i then x else a k
 -- Next, we can write the following function, `init`, that ''loops'' over a vector, to `set` each index to a value given by some function.
 
 
-{-@ initialize :: forall a <r :: x0: Int -> x1: a -> Prop>.
+{-@ initialize :: forall a <r :: x0: Int -> x1: a -> Bool>.
       f: (z: Int -> a<r z>) ->
       i: {v: Int | v >= 0} ->
       n: Int ->
@@ -177,7 +177,7 @@ upperCaseString n s = ucs n 0 s
 
 {-@ measure fib :: Int -> Int @-}
 
-{-@ axiom_fib :: i:Int -> {v: Bool | Prop v <=> (fib i = (if i <= 1 then 1 else (fib (i-1) + fib (i-2)))) } @-}
+{-@ axiom_fib :: i:Int -> {v: Bool | v <=> (fib i = (if i <= 1 then 1 else (fib (i-1) + fib (i-2)))) } @-}
 axiom_fib :: Int -> Bool
 axiom_fib i = undefined
 

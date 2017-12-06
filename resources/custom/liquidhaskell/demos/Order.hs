@@ -43,7 +43,7 @@ sparseVecP = KVP [ (12 ,  34.1 )
 -- Monomorphic Association Lists
 -- -----------------------------
 
-{-@ data Assoc v <p :: Int -> Prop> = KV { keyVals :: [(Int<p>, v)] } @-}
+{-@ data Assoc v <p :: Int -> Bool> = KV { keyVals :: [(Int<p>, v)] } @-}
 data Assoc v = KV [(Int, v)]
 
 
@@ -84,7 +84,7 @@ break p xs@(x:xs')
 plusOnes = [(0,1), (5,6), (999,1000)]
 
 {-@ break :: (a -> Bool) -> x:[a]
-          -> ([a], [a])<{\y z -> (Break x y z)}> @-}
+          -> ([a], [a])<\y -> {z:[a] |  (Break x y z)}> @-}
 
 {-@ predicate Break X Y Z   = (len X) = (len Y) + (len Z) @-}
 
@@ -152,6 +152,7 @@ insert y (x:xs)
 -- i.e. with a `foldr`, that works too. Can you figure out why?
 
 {-@ insertSort' :: (Ord a) => [a] -> IncrList a @-}
+insertSort' :: Ord a => [a] -> [a]
 insertSort' xs  = foldr insert [] xs
 
 
@@ -245,7 +246,7 @@ sort = mergeAll . sequences
 
 data Vec a = Null | Cons a (Vec a)
 
-{-@ data Vec a <p :: a -> a -> Prop> 
+{-@ data Vec a <p :: a -> a -> Bool> 
       = Null
       | Cons (h :: a) (t :: Vec <p> (a<p h>))
   @-}

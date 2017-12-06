@@ -43,7 +43,7 @@ error'     = error
 
 -- | Refinements encode arbitrary **assertions** via a function
 
-{-@ lAssert     :: {v:Bool | Prop v} -> a -> a  @-}
+{-@ lAssert     :: {v:Bool | v} -> a -> a  @-}
 lAssert         :: Bool -> a -> a
 lAssert True  x = x
 lAssert False _ = error' "lAssert failure"

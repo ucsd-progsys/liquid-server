@@ -18,8 +18,8 @@ plus3''     = (+1) `c` (+2)
 
 -- | Typing function composition
 
-{-@ c :: forall < p :: b -> c -> Prop
-                , q :: a -> b -> Prop>.
+{-@ c :: forall < p :: b -> c -> Bool 
+                , q :: a -> b -> Bool>.
          (x:b -> c<p x>) 
       -> g:(x:a -> b<q x>) 
       -> y:a 

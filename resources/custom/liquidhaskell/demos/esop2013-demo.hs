@@ -6,7 +6,7 @@ data L a = N
          | C a (L a)
 
 {-@
-data L [llen] a <p :: a -> a -> Prop>
+data L [llen] a <p :: a -> a -> Bool>
   = N 
   | C (h :: a) (tl :: (L <p> a<p h>))
 @-}
