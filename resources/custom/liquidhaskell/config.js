@@ -62,5 +62,6 @@ var allDemos =
     "SimpleRefinements.hs" : { name : "Simple Refinements", type : "tutorial" },  
     "Loop.hs"              : { name : "HO Loop"           , type : "tutorial" },
     "Composition.hs"       : { name : "Composition"       , type : "tutorial" },
-    "Array.hs"             : { name : "Finite Maps"       , type : "tutorial" }
+    "Array.hs"             : { name : "Finite Maps"       , type : "tutorial" },
+    "IntervalSets.hs"      : { name : "Interval Sets"     , type : "tutorial" }
   };
