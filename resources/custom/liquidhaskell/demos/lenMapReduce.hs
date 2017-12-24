@@ -1,9 +1,10 @@
-module ListLengths where
+module ListLengths () where
 
-import qualified Data.Hashable as H 
+-- import qualified Data.Hashable as H 
 import Prelude hiding (length, map, filter, head, tail, foldl1)
 import Language.Haskell.Liquid.Prelude (liquidError)
-import qualified Data.HashMap.Strict as M
+-- import qualified Data.HashMap.Strict as M
+import qualified Data.Map.Strict as M
 
 -- liquidError = error
 
@@ -84,7 +85,7 @@ eliminateStutter xs = map head $ groupEq xs
 
 
 -- `groupEq` gathers consecutive equal elements in the list into a single non-empty list.
-
+{-@ groupEq :: (Eq a) => [a] -> [{v:[a] | NonNull v}] @-} 
 groupEq []     = []
 groupEq (x:xs) = (x:ys) : groupEq zs
                  where (ys,zs) = span (x ==) xs
@@ -109,7 +110,7 @@ safeSplit _      = liquidError "don't worry, be happy"
 
 -- | A Simple map-reduce library
 
-mapReduce       :: (Eq k, H.Hashable k) 
+mapReduce       :: (Ord k) 
                 => (a -> [(k, v)]) -- ^ key-mapper
                 -> (v -> v -> v)   -- ^ reduction operator
                 -> [a]             -- ^ inputs
@@ -128,26 +129,23 @@ keyMap f xs = concatMap f xs
 -- | `group` gathers the key-value pairs into a `Map` from keys to the 
 -- lists of values with that same key.
 
-group     :: (Eq k, H.Hashable k) 
-          => [(k, a)] -> M.HashMap k [a]
+group     :: (Ord k) 
+	  => [(k, a)] -> M.Map k [a]
 
 group kvs = foldr (\(k, v) m -> inserts k v m) M.empty kvs
 
 
 -- | `inserts` adds the new value `v` to the list of previously known 
---  values `lookupDefault [] k m` for the key `k`.
+--  values `findWithDefault [] k m` for the key `k`.
 
-inserts   :: (Eq k, H.Hashable k) 
-          => k -> a -> M.HashMap k [a] -> M.HashMap k [a]
-
+inserts   :: (Ord k) => k -> a -> M.Map k [a] -> M.Map k [a]
 inserts k v m = M.insert k (v : vs) m
-  where vs    = M.lookupDefault [] k m
-
+  where vs    = M.findWithDefault [] k m
 
 -- | `reduces` crunches a list of values for a given key in the 
 -- table to a single value
 
-reduce    :: (v -> v -> v) -> M.HashMap k [v] -> M.HashMap k v
+reduce    :: (v -> v -> v) -> M.Map k [v] -> M.Map k v
 reduce op = M.map (foldl1 op)
 
 
