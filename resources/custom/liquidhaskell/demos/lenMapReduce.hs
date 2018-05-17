@@ -1,9 +1,7 @@
 module ListLengths () where
 
--- import qualified Data.Hashable as H 
 import Prelude hiding (length, map, filter, head, tail, foldl1)
 import Language.Haskell.Liquid.Prelude (liquidError)
--- import qualified Data.HashMap.Strict as M
 import qualified Data.Map.Strict as M
 
 -- liquidError = error
