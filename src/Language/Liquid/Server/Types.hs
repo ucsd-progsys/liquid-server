@@ -1,11 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PartialTypeSignatures #-}
 
 module Language.Liquid.Server.Types (
     -- * Configuration
     Config (..)
-   , Files  (..)
-
-    -- * Query Type 
+  , Files  (..)
+    
+  -- * Query Type 
   , Query (..) 
   
     -- * Response Type
@@ -65,6 +66,7 @@ instance FromJSON Config where
   parseJSON (Object v) = objectConfig v
   parseJSON _          = mzero
 
+objectConfig :: Object -> _
 objectConfig v = Config <$> v .: "toolName" 
                         <*> v .: "srcSuffix"
                         <*> v .: "srcChecker"
@@ -82,7 +84,7 @@ instance FromJSON Query where
   parseJSON (Object v) = objectQuery v
   parseJSON _          = mzero 
 
--- objectQuery    :: Object -> Query
+objectQuery    :: Object -> _
 objectQuery v 
   = do ty <- v .: "type" 
        case ty :: String of 
