@@ -29,5 +29,6 @@ var allCategories = [ { type : "basic"    , name: "Basics" }
 
 var allDemos =
   { // Basic Demos
-    "option.rs"             : { name : "Option"           , type : "basic"  },
+    "blank.rs"    : { name : "Blank"            , type : "basic"  },
+    "option.rs"   : { name : "Option"           , type : "basic"  },
   };
