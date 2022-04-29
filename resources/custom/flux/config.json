@@ -5,5 +5,5 @@
 , "themeFile"  : "theme-xcode.js"
 , "modeFile"   : "mode-rust.js"
 , "tmpDir"     : "."
-, "port"       : 8095 
+, "port"       : 8091 
 }
