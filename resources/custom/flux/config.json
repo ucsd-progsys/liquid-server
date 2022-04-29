@@ -4,6 +4,6 @@
 , "cmdPrefix"  : ""
 , "themeFile"  : "theme-xcode.js"
 , "modeFile"   : "mode-rust.js"
-, "tmpDir"     : ".elsa"
+, "tmpDir"     : ".flux"
 , "port"       : 8095 
 }
