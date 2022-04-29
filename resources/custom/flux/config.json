@@ -1,9 +1,9 @@
-{ "toolName"   : "elsa"      
-, "srcSuffix"  : "lc" 
-, "srcChecker" : "elsa --server"
+{ "toolName"   : "flux"      
+, "srcSuffix"  : "rs" 
+, "srcChecker" : "flux"
 , "cmdPrefix"  : ""
 , "themeFile"  : "theme-xcode.js"
-, "modeFile"   : "mode-haskell.js"
+, "modeFile"   : "mode-rust.js"
 , "tmpDir"     : ".elsa"
 , "port"       : 8095 
 }
