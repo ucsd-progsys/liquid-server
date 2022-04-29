@@ -1,8 +1,8 @@
 flags: {}
 packages:
 - '.'
-extra-deps: []
-
+extra-deps: 
+- scotty-tls-0.4.1
 # resolver: nightly-2016-05-21
 # resolver: lts-8.9
 # resolver: nightly-2017-10-06

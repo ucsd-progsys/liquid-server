@@ -33,7 +33,7 @@ Executable liquid-server
     filepath,
     transformers,
     directory,
-    scotty, wai-extra, wai-middleware-static, wai-cors
+    scotty, wai-extra, wai-middleware-static, wai-cors, scotty-tls
 
   other-modules:   Language.Liquid.Server.Config,
                    Language.Liquid.Server.Paths,
