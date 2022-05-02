@@ -24,11 +24,24 @@ var showErrorBanners = false;
 
 /************** List of Demos **************************************************/
 
-var allCategories = [ { type : "basic"    , name: "Basics" }
+var allCategories = [ { type : "basic"    , name: "Basics" },
+	              { type : "option"   , name: "Options"}, 
+	              { type : "vector"   , name: "Vectors"}, 
                     ];
 
 var allDemos =
   { // Basic Demos
-    "blank.rs"    : { name : "Blank"            , type : "basic"  },
-    "option.rs"   : { name : "Option"           , type : "basic"  },
+    "blank.rs"    : { name : "Blank"   , type : "basic"  },
+    "basics.rs"   : { name : "Basics"  , type : "basic"  },
+    "pointers.rs" : { name : "Borrows" , type : "basic"  },
+
+    // Options
+    "poly-option.rs" : { name : "Polymorphic" , type : "option"  },
+    "ref-option.rs"  : { name : "Refined"     , type : "option"  },
+
+    // Vectors 
+    "vectors.rs" : { name : "Loops"               , type : "vector"},
+    "kmeans.rs"  : { name : "K-Means Clustering"  , type : "vector"},
+    "kmp.rs"     : { name : "KMP String Matching" , type : "vector"},
+    "fft.rs"     : { name : "FFT" 	          , type : "vector"},
   };
