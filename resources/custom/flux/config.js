@@ -36,8 +36,8 @@ var allDemos =
     "pointers.rs" : { name : "Borrows" , type : "basic"  },
 
     // Options
-    "poly-option.rs" : { name : "Polymorphic" , type : "option"  },
-    "ref-option.rs"  : { name : "Refined"     , type : "option"  },
+    "poly-option.rs" : { name : "Standard Options" , type : "option"  },
+    "ref-option.rs"  : { name : "Refined Options"  , type : "option"  },
 
     // Vectors 
     "vectors.rs" : { name : "Loops"               , type : "vector"},
