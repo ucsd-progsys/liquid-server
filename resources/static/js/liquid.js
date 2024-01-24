@@ -443,7 +443,15 @@ function LiquidDemoCtrl($scope, $http, $location) {
   
   $scope.verifySource   = function(){ verifyQuery(getCheckQuery($scope));   };
   $scope.reVerifySource = function(){ verifyQuery(getRecheckQuery($scope)); };
-   
+
+  // add Ctrl + Enter keybind for verifySource
+  $scope.initKeyListener = function(){
+    document.addEventListener('keydown', e => {
+        if (e.ctrlKey && e.key === 'Enter') {
+            $scope.$apply($scope.verifySource);
+        }
+    });
+  };
 }
 
 /************************************************************************/
