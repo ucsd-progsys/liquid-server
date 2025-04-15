@@ -26,10 +26,11 @@ var showErrorBanners = false;
  
 /************** List of Demos **************************************************/
 
-var allCategories = [ { type : "basic"    , name: "Basics" }
-                    , { type : "measure"  , name: "Measures" }
-                    , { type : "absref"   , name: "Abstract Refinements" }
-                    , { type : "tutorial" , name: "HOPA Tutorial" }
+var allCategories = [ { type : "basic"      , name: "Basics" }
+                    , { type : "measure"    , name: "Measures" }
+                    , { type : "higherorder", name: "Higher Order" }
+                    , { type : "absref"     , name: "Abstract Refinements" }
+                    , { type : "tutorial"   , name: "HOPA Tutorial" }
                     ];
 
 var allDemos =
@@ -51,6 +52,14 @@ var allDemos =
     "UniqueZipper.hs"       : { name : "Unique Zippers"   , type : "measure"},
     "LambdaEval.hs"         : { name : "Lambda Eval"      , type : "measure"}, 
     "treesum.hs"            : { name : "List-Tree Sum"    , type : "measure"},
+
+    // Higher Order Demos
+    "MapFusion.hs"          : { name : "Map Fusion"        , type : "higherorder"},
+    "Reader.hs"             : { name : "Reader Monad"      , type : "higherorder"},
+    "List.hs"               : { name : "List Monad"        , type : "higherorder"},
+    "Cont.hs"               : { name : "Continutaion Monad", type : "higherorder"},
+    "Compiler.hs"           : { name : "Expr compiler"     , type : "higherorder"},
+
     // Abstract Refinement Demos
     "absref101.hs"          : { name : "Parametric Invariants", type : "absref" },
     "filter.hs"             : { name : "A Fine Filter"        , type : "absref" },
