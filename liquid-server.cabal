@@ -6,7 +6,7 @@ Description:         liquid-server is a general web server that can be used
                      brower-based GUI for using the tools.
 License:             GPL
 License-file:        LICENSE
-Author:              Ranjit Jhala 
+Author:              Ranjit Jhala
 Maintainer:          jhala@cs.ucsd.edu
 Stability:           Experimental
 Category:            Web
@@ -33,7 +33,10 @@ Executable liquid-server
     filepath,
     transformers,
     directory,
-    scotty, wai-extra, wai-middleware-static, wai-cors, scotty-tls
+    scotty,
+    wai-extra,
+    wai-middleware-static,
+    wai-cors
 
   other-modules:   Language.Liquid.Server.Config,
                    Language.Liquid.Server.Paths,
