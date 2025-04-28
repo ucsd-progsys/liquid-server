@@ -3,5 +3,3 @@ compiler: ghc-8.10.7
 allow-newer: true
 packages:
 - '.'
-extra-deps: 
-- scotty-tls-0.4.1

@@ -12,6 +12,7 @@ import           Control.Exception      (throw)
 import           Data.Maybe
 import           Data.List              (isPrefixOf, intercalate)
 import           Data.Aeson                 hiding (Result)
+import qualified Data.Aeson.KeyMap    as KM
 import qualified Data.Text.Lazy       as T
 import qualified Data.Text.Lazy.IO    as TIO
 import qualified Data.ByteString.Lazy as LB
@@ -159,5 +160,5 @@ makeCommand config t = intercalate " "
 -- (+=) :: Value -> (T.Text, Value) -> Value
 {-@ (+=) :: {v:Value | (Object v)} -> Pair -> Value @-}
 ---------------------------------------------------------------
-(Object o) += (k, v) = Object $ M.insert k v o
+(Object o) += (k, v) = Object $ KM.insert k v o
 _          +=  _     = throw  $ userError "invalid addition to value"

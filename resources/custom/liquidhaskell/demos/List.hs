@@ -1,12 +1,15 @@
 {-@ LIQUID "--reflection" @-}
 {-@ LIQUID "--ple"        @-}
+{-@ LIQUID "--etabeta"    @-}
 
-module List where
+module MonadList where
 
 import Language.Haskell.Liquid.ProofCombinators
 
 import Prelude hiding (return, (>>=), (++))
 
+-- We define a custom list type to prevent the SMT solver from
+-- making it too easy
 data List a = Nil | Cons a (List a)
 
 {-@ reflect return @-}
@@ -22,7 +25,7 @@ Nil         ++ ys = ys
 {-@ infix   >>= @-}
 {-@ reflect >>= @-}
 (>>=) :: List a -> (a -> List b) -> List b
-Nil         >>= _ = Nil
+Nil         >>= f = Nil
 (Cons x xs) >>= f = f x ++ (xs >>= f)
 
 {-@ rightIdentity :: x:List a -> { x >>= return = x } @-}
@@ -49,12 +52,12 @@ appendAssoc (Cons x xs) ys zs = appendAssoc xs ys zs
                       -> { xs ++ ys >>= f = (xs >>= f) ++ (ys >>= f) } @-}
 rightDistributive :: List a -> List a -> (a -> List b) -> Proof
 rightDistributive Nil         ys f = trivial
-rightDistributive (Cons x xs) ys f = rightDistributive xs ys f 
+rightDistributive (Cons x xs) ys f = rightDistributive xs ys f
                                  &&& appendAssoc (f x) (xs >>= f) (ys >>= f)
 
-{-@ associativity :: x:List a -> f:(a -> List a) -> g:(a -> List a) 
+{-@ associativity :: x:List a -> f:(a -> List a) -> g:(a -> List a)
                   -> { (x >>= f) >>= g = x >>= (\r:a -> f r >>= g) } @-}
 associativity :: List a -> (a -> List a) -> (a -> List a) -> Proof
-associativity Nil         _ _ = trivial
-associativity (Cons x xs) f g = associativity xs f g 
+associativity Nil         f g = trivial
+associativity (Cons x xs) f g = associativity xs f g
                             &&& rightDistributive (f x) (xs >>= f) g
