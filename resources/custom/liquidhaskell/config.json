@@ -1,9 +1,9 @@
-{ "toolName"   : "liquidhaskell"      
-, "srcSuffix"  : "hs" 
-, "srcChecker" : "liquid"
+{ "toolName"   : "liquidhaskell"
+, "srcSuffix"  : "hs"
+, "srcChecker" : "ghc -package liquid-prelude -fplugin=LiquidHaskell"
 , "cmdPrefix"  : ""
 , "themeFile"  : "theme-xcode.js"
 , "modeFile"   : "mode-haskell.js"
 , "tmpDir"     : ".liquid"
-, "port"       : 8090 
+, "port"       : 8090
 }
