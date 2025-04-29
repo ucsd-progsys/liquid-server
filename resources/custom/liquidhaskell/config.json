@@ -1,6 +1,6 @@
 { "toolName"   : "liquidhaskell"
 , "srcSuffix"  : "hs"
-, "srcChecker" : "ghc -package vector -package liquid-vector -package liquid-prelude -fplugin=LiquidHaskell"
+, "srcChecker" : "cabal exec -- ghc -package vector -package liquid-vector -package liquid-prelude -fplugin=LiquidHaskell"
 , "cmdPrefix"  : ""
 , "themeFile"  : "theme-xcode.js"
 , "modeFile"   : "mode-haskell.js"

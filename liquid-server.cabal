@@ -21,10 +21,6 @@ Executable liquid-server
     base,
     bytestring,
     text,
-    -- MonadCatchIO-transformers ,
-    -- mtl,
-    -- snap-core,
-    -- snap-server,
     aeson,
     hashable,
     unordered-containers,
@@ -36,7 +32,14 @@ Executable liquid-server
     scotty,
     wai-extra,
     wai-middleware-static,
-    wai-cors
+    wai-cors,
+    -- These dependencies are not needed to build liquid-server, but thus they
+    -- are made available to the invocations of GHC when verifying programs via
+    -- cabal build && cabal exec -- liquid-server:
+    liquidhaskell,
+    liquid-prelude,
+    liquid-vector,
+    vector
 
   other-modules:   Language.Liquid.Server.Config,
                    Language.Liquid.Server.Paths,

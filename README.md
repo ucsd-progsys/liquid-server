@@ -82,11 +82,11 @@ Installation
 
 1. Build 
 
-    $ stack install
+    $ cabal build
 
 2. Run (make sure that the `toolName` binary, described below, is in the `$PATH`)
 
-    $ liquid-server -p 8000 resources/custom/toolName/config.json
+    $ cabal exec -- liquid-server -p 8000 resources/custom/toolName/config.json
 
 3. Use by pointing your web-browser to 
 
