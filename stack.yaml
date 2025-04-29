@@ -1,5 +1,4 @@
-resolver: lts-18.13
-compiler: ghc-8.10.7
+resolver: nightly-2025-03-20
 allow-newer: true
 packages:
 - '.'
