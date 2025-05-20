@@ -17,6 +17,9 @@ Executable liquid-server
   hs-source-dirs: src
   main-is: Main.hs
 
+  extensions:
+    DoAndIfThenElse
+
   Build-depends:
     base,
     bytestring,
