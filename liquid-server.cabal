@@ -19,6 +19,8 @@ Executable liquid-server
 
   extensions:
     DoAndIfThenElse
+    DeriveGeneric
+    DeriveAnyClass
 
   Build-depends:
     base,

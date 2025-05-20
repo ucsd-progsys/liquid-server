@@ -13,16 +13,19 @@ module Language.Liquid.Server.Types (
   , Result
 
     -- * Canned Responses
-  , dummyResult, okResult, errResult, typeErrResult
+  , dummyResult, okResult, errResult, hsParseResult
   ) where
 
-import           Control.Monad          (mzero)
+import           Control.Monad          (mzero, guard)
 import           Control.Applicative    ((<$>), (<*>))
 -- import           Data.Maybe
-import           Data.Aeson                 hiding (Result)
--- import qualified Data.ByteString.Lazy as LB
+import           Data.Aeson                 hiding (Result, Error)
+import qualified Data.ByteString.Lazy as LB
+import qualified Data.ByteString.Lazy.Char8 as LB
 import qualified Data.Text.Lazy as T
 import qualified Data.HashMap.Strict as M
+import           GHC.Generics
+
 -----------------------------------------------------------------
 -- Core Data Types ----------------------------------------------
 -----------------------------------------------------------------
@@ -128,40 +131,49 @@ errResult s = mkResult [("status", "crash"), ("error",  s)]
 mkResult :: [(T.Text, T.Text)] -> Result
 mkResult = toJSON . M.fromList
 
-typeErrResult :: String -> Result
-typeErrResult err = object
-  [ "status" .= "unsafe"
-  , "errors" .=  toJSONList
-    [ object
-      [ "message" .= err
-      , "start"   .= origin
-      , "stop"    .= origin -- Needed to show the error message
-      ]
-    , object
-      [ "message" .= err
-      , "start"   .= origin
-      , "stop"    .= end -- Needed to highlight all the code editor
-    ]
-  ]
+hsParseResult :: LB.ByteString -> Maybe Result
+hsParseResult txt = do
+   let errors = drop 2 $ LB.lines txt
+   guard $ not $ null errors
+   errors <- mapM decode errors
+   pure $ makeError errors
+
+data Position = Position
+  { column :: Int
+  , line   :: Int
+  } deriving (Show, Generic, FromJSON, ToJSON)
+
+data Error = Error
+  { message :: String
+  , start   :: Position
+  , stop    :: Position
+  } deriving (Show, Generic, ToJSON)
+
+instance FromJSON Error where
+  parseJSON = withObject "Error" $ \v -> do
+    msgArray <- v .: "message"
+    msgStr <- case msgArray of
+      [] -> fail "Empty message array"
+      s  -> pure $ concat s
+    spanObj <- v .: "span"
+    startPos <- spanObj .: "start"
+    stopPos  <- spanObj .: "end"
+    pure $ Error msgStr startPos stopPos
+
+makeError :: [Error] -> Result
+makeError err = object
+  [ "status" .= ("unsafe" :: String)
+  , "errors" .=  toJSONList err
   , "sptypes" .= toJSONList [ object
-    [ "ann"   .= err
-    , "ident" .= err
-    , "start" .= origin
-    , "stop"  .= end
+    [ "ann"   .= ("" :: String)
+    , "ident" .= ("" :: String)
+    , "start" .= (1 :: Int)
+    , "stop"  .= (1 :: Int)
     ]]
   , "types" .= object [ "1" .= object
-    [ "ann"   .= err
-    , "ident" .= err
+    [ "ann"   .= ("" :: String)
+    , "ident" .= ("" :: String)
     , "col"   .= (1 :: Int)
     , "row"   .= (1 :: Int)
     ]]
   ]
-  where
-    origin = object
-              [ "column" .= (1 :: Int)
-              , "line" .= (1 :: Int)
-              ]
-    end    = object
-              [ "column" .= (999 :: Int)
-              , "line" .= (999 :: Int)
-              ]

@@ -2,7 +2,6 @@
 
 module Language.Liquid.Server.Query (queryResult) where
 
-
 import           System.IO.Error        (catchIOError)
 import           System.Exit            (ExitCode)
 import           System.Directory       (doesFileExist)
@@ -136,9 +135,12 @@ readResult cfg files = do
     if jsonFileExists then do
         jsonRes <- LB.readFile $ jsonFile files
         pure $ fromMaybe dummyResult $ decode jsonRes
+    else if toolName cfg == "liquidhaskell" then do
+        logContext <- LB.readFile $ logFile cfg
+        pure $ fromMaybe dummyResult $ hsParseResult logContext
     else do
-        logContext <- readFile $ logFile cfg
-        pure $ typeErrResult logContext
+        pure dummyResult
+
 
 ---------------------------------------------------------------
 makeCommand :: Config -> FilePath -> String
