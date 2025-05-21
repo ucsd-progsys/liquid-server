@@ -2,7 +2,6 @@
 
 module Language.Liquid.Server.Query (queryResult) where
 
-
 import           System.IO.Error        (catchIOError)
 import           System.Exit            (ExitCode)
 import           System.Directory       (doesFileExist)
@@ -112,8 +111,8 @@ nextId t = do
 execCheck :: Config -> Files -> IO Result
 ---------------------------------------------------------------
 execCheck c f
-  = do runCommand c f
-       r <- readResult f
+  = do _ <- runCommand c f
+       r <- readResult c f
        return $ r += ("path", toJSON $ srcFile f)
 
 ---------------------------------------------------------------
@@ -129,14 +128,19 @@ runCommand cfg = systemD . makeCommand cfg . srcFile
     systemD c  = {- putStrLn ("EXEC: " ++ c) >> -} system c
 
 ---------------------------------------------------------------
-readResult   :: Files -> IO Result
+readResult   :: Config -> Files -> IO Result
 ---------------------------------------------------------------
-readResult f = do b <- doesFileExist file
-                  if b then decodeRes <$> LB.readFile file
-                       else return dummyResult
-  where
-    file      = jsonFile f
-    decodeRes = fromMaybe dummyResult . decode
+readResult cfg files = do
+    jsonFileExists <- doesFileExist $ jsonFile files
+    if jsonFileExists then do
+        jsonRes <- LB.readFile $ jsonFile files
+        pure $ fromMaybe dummyResult $ decode jsonRes
+    else if toolName cfg == "liquidhaskell" then do
+        logContext <- LB.readFile $ logFile cfg
+        pure $ fromMaybe dummyResult $ hsParseResult logContext
+    else do
+        pure dummyResult
+
 
 ---------------------------------------------------------------
 makeCommand :: Config -> FilePath -> String

@@ -5,32 +5,35 @@ module Language.Liquid.Server.Types (
     -- * Configuration
     Config (..)
   , Files  (..)
-    
-  -- * Query Type 
-  , Query (..) 
-  
+
+  -- * Query Type
+  , Query (..)
+
     -- * Response Type
   , Result
 
     -- * Canned Responses
-  , dummyResult, okResult, errResult
+  , dummyResult, okResult, errResult, hsParseResult
   ) where
 
-import           Control.Monad          (mzero)
+import           Control.Monad          (mzero, guard)
 import           Control.Applicative    ((<$>), (<*>))
 -- import           Data.Maybe
-import           Data.Aeson                 hiding (Result)
--- import qualified Data.ByteString.Lazy as LB
-import qualified Data.Text.Lazy as T 
+import           Data.Aeson                 hiding (Result, Error)
+import qualified Data.ByteString.Lazy as LB
+import qualified Data.ByteString.Lazy.Char8 as LB
+import qualified Data.Text.Lazy as T
 import qualified Data.HashMap.Strict as M
+import           GHC.Generics
+
 -----------------------------------------------------------------
 -- Core Data Types ----------------------------------------------
 -----------------------------------------------------------------
 
-data Config = Config { 
-    toolName    :: String     -- used to lookup resources/custom/toolName 
+data Config = Config {
+    toolName    :: String     -- used to lookup resources/custom/toolName
   , srcSuffix   :: String     -- hs, js etc.
-  , srcChecker  :: FilePath   -- checker binary; must be in your $PATH 
+  , srcChecker  :: FilePath   -- checker binary; must be in your $PATH
   , cmdPrefix   :: String     -- extra command line params to be passed to `srcChecker`
   , themeFile   :: FilePath   -- theme-THEMEFILE.js
   , modeFile    :: FilePath   -- mode-MODEFILE.js
@@ -38,21 +41,22 @@ data Config = Config {
   , port        :: Int        -- port at which to run server
   } deriving (Show)
 
-data Files   = Files { 
+data Files   = Files {
     srcFile  :: FilePath
   , jsonFile :: FilePath
   }
+  deriving Show
 
 -----------------------------------------------------------------
--- "REST" Queries ----------------------------------------------- 
+-- "REST" Queries -----------------------------------------------
 -----------------------------------------------------------------
 
-data Query  = Check   { program :: T.Text } 
+data Query  = Check   { program :: T.Text }
             | Recheck { program :: T.Text
                       , path    :: FilePath      }
-            | Save    { program :: T.Text 
-                      , path    :: FilePath      } 
-            | Load    { path    :: FilePath      } 
+            | Save    { program :: T.Text
+                      , path    :: FilePath      }
+            | Load    { path    :: FilePath      }
             | Perma   { program :: T.Text }
             | Junk
 
@@ -67,7 +71,7 @@ instance FromJSON Config where
   parseJSON _          = mzero
 
 objectConfig :: Object -> _
-objectConfig v = Config <$> v .: "toolName" 
+objectConfig v = Config <$> v .: "toolName"
                         <*> v .: "srcSuffix"
                         <*> v .: "srcChecker"
                         <*> v .: "cmdPrefix"
@@ -75,25 +79,25 @@ objectConfig v = Config <$> v .: "toolName"
                         <*> v .: "modeFile"
                         <*> v .: "tmpDir"
                         <*> v .: "port"
-                        
+
 ----------------------------------------------------------------
 -- JSON Serialization: Query -----------------------------------
 ----------------------------------------------------------------
 
 instance FromJSON Query where
   parseJSON (Object v) = objectQuery v
-  parseJSON _          = mzero 
+  parseJSON _          = mzero
 
 objectQuery    :: Object -> _
-objectQuery v 
-  = do ty <- v .: "type" 
-       case ty :: String of 
-         "check"   -> Check   <$> v .: "program"  
-         "recheck" -> Recheck <$> v .: "program" <*> v.: "path" 
-         "perma"   -> Perma   <$> v .: "program" 
-         "save"    -> Save    <$> v .: "program" <*> v.: "path" 
+objectQuery v
+  = do ty <- v .: "type"
+       case ty :: String of
+         "check"   -> Check   <$> v .: "program"
+         "recheck" -> Recheck <$> v .: "program" <*> v.: "path"
+         "perma"   -> Perma   <$> v .: "program"
+         "save"    -> Save    <$> v .: "program" <*> v.: "path"
          "load"    -> Load    <$> v .: "path"
-         _         -> mzero 
+         _         -> mzero
 
 instance ToJSON Query where
   toJSON q@(Check prg)       = object ["type" .= jsonType q, "program" .= prg]
@@ -103,7 +107,7 @@ instance ToJSON Query where
   toJSON q@(Load  pth)       = object ["type" .= jsonType q,                   "path" .= pth]
   toJSON q@(Junk)            = object ["type" .= jsonType q]
 
-jsonType              :: Query -> String 
+jsonType              :: Query -> String
 jsonType (Check {})   = "check"
 jsonType (Recheck {}) = "recheck"
 jsonType (Perma {})   = "perma"
@@ -115,14 +119,61 @@ jsonType (Junk  {})   = "junk"
 ----------------------------------------------------------------
 ----------------------------------------------------------------
 
-dummyResult :: Result 
+dummyResult :: Result
 dummyResult = mkResult [("status", "crash")] -- fromJust $ decode "{\"status\" : \"crash\" }"
 
 okResult :: Result
-okResult    = mkResult [("status", "ok")] 
+okResult    = mkResult [("status", "ok")]
 
 errResult :: T.Text -> Result
-errResult s = mkResult [("status", "crash"), ("error",  s)] 
+errResult s = mkResult [("status", "crash"), ("error",  s)]
 
 mkResult :: [(T.Text, T.Text)] -> Result
 mkResult = toJSON . M.fromList
+
+hsParseResult :: LB.ByteString -> Maybe Result
+hsParseResult txt = do
+   let errors = drop 2 $ LB.lines txt
+   guard $ not $ null errors
+   errors <- mapM decode errors
+   pure $ makeError errors
+
+data Position = Position
+  { column :: Int
+  , line   :: Int
+  } deriving (Show, Generic, FromJSON, ToJSON)
+
+data Error = Error
+  { message :: String
+  , start   :: Position
+  , stop    :: Position
+  } deriving (Show, Generic, ToJSON)
+
+instance FromJSON Error where
+  parseJSON = withObject "Error" $ \v -> do
+    msgArray <- v .: "message"
+    msgStr <- case msgArray of
+      [] -> fail "Empty message array"
+      s  -> pure $ concat s
+    spanObj <- v .: "span"
+    startPos <- spanObj .: "start"
+    stopPos  <- spanObj .: "end"
+    pure $ Error msgStr startPos stopPos
+
+makeError :: [Error] -> Result
+makeError err = object
+  [ "status" .= ("unsafe" :: String)
+  , "errors" .=  toJSONList err
+  , "sptypes" .= toJSONList [ object
+    [ "ann"   .= ("" :: String)
+    , "ident" .= ("" :: String)
+    , "start" .= (1 :: Int)
+    , "stop"  .= (1 :: Int)
+    ]]
+  , "types" .= object [ "1" .= object
+    [ "ann"   .= ("" :: String)
+    , "ident" .= ("" :: String)
+    , "col"   .= (1 :: Int)
+    , "row"   .= (1 :: Int)
+    ]]
+  ]
